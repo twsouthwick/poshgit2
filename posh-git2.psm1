@@ -3,6 +3,7 @@ if (Get-Module posh-git) { return }
 Push-Location $psScriptRoot
 .\CheckVersion.ps1 > $null
 
+
 . .\Utils.ps1
 . .\GitUtils.ps1
 . .\GitPrompt.ps1
@@ -23,7 +24,6 @@ Export-ModuleMember `
         'Invoke-NullCoalescing',
         'Write-GitStatus',
         'Write-Prompt',
-        'Get-GitStatus', 
         'Enable-GitColors', 
         'Get-GitDirectory',
         'TabExpansion',

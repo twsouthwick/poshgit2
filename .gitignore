@@ -1,2 +1,8 @@
 VERSION
 obj
+.vs
+bin
+packages
+*.zip
+ChocolateyPackage/posh-git/
+*.nupkg
