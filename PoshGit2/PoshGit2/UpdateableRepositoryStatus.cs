@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace PoshGit2
 {
@@ -11,9 +10,11 @@ namespace PoshGit2
     {
         private readonly IRepository _repository;
         private readonly IFileWatcher _fileWatcher;
+        private readonly IQueuedLocker _gate;
 
-        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory)
+        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, IQueuedLocker gate)
         {
+            _gate = gate;
             _repository = repositoryFactory(folder);
 
             _fileWatcher = folderWatcherFactory(folder);
@@ -39,29 +40,32 @@ namespace PoshGit2
 
         public void UpdateStatus()
         {
-            Trace.WriteLine($"Updating repo {GitDir}");
-
-            _fileWatcher.Pause();
-
-            var repositoryStatus = _repository.RetrieveStatus();
-
-            Working = new ChangedItemsCollection
+            _gate.TryContinueOrBlock(() =>
             {
-                Added = GetCollection(repositoryStatus.Untracked),
-                Deleted = GetCollection(repositoryStatus.Missing),
-                Modified = GetCollection(repositoryStatus.Modified)
-            };
+                Trace.WriteLine($"Updating repo {GitDir}");
 
-            Index = new ChangedItemsCollection
-            {
-                Added = GetCollection(repositoryStatus.Added),
-                Deleted = GetCollection(repositoryStatus.Removed),
-                Modified = GetCollection(repositoryStatus.Staged)
-            };
+                try
+                {
+                    var repositoryStatus = _repository.RetrieveStatus();
 
-            _fileWatcher.Start();
+                    Working = new ChangedItemsCollection
+                    {
+                        Added = GetCollection(repositoryStatus.Untracked),
+                        Deleted = GetCollection(repositoryStatus.Missing),
+                        Modified = GetCollection(repositoryStatus.Modified)
+                    };
 
-            Trace.WriteLine($"Done updating repo {GitDir}");
+                    Index = new ChangedItemsCollection
+                    {
+                        Added = GetCollection(repositoryStatus.Added),
+                        Deleted = GetCollection(repositoryStatus.Removed),
+                        Modified = GetCollection(repositoryStatus.Staged)
+                    };
+
+                    Trace.WriteLine($"Done updating repo {GitDir}");
+                }
+                catch (LibGit2SharpException) { }
+            });
         }
 
         private ICollection<string> GetCollection(IEnumerable<StatusEntry> entries)

@@ -62,11 +62,13 @@
     <Compile Include="FileChangedStatus.cs" />
     <Compile Include="IFileWatcher.cs" />
     <Compile Include="IFolderWatcher.cs" />
+    <Compile Include="IQueuedLocker.cs" />
     <Compile Include="IRepositoryCache.cs" />
     <Compile Include="IRepositoryStatus.cs" />
     <Compile Include="ObservableBase.cs" />
     <Compile Include="PoshGit2Container.cs" />
     <Compile Include="PSCurrentWorkingDirectory.cs" />
+    <Compile Include="QueuedLocker.cs" />
     <Compile Include="UpdateableRepositoryStatus.cs" />
     <Compile Include="GetGitInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
