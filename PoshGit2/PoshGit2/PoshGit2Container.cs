@@ -7,12 +7,16 @@ namespace PoshGit2
 {
     internal sealed class PoshGit2Container : IDisposable
     {
-        private static Lazy<PoshGit2Container> _instance = new Lazy<PoshGit2Container>(true);
+        private readonly static Lazy<PoshGit2Container> _instance = new Lazy<PoshGit2Container>(true);
+        private readonly string _path;
+
         public static IContainer Instance { get { return _instance.Value.Container; } }
 
         public PoshGit2Container()
         {
             Container = CreateContainer();
+
+            _path = SetupLogging();
         }
 
         public IContainer Container { get; }
@@ -29,35 +33,48 @@ namespace PoshGit2
             builder.RegisterType<FolderWatcher>().As<IFolderWatcher>();
             builder.RegisterType<QueuedLocker>().As<IQueuedLocker>();
 
-            AppDomain.CurrentDomain.FirstChanceException += FirstChanceException;
-            AppDomain.CurrentDomain.UnhandledException += UnhandledException;
-
             return builder.Build();
         }
 
-        private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private string SetupLogging()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), "poshgit2");
+            var path = Path.Combine(dir, $"{Guid.NewGuid()}.err.log");
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            AppDomain.CurrentDomain.FirstChanceException += FirstChanceException;
+            AppDomain.CurrentDomain.UnhandledException += UnhandledException;
+
+            return path;
+        }
+
+        private void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             ExceptionWriter(e.ExceptionObject as Exception, e.IsTerminating);
         }
 
-        private static void FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        private void FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         {
             ExceptionWriter(e.Exception, false);
         }
 
-        private static void ExceptionWriter(Exception e, bool isTerminating)
+        private void ExceptionWriter(Exception e, bool isTerminating)
         {
-            var sb = new StringBuilder();
-            var terminating = isTerminating ? "Terminating" : "Continuing";
+            try
+            {
+                var sb = new StringBuilder();
+                var terminating = isTerminating ? "Terminating" : "Continuing";
 
-            sb.AppendLine("-----------------------------------");
-            sb.AppendLine($"Date: {DateTime.Now} [{System.Diagnostics.Process.GetCurrentProcess().Id}] | {terminating}");
-            sb.AppendLine($"{e}");
-            sb.AppendLine("-----------------------------------");
+                sb.AppendLine("-----------------------------------");
+                sb.AppendLine($"Date: {DateTime.Now} [{System.Diagnostics.Process.GetCurrentProcess().Id}] | {terminating}");
+                sb.AppendLine($"{e}");
+                sb.AppendLine("-----------------------------------");
 
-            var path = $@"{Path.GetTempPath()}\poshgit2-{Guid.NewGuid()}.err.log";
-
-            File.AppendAllText(path, sb.ToString());
+                File.AppendAllText(_path, sb.ToString());
+            }
+            catch { }
         }
 
         public void Dispose()
