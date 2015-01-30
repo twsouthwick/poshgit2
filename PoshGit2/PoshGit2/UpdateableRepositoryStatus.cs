@@ -1,6 +1,7 @@
 ﻿using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -38,6 +39,8 @@ namespace PoshGit2
 
         public void UpdateStatus()
         {
+            Trace.WriteLine($"Updating repo {GitDir}");
+
             _fileWatcher.Pause();
 
             var repositoryStatus = _repository.RetrieveStatus();
@@ -57,6 +60,8 @@ namespace PoshGit2
             };
 
             _fileWatcher.Start();
+
+            Trace.WriteLine($"Done updating repo {GitDir}");
         }
 
         private ICollection<string> GetCollection(IEnumerable<StatusEntry> entries)
