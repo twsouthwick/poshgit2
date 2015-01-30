@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace PoshGit2
@@ -37,13 +38,68 @@ namespace PoshGit2
         {
             get
             {
-                var name = InGitDir ? "GIT!" : _repository.Head.Name;
+                var name = GetExtraBranchStatus();
 
                 return _isUpdating ? $"{name}..." : name;
             }
         }
 
-        private bool InGitDir { get { return _cwd.CWD.StartsWith(GitDir, StringComparison.CurrentCultureIgnoreCase); } }
+        private string GetExtraBranchStatus()
+        {
+            var branch = _repository.Head.Name;
+
+            if (_cwd.CWD.StartsWith(GitDir, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "GIT!";
+            }
+
+            if (Directory.Exists($"{GitDir}\rebase-merge)"))
+            {
+                var rebase_branch = File.ReadAllText($@"{GitDir}\rebase-merge\head-name").TrimEnd().Replace("refs/heads/", "");
+
+                if (File.Exists($@"{GitDir}\rebase-merge\interactive)"))
+                {
+                    return $"{rebase_branch}|REBASE-i";
+                }
+
+                return $"{rebase_branch}|REBASE-m";
+            }
+
+            if (Directory.Exists($@"{GitDir}\rebase-apply"))
+            {
+                if (File.Exists($@"{GitDir}\rebase-apply\rebasing"))
+                {
+                    return $"{branch}|REBASE";
+                }
+                else if (File.Exists($@"{GitDir}\rebase-apply\applying"))
+                {
+                    return $"{branch}|AM";
+                }
+                else
+                {
+                    return $"{branch}|AM/REBASE";
+                }
+            }
+
+            if (File.Exists($@"{GitDir}\MERGE_HEAD"))
+            {
+                return $"{branch}|MERGING";
+            }
+            else
+            {
+                if (File.Exists($@"{GitDir}\CHERRY_PICK_HEAD"))
+                {
+                    return $"{branch}|CHERRY-PICKING";
+                }
+
+                if (File.Exists($@"{GitDir}\BISECT_LOG"))
+                {
+                    return $"{branch}|BISECTING";
+                }
+            }
+
+            return branch;
+        }
 
         public bool HasWorking { get { return Working.HasAny; } }
         public ChangedItemsCollection Working { get; set; }
