@@ -16,24 +16,3 @@ if (!$Env:HOME) { $Env:HOME = "$Env:USERPROFILE" }
 
 Get-TempEnv 'SSH_AGENT_PID'
 Get-TempEnv 'SSH_AUTH_SOCK'
-
-Export-ModuleMember `
-    -Alias @(
-        '??') `
-    -Function @(
-        'Invoke-NullCoalescing',
-        'Write-GitStatus',
-        'Write-Prompt',
-        'Enable-GitColors', 
-        'Get-GitDirectory',
-        'TabExpansion',
-        'Get-AliasPattern',
-        'Get-SshAgent',
-        'Start-SshAgent',
-        'Stop-SshAgent',
-        'Add-SshKey',
-        'Get-SshPath',
-        'Update-AllBranches',
-        'tgit')
-
-
