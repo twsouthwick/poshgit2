@@ -11,18 +11,21 @@ namespace PoshGit2
         private readonly IRepository _repository;
         private readonly IFileWatcher _fileWatcher;
         private readonly IQueuedLocker _gate;
+        private readonly ICurrentWorkingDirectory _cwd;
 
         private bool _isUpdating;
 
-        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, IQueuedLocker gate)
+        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, IQueuedLocker gate, ICurrentWorkingDirectory cwd)
         {
             _gate = gate;
             _repository = repositoryFactory(folder);
+            _cwd = cwd;
 
             _fileWatcher = folderWatcherFactory(folder);
             _fileWatcher.Subscribe(new DelegateObserver(_ => UpdateStatus()));
 
-            GitDir = _repository.Info.Path;
+            // _repository.Info.Path returns a path ending with '\'
+            GitDir = _repository.Info.Path.Substring(0, _repository.Info.Path.Length - 1);
 
             Working = new ChangedItemsCollection();
             Index = new ChangedItemsCollection();
@@ -34,16 +37,13 @@ namespace PoshGit2
         {
             get
             {
-                if (_isUpdating)
-                {
-                    return $"{_repository.Head.Name}...";
-                }
-                else
-                {
-                    return _repository.Head.Name;
-                }
+                var name = InGitDir ? "GIT!" : _repository.Head.Name;
+
+                return _isUpdating ? $"{name}..." : name;
             }
         }
+
+        private bool InGitDir { get { return _cwd.CWD.StartsWith(GitDir, StringComparison.CurrentCultureIgnoreCase); } }
 
         public bool HasWorking { get { return Working.HasAny; } }
         public ChangedItemsCollection Working { get; set; }
