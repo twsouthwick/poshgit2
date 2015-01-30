@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangedItemsCollection.cs" />
+    <Compile Include="Cmdlets\DICmdlet.cs" />
     <Compile Include="DelegateObserver.cs" />
     <Compile Include="FileSystemWatcherObserver.cs" />
     <Compile Include="FileWatcher.cs" />
@@ -70,7 +71,7 @@
     <Compile Include="PSCurrentWorkingDirectory.cs" />
     <Compile Include="QueuedLocker.cs" />
     <Compile Include="UpdateableRepositoryStatus.cs" />
-    <Compile Include="GetGitInfo.cs" />
+    <Compile Include="Cmdlets\GetGitInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepoFinder.cs" />
   </ItemGroup>

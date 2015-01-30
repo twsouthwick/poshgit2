@@ -1,18 +1,10 @@
-﻿using Autofac;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 
-namespace PoshGit2
+namespace PoshGit2.Cmdlets
 {
     [Cmdlet(VerbsCommon.Get, "GitStatus")]
-    public class GetGitInfo : PSCmdlet
+    public class GetGitInfo : DICmdlet
     {
-        protected override void BeginProcessing()
-        {
-            base.BeginProcessing();
-
-            PoshGit2Container.Instance.InjectUnsetProperties(this);
-        }
-
         public IRepositoryCache RepositoryCache { get; set; }
 
         protected override void ProcessRecord()
