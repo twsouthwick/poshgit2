@@ -13,6 +13,14 @@ namespace PoshGit2
         private readonly ICurrentWorkingDirectory _path;
         private readonly Func<string, IRepositoryStatus> _factory;
 
+        public IEnumerable<IRepositoryStatus> All
+        {
+            get
+            {
+                return _repositories.Values.Select(o => o.Clone()).ToList();
+            }
+        }
+
         public RepoFinder(ICurrentWorkingDirectory path, Func<string, IRepositoryStatus> factory)
         {
             _path = path;
@@ -83,16 +91,31 @@ namespace PoshGit2
             }
         }
 
-        private void Remove(string path)
+        public void Remove(IRepositoryStatus repository)
         {
-            IRepositoryStatus status;
+            var storedRepo = _repositories
+                .Where(r => string.Equals(r.Value.GitDir, repository.GitDir, StringComparison.CurrentCultureIgnoreCase))
+                .FirstOrDefault();
 
-            if (_repositories.TryGetValue(path, out status))
+            Remove(storedRepo.Key);
+        }
+
+        public void Remove(string path)
+        {
+            var mainPath = FindGitRepo(path);
+
+            if(mainPath == null)
+            {
+                return;
+            }
+
+            IRepositoryStatus status;
+            if (_repositories.TryGetValue(mainPath, out status))
             {
                 (status as IDisposable)?.Dispose();
             }
 
-            _repositories.Remove(path);
+            _repositories.Remove(mainPath);
         }
 
         public void Dispose()

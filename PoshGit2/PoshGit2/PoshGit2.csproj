@@ -54,6 +54,8 @@
   <ItemGroup>
     <Compile Include="ChangedItemsCollection.cs" />
     <Compile Include="Cmdlets\DICmdlet.cs" />
+    <Compile Include="Cmdlets\GetRepoStatus.cs" />
+    <Compile Include="Cmdlets\RemoveGitRepo.cs" />
     <Compile Include="DelegateObserver.cs" />
     <Compile Include="FileSystemWatcherObserver.cs" />
     <Compile Include="FileWatcher.cs" />
