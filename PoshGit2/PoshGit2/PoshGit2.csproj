@@ -75,7 +75,7 @@
     <Compile Include="UpdateableRepositoryStatus.cs" />
     <Compile Include="Cmdlets\GetGitInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepoFinder.cs" />
+    <Compile Include="RepositoryCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

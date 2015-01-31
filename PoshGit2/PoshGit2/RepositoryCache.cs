@@ -7,13 +7,13 @@ using System.Linq;
 
 namespace PoshGit2
 {
-    public sealed class RepoFinder : IDisposable, IRepositoryCache
+    public sealed class RepositoryCache : IDisposable, IRepositoryCache
     {
         private readonly IDictionary<string, IRepositoryStatus> _repositories = new Dictionary<string, IRepositoryStatus>(StringComparer.OrdinalIgnoreCase);
         private readonly ICurrentWorkingDirectory _path;
         private readonly Func<string, IRepositoryStatus> _factory;
 
-        public RepoFinder(ICurrentWorkingDirectory path, Func<string, IRepositoryStatus> factory)
+        public RepositoryCache(ICurrentWorkingDirectory path, Func<string, IRepositoryStatus> factory)
         {
             _path = path;
             _factory = factory;

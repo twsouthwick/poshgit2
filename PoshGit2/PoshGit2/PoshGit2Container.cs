@@ -25,7 +25,7 @@ namespace PoshGit2
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterType<RepoFinder>().As<IRepositoryCache>().SingleInstance();
+            builder.RegisterType<RepositoryCache>().As<IRepositoryCache>().SingleInstance();
             builder.RegisterType<PSCurrentWorkingDirectory>().As<ICurrentWorkingDirectory>().SingleInstance();
             builder.RegisterType<UpdateableRepositoryStatus>().As<IRepositoryStatus>();
             builder.RegisterType<LibGit2Sharp.Repository>().As<LibGit2Sharp.IRepository>();
