@@ -55,11 +55,13 @@
     <Compile Include="ChangedItemsCollection.cs" />
     <Compile Include="Cmdlets\DICmdlet.cs" />
     <Compile Include="Cmdlets\GetRepoStatus.cs" />
+    <Compile Include="IGitPromptSettings.cs" />
     <Compile Include="Cmdlets\RemoveGitRepo.cs" />
     <Compile Include="DelegateObserver.cs" />
     <Compile Include="FileSystemWatcherObserver.cs" />
     <Compile Include="FileWatcher.cs" />
     <Compile Include="FolderWatcher.cs" />
+    <Compile Include="PSObjectGitPromptSettings.cs" />
     <Compile Include="RepositoryStatusExtensions.cs" />
     <Compile Include="ICurrentWorkingDirectory.cs" />
     <Compile Include="FileChangedStatus.cs" />
