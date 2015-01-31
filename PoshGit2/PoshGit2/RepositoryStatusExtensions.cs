@@ -1,6 +1,6 @@
 ﻿namespace PoshGit2
 {
-    internal static class HelperExtensions
+    internal static class RepositoryStatusExtensions
     {
         internal static IRepositoryStatus Clone(this IRepositoryStatus status)
         {

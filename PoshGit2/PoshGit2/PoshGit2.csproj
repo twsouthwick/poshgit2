@@ -60,7 +60,7 @@
     <Compile Include="FileSystemWatcherObserver.cs" />
     <Compile Include="FileWatcher.cs" />
     <Compile Include="FolderWatcher.cs" />
-    <Compile Include="HelperExtensions.cs" />
+    <Compile Include="RepositoryStatusExtensions.cs" />
     <Compile Include="ICurrentWorkingDirectory.cs" />
     <Compile Include="FileChangedStatus.cs" />
     <Compile Include="IFileWatcher.cs" />
