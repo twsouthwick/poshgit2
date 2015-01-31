@@ -10,9 +10,9 @@ namespace PoshGit2
     {
         private readonly PSObject _psobject;
 
-        public PSObjectGitPromptSettings(PSObject psobject)
+        public PSObjectGitPromptSettings(SessionState sessionState)
         {
-            _psobject = psobject;
+            _psobject = sessionState.PSVariable.GetValue("GitPromptSettings") as PSObject;
         }
 
         public ConsoleColor AfterBackgroundColor
@@ -251,6 +251,7 @@ namespace PoshGit2
         {
             get
             {
+                // TODO: Throws InvalidCastException
                 return ConvertTo<string[]>() ?? Enumerable.Empty<string>();
             }
         }
