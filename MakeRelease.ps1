@@ -13,15 +13,13 @@ mkdir $targetDir | Out-Null
 mkdir $targetDir\NativeBinaries\amd64 | Out-Null
 mkdir $targetDir\NativeBinaries\x86 | Out-Null
 
-$files = @(	'CheckVersion.ps1',
-			'GitPrompt.ps1',
+$files = @(	'GitPrompt.ps1',
 			'GitTabExpansion.ps1',
 			'GitUtils.ps1',
 			'LICENSE.txt',
 			'posh-git2.psd1',
 			'posh-git2.psm1',
 			'readme.md',
-			'TortoiseGit.ps1',
 			'Utils.ps1',
 			'PoshGit2\PoshGit2\bin\Release\Autofac.dll',
 			'PoshGit2\PoshGit2\bin\Release\LibGit2Sharp.dll',
