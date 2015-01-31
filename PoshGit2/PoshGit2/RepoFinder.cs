@@ -100,7 +100,7 @@ namespace PoshGit2
             Remove(storedRepo.Key);
         }
 
-        public void Remove(string path)
+        private void Remove(string path)
         {
             var mainPath = FindGitRepo(path);
 

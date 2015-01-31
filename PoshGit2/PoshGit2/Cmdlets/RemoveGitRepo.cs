@@ -1,15 +1,13 @@
-﻿using System.Management.Automation;
+﻿using System.Collections.Generic;
+using System.Management.Automation;
 
 namespace PoshGit2.Cmdlets
 {
     [Cmdlet(VerbsCommon.Remove, "GitRepo")]
     public class RemoveGitRepo : DICmdlet
     {
-        [Parameter(ParameterSetName = "name", Mandatory = true)]
-        public string RepositoryPath { get; set; }
-
-        [Parameter(ParameterSetName = "repo", Mandatory = true)]
-        public IRepositoryStatus Repository { get; set; }
+        [Parameter(Mandatory = true, Position = 0)]
+        public IRepositoryStatus[] Repository { get; set; }
 
         public IRepositoryCache RepositoryCache { get; set; }
 
@@ -17,9 +15,9 @@ namespace PoshGit2.Cmdlets
         {
             base.ProcessRecord();
 
-            if (Repository != null)
+            foreach (var repo in Repository)
             {
-                RepositoryCache.Remove(RepositoryPath ?? Repository.GitDir);
+                RepositoryCache.Remove(repo);
             }
 
             foreach (var repo in RepositoryCache.All)

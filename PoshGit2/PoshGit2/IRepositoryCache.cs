@@ -8,6 +8,6 @@ namespace PoshGit2
         IRepositoryStatus FindRepo(string path);
         IRepositoryStatus GetCurrentRepo();
         IEnumerable<IRepositoryStatus> All { get; }
-        void Remove(string path);
+        void Remove(IRepositoryStatus repo);
     }
 }
