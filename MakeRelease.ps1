@@ -1,13 +1,34 @@
 $sln = "$PSScriptRoot\PoshGit2\PoshGit2.sln";
-& "C:\Users\tasou\AppData\Local\OneGet\ProviderAssemblies\nuget-anycpu.exe" restore $sln
+$nuspec = "posh-git2.nuspec"
+
+if (-not(Get-Command -Name msbuild -ErrorAction Ignore))
+{
+	Write-Warning "Could not find 'msbuild'."
+	exit
+}
+
+if (-not(Get-Command -Name nuget -ErrorAction Ignore))
+{
+	Write-Warning "Could not find 'nuget'."
+	exit
+}
+
+Write-Host "------------------------------------"
+Write-Host "          Restore packages" 
+Write-Host "------------------------------------"
+Write-Host ""
+
+nuget restore $sln
+
+Write-Host ""
+Write-Host "------------------------------------"
+Write-Host "          Build binaries" 
+Write-Host "------------------------------------"
+Write-Host ""
+
 msbuild $sln /t:Rebuild /p:Configuration=Release
 
-$targetDir = "${env:Temp}\PoshGit2"
-
-if (Test-Path -Path $targetDir)
-{
-    rmdir -Recurse $targetDir
-}
+$targetDir = "${env:Temp}\PoshGit2\" + [System.Guid]::NewGuid().ToString()
 
 mkdir $targetDir | Out-Null
 mkdir $targetDir\NativeBinaries\amd64 | Out-Null
@@ -31,14 +52,21 @@ foreach ($file in $files)
     copy $PSScriptRoot\$file $targetDir
 }
 
-copy $PSScriptRoot\PoshGit2\PoshGit2\bin\Release\NativeBinaries\amd64\git2-4a30c53.dll $targetDir\NativeBinaries\amd64\git2-4a30c53.dll
-copy $PSScriptRoot\PoshGit2\PoshGit2\bin\Release\NativeBinaries\x86\git2-4a30c53.dll $targetDir\NativeBinaries\x86\git2-4a30c53.dll
+copy $PSScriptRoot\PoshGit2\PoshGit2\bin\Release\NativeBinaries\amd64\git2-*.dll $targetDir\NativeBinaries\amd64\
+copy $PSScriptRoot\PoshGit2\PoshGit2\bin\Release\NativeBinaries\x86\git2-*.dll $targetDir\NativeBinaries\x86\
 
 #$version = (Get-ChildItem -Path $targetDir\poshgit2.dll).VersionInfo.FileVersion
 
 #& $PSScriptRoot\Update-ModuleManifest.ps1 $targetDir\posh-git2.psd1 $version
 #& $PSScriptRoot\Update-NuspecVersion.ps1 "$PSScriptRoot\posh-git2.nuspec" $version
 
-copy $PSScriptRoot\posh-git2.nuspec $targetDir
+copy $PSScriptRoot\$nuspec $targetDir
 
-cpack "$targetDir\posh-git2.nuspec"
+Write-Host ""
+Write-Host "------------------------------------"
+Write-Host "          Creating nupkg" 
+Write-Host "------------------------------------"
+Write-Host ""
+
+nuget pack $targetDir\$nuspec -NoPackageAnalysis -NonInteractive
+
