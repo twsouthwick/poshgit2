@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace PoshGit2
 {
-    public class QueuedLocker : IQueuedLocker
+    public class MutexThrottle : IThrottle
     {
         private readonly Mutex _mutex = new Mutex();
         private bool _isWaiting;

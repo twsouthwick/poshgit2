@@ -2,7 +2,7 @@
 
 namespace PoshGit2
 {
-    public interface IQueuedLocker
+    public interface IThrottle
     {
         void TryContinueOrBlock(Action action);
     }

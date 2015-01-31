@@ -1,18 +1,16 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PoshGit2;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace PoshGit.Tests
 {
     [TestClass]
-    public class QueuedLockerTests
+    public class MutexThrottleTests
     {
         [TestMethod]
-        public async Task TestMethod1()
+        public async Task MutextThrottle()
         {
-            var queue = new QueuedLocker();
+            var queue = new MutexThrottle();
 
             var task1_ready = new TaskCompletionSource<bool>();
             var task1_wait = new TaskCompletionSource<bool>();

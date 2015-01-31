@@ -11,12 +11,12 @@ namespace PoshGit2
     {
         private readonly IRepository _repository;
         private readonly IFileWatcher _fileWatcher;
-        private readonly IQueuedLocker _gate;
+        private readonly IThrottle _gate;
         private readonly ICurrentWorkingDirectory _cwd;
 
         private bool _isUpdating;
 
-        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, IQueuedLocker gate, ICurrentWorkingDirectory cwd)
+        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, IThrottle gate, ICurrentWorkingDirectory cwd)
         {
             _gate = gate;
             _repository = repositoryFactory(folder);
