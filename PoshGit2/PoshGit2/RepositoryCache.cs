@@ -10,12 +10,10 @@ namespace PoshGit2
     public sealed class RepositoryCache : IDisposable, IRepositoryCache
     {
         private readonly IDictionary<string, IRepositoryStatus> _repositories = new Dictionary<string, IRepositoryStatus>(StringComparer.OrdinalIgnoreCase);
-        private readonly ICurrentWorkingDirectory _path;
         private readonly Func<string, IRepositoryStatus> _factory;
 
-        public RepositoryCache(ICurrentWorkingDirectory path, Func<string, IRepositoryStatus> factory)
+        public RepositoryCache(Func<string, IRepositoryStatus> factory)
         {
-            _path = path;
             _factory = factory;
         }
 
@@ -27,13 +25,9 @@ namespace PoshGit2
             }
         }
 
-        public IRepositoryStatus GetCurrentRepo()
+        public IRepositoryStatus FindRepo(ICurrentWorkingDirectory cwd)
         {
-            return FindRepo(_path.CWD);
-        }
-
-        public IRepositoryStatus FindRepo(string path)
-        {
+            var path = cwd.CWD;
             var repo = FindGitRepo(path);
 
             if (repo == null)
@@ -104,7 +98,7 @@ namespace PoshGit2
         {
             var mainPath = FindGitRepo(path);
 
-            if(mainPath == null)
+            if (mainPath == null)
             {
                 return;
             }

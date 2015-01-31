@@ -6,12 +6,13 @@ namespace PoshGit2.Cmdlets
     public class GetGitInfo : DICmdlet
     {
         public IRepositoryCache RepositoryCache { get; set; }
+        public ICurrentWorkingDirectory WorkingDirectory { get; set; }
 
         protected override void ProcessRecord()
         {
             base.ProcessRecord();
 
-            var repo = RepositoryCache.GetCurrentRepo();
+            var repo = RepositoryCache.FindRepo(WorkingDirectory);
 
             if (repo != null)
             {

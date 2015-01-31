@@ -5,8 +5,7 @@ namespace PoshGit2
 {
     public interface IRepositoryCache 
     {
-        IRepositoryStatus FindRepo(string path);
-        IRepositoryStatus GetCurrentRepo();
+        IRepositoryStatus FindRepo(ICurrentWorkingDirectory cwd);
         IEnumerable<IRepositoryStatus> All { get; }
         void Remove(IRepositoryStatus repo);
     }

@@ -4,7 +4,12 @@ namespace PoshGit2
 {
     class PSCurrentWorkingDirectory : ICurrentWorkingDirectory
     {
-        private SessionState _sessionState = new SessionState();
+        private SessionState _sessionState;
+
+        public PSCurrentWorkingDirectory(SessionState sessionState)
+        {
+            _sessionState = sessionState;
+        }
 
         public string CWD
         {
