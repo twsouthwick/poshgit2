@@ -78,7 +78,45 @@
     <Compile Include="RepositoryCache.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\GitPrompt.ps1">
+      <Link>Scripts\GitPrompt.ps1</Link>
+    </None>
+    <None Include="..\..\GitTabExpansion.ps1">
+      <Link>Scripts\GitTabExpansion.ps1</Link>
+    </None>
+    <None Include="..\..\GitUtils.ps1">
+      <Link>Scripts\GitUtils.ps1</Link>
+    </None>
+    <None Include="..\..\MakeRelease.ps1">
+      <Link>Scripts\MakeRelease.ps1</Link>
+    </None>
+    <None Include="..\..\posh-git2.nuspec">
+      <Link>Scripts\posh-git2.nuspec</Link>
+    </None>
+    <None Include="..\..\posh-git2.psd1">
+      <Link>Scripts\posh-git2.psd1</Link>
+    </None>
+    <None Include="..\..\posh-git2.psm1">
+      <Link>Scripts\posh-git2.psm1</Link>
+    </None>
+    <None Include="..\..\readme.md">
+      <Link>Scripts\readme.md</Link>
+    </None>
+    <None Include="..\..\Update-ModuleManifest.ps1">
+      <Link>Scripts\Update-ModuleManifest.ps1</Link>
+    </None>
+    <None Include="..\..\Update-NuspecVersion.ps1">
+      <Link>Scripts\Update-NuspecVersion.ps1</Link>
+    </None>
+    <None Include="..\..\Utils.ps1">
+      <Link>Scripts\Utils.ps1</Link>
+    </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\LICENSE.txt">
+      <Link>Scripts\LICENSE.txt</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
