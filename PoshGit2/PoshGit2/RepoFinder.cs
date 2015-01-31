@@ -13,18 +13,18 @@ namespace PoshGit2
         private readonly ICurrentWorkingDirectory _path;
         private readonly Func<string, IRepositoryStatus> _factory;
 
+        public RepoFinder(ICurrentWorkingDirectory path, Func<string, IRepositoryStatus> factory)
+        {
+            _path = path;
+            _factory = factory;
+        }
+
         public IEnumerable<IRepositoryStatus> All
         {
             get
             {
                 return _repositories.Values.Select(o => o.Clone()).ToList();
             }
-        }
-
-        public RepoFinder(ICurrentWorkingDirectory path, Func<string, IRepositoryStatus> factory)
-        {
-            _path = path;
-            _factory = factory;
         }
 
         public IRepositoryStatus GetCurrentRepo()
