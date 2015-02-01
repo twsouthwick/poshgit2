@@ -16,7 +16,7 @@ namespace PoshGit2
         string UntrackedText { get; }
         ConsoleColor BranchBackgroundColor { get; }
         ConsoleColor BeforeIndexForegroundColor { get; }
-        string EnablePromptStatus { get; }
+        bool EnablePromptStatus { get; }
         bool Debug { get; }
         bool EnableFileStatus { get; }
         ConsoleColor DefaultForegroundColor { get; }
@@ -29,7 +29,7 @@ namespace PoshGit2
         string BeforeText { get; }
         ConsoleColor WorkingBackgroundColor { get; }
         ConsoleColor WorkingForegroundColor { get; }
-        string EnableWindowTitle { get; }
+        bool EnableWindowTitle { get; }
         ConsoleColor BranchBehindBackgroundColor { get; }
         string BeforeIndexText { get; }
         bool ShowStatusWhenZero { get; }

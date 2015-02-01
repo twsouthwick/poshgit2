@@ -215,19 +215,19 @@ namespace PoshGit2
             }
         }
 
-        public string EnablePromptStatus
+        public bool EnablePromptStatus
         {
             get
             {
-                return ConvertTo<string>();
+                return ConvertTo<bool>();
             }
         }
 
-        public string EnableWindowTitle
+        public bool EnableWindowTitle
         {
             get
             {
-                return ConvertTo<string>();
+                return ConvertTo<bool>();
             }
         }
 
