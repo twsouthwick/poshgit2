@@ -10,9 +10,9 @@ namespace PoshGit2
     {
         private readonly PSObject _psobject;
 
-        public PSObjectGitPromptSettings(SessionState sessionState)
+        public PSObjectGitPromptSettings(PSObject psObject)
         {
-            _psobject = sessionState.PSVariable.GetValue("GitPromptSettings") as PSObject;
+            _psobject = psObject;
         }
 
         public ConsoleColor AfterBackgroundColor

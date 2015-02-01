@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using System;
 using System.IO;
+using System.Management.Automation;
 using System.Text;
 
 namespace PoshGit2
@@ -27,12 +28,28 @@ namespace PoshGit2
 
             builder.RegisterType<RepositoryCache>().As<IRepositoryCache>().SingleInstance();
             builder.RegisterType<PSCurrentWorkingDirectory>().As<ICurrentWorkingDirectory>().InstancePerLifetimeScope();
-            builder.RegisterType<PSObjectGitPromptSettings>().As<IGitPromptSettings>().InstancePerLifetimeScope();
             builder.RegisterType<UpdateableRepositoryStatus>().As<IRepositoryStatus>();
             builder.RegisterType<LibGit2Sharp.Repository>().As<LibGit2Sharp.IRepository>();
             builder.RegisterType<FileWatcher>().As<IFileWatcher>();
             builder.RegisterType<FolderWatcher>().As<IFolderWatcher>();
             builder.RegisterType<MutexThrottle>().As<IThrottle>();
+
+            builder.RegisterAdapter<SessionState, IGitPromptSettings>(s =>
+            {
+                // If available, use from session information
+                if (s.PSVariable != null)
+                {
+                    var psobject = s.PSVariable.GetValue("GitPromptSettings") as PSObject;
+
+                    if (psobject != null)
+                    {
+                        return new PSObjectGitPromptSettings(psobject);
+                    }
+                }
+
+                // Otherwise, use default settings
+                return new DefaultGitPromptSettings();
+            });
 
             return builder.Build();
         }
