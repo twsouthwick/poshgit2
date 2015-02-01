@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PoshGit2.Cmdlets
 {
@@ -11,24 +8,23 @@ namespace PoshGit2.Cmdlets
     public class Write_GitStatus : DICmdlet
     {
         public IGitPromptSettings Settings { get; set; }
-        public IRepositoryCache Cache { get; set; }
-        public ICurrentWorkingDirectory CWD { get; set; }
+        public Option<IRepositoryStatus> Status { get; set; }
 
         protected override void ProcessRecord()
         {
             base.ProcessRecord();
+
+            if (!Status.HasValue)
+            {
+                return;
+            }
 
             if (!Settings.EnablePromptStatus)
             {
                 return;
             }
 
-            var status = Cache.FindRepo(CWD);
-
-            if(status == null)
-            {
-                return;
-            }
+            var status = Status.Value;
 
             WriteColor(Settings.BeforeText, Settings.BeforeBackgroundColor, Settings.BeforeForegroundColor);
 

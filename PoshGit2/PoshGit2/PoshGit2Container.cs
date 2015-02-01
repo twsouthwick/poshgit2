@@ -35,6 +35,14 @@ namespace PoshGit2
             builder.RegisterType<MutexThrottle>().As<IThrottle>();
             builder.RegisterType<SessionState>().AsSelf().SingleInstance();
 
+            builder.Register(c =>
+            {
+                var cache = c.Resolve<IRepositoryCache>();
+                var cwd = c.Resolve<ICurrentWorkingDirectory>();
+
+                return new Option<IRepositoryStatus>(cache.FindRepo(cwd));
+            }).As<Option<IRepositoryStatus>>().InstancePerLifetimeScope();
+
             builder.RegisterAdapter<SessionState, IGitPromptSettings>(s =>
             {
                 // If available, use from session information

@@ -63,6 +63,7 @@
     <Compile Include="FileSystemWatcherObserver.cs" />
     <Compile Include="FileWatcher.cs" />
     <Compile Include="FolderWatcher.cs" />
+    <Compile Include="Option.cs" />
     <Compile Include="PSObjectGitPromptSettings.cs" />
     <Compile Include="RepositoryStatusExtensions.cs" />
     <Compile Include="ICurrentWorkingDirectory.cs" />
