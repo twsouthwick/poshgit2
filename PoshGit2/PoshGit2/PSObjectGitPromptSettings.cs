@@ -19,7 +19,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -27,7 +27,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -51,7 +51,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -59,7 +59,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -67,7 +67,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -75,7 +75,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -99,7 +99,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -107,7 +107,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -115,7 +115,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -123,7 +123,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -131,7 +131,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -139,7 +139,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -147,7 +147,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -155,7 +155,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -171,7 +171,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -179,7 +179,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -187,7 +187,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -235,7 +235,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -243,7 +243,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -269,7 +269,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -277,7 +277,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -293,7 +293,7 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
         }
 
@@ -301,8 +301,25 @@ namespace PoshGit2
         {
             get
             {
-                return ConvertTo<ConsoleColor>();
+                return ConvertToConsoleColor();
             }
+        }
+
+        private ConsoleColor ConvertToConsoleColor([CallerMemberName] string propertyName = null)
+        {
+            var property = _psobject.Properties[propertyName];
+
+            if (property != null)
+            {
+
+                ConsoleColor output;
+                if (Enum.TryParse(property.Value.ToString(), out output))
+                {
+                    return output;
+                }
+            }
+
+            return ConsoleColor.White;
         }
 
         private T ConvertTo<T>([CallerMemberName] string propertyName = null)
