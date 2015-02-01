@@ -33,6 +33,7 @@ namespace PoshGit2
             builder.RegisterType<FileWatcher>().As<IFileWatcher>();
             builder.RegisterType<FolderWatcher>().As<IFolderWatcher>();
             builder.RegisterType<MutexThrottle>().As<IThrottle>();
+            builder.RegisterType<SessionState>().AsSelf().SingleInstance();
 
             builder.RegisterAdapter<SessionState, IGitPromptSettings>(s =>
             {
