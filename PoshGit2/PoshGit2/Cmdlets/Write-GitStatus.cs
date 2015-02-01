@@ -25,6 +25,11 @@ namespace PoshGit2.Cmdlets
 
             var status = Cache.FindRepo(CWD);
 
+            if(status == null)
+            {
+                return;
+            }
+
             WriteColor(Settings.BeforeText, Settings.BeforeBackgroundColor, Settings.BeforeForegroundColor);
 
             WriteBranch(status);
@@ -48,7 +53,7 @@ namespace PoshGit2.Cmdlets
                     WriteColor($" -{status.Index.Deleted.Count}", Settings.IndexBackgroundColor, Settings.IndexForegroundColor);
                 }
 
-                if (Settings.ShowStatusWhenZero || status.Index.Unmerged.Any())
+                if (status.Index.Unmerged.Any())
                 {
                     WriteColor($" !{status.Index.Unmerged.Count}", Settings.IndexBackgroundColor, Settings.IndexForegroundColor);
                 }
@@ -58,6 +63,7 @@ namespace PoshGit2.Cmdlets
                     WriteColor(Settings.DelimText, Settings.DelimBackgroundColor, Settings.DelimForegroundColor);
                 }
             }
+
             if (Settings.EnableFileStatus && status.HasWorking)
             {
                 if (Settings.ShowStatusWhenZero || status.Working.Added.Any())
@@ -75,7 +81,7 @@ namespace PoshGit2.Cmdlets
                     WriteColor($" -{status.Working.Deleted.Count}", Settings.WorkingBackgroundColor, Settings.WorkingForegroundColor);
                 }
 
-                if (Settings.ShowStatusWhenZero || status.Index.Unmerged.Any())
+                if (status.Index.Unmerged.Any())
                 {
                     WriteColor($" !{status.Working.Unmerged.Count}", Settings.WorkingBackgroundColor, Settings.WorkingForegroundColor);
                 }
@@ -115,12 +121,20 @@ namespace PoshGit2.Cmdlets
                     ForegroundColor = Settings.BranchBehindForegroundColor
                 };
             }
-            else
+            else if (status.AheadBy > 0)
             {
                 return new StatusColor
                 {
                     BackgroundColor = Settings.BranchAheadBackgroundColor,
                     ForegroundColor = Settings.BranchAheadForegroundColor
+                };
+            }
+            else
+            {
+                return new StatusColor
+                {
+                    BackgroundColor = Settings.BranchBackgroundColor,
+                    ForegroundColor = Settings.BranchForegroundColor
                 };
             }
         }
