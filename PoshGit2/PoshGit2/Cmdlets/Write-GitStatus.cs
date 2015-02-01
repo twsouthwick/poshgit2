@@ -5,7 +5,7 @@ using System.Management.Automation;
 namespace PoshGit2.Cmdlets
 {
     [Cmdlet(VerbsCommunications.Write, "GitStatus")]
-    public class Write_GitStatus : DICmdlet
+    public class Write_GitStatus : AutofacCmdlet
     {
         public IGitPromptSettings Settings { get; set; }
         public Option<IRepositoryStatus> Status { get; set; }

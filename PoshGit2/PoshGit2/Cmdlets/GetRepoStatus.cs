@@ -3,7 +3,7 @@
 namespace PoshGit2.Cmdlets
 {
     [Cmdlet(VerbsCommon.Get, "GitRepo")]
-    public class GetRepoStatus : DICmdlet
+    public class GetRepoStatus : AutofacCmdlet
     {
         public IRepositoryCache RepositoryCache { get; set; }
 

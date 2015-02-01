@@ -4,7 +4,7 @@ using System.Management.Automation;
 namespace PoshGit2.Cmdlets
 {
     [Cmdlet(VerbsCommon.Remove, "GitRepo")]
-    public class RemoveGitRepo : DICmdlet
+    public class RemoveGitRepo : AutofacCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
         public IRepositoryStatus[] Repository { get; set; }

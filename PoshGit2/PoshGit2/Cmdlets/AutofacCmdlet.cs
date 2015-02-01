@@ -4,11 +4,11 @@ using System.Management.Automation;
 
 namespace PoshGit2.Cmdlets
 {
-    public class DICmdlet : PSCmdlet, IDisposable
+    public class AutofacCmdlet : PSCmdlet, IDisposable
     {
         private readonly ILifetimeScope _lifetimeScope;
 
-        public DICmdlet()
+        public AutofacCmdlet()
         {
             _lifetimeScope = PoshGit2Container.Instance.BeginLifetimeScope(builder =>
            {

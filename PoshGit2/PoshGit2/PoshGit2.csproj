@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Status\ChangedItemsCollection.cs" />
-    <Compile Include="Cmdlets\DICmdlet.cs" />
+    <Compile Include="Cmdlets\AutofacCmdlet.cs" />
     <Compile Include="Cmdlets\GetRepoStatus.cs" />
     <Compile Include="Cmdlets\Write-GitStatus.cs" />
     <Compile Include="Settings\DefaultGitPromptSettings.cs" />
