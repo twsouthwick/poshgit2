@@ -88,6 +88,7 @@ namespace PoshGit2.Cmdlets
 
             WriteColor(Settings.AfterText, Settings.AfterBackgroundColor, Settings.AfterForegroundColor);
 
+            // TODO: Update Window title
         }
 
         private class StatusColor
