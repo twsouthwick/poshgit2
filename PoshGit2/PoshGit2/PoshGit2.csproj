@@ -55,6 +55,7 @@
     <Compile Include="ChangedItemsCollection.cs" />
     <Compile Include="Cmdlets\DICmdlet.cs" />
     <Compile Include="Cmdlets\GetRepoStatus.cs" />
+    <Compile Include="Cmdlets\Write-GitStatus.cs" />
     <Compile Include="DefaultGitPromptSettings.cs" />
     <Compile Include="IGitPromptSettings.cs" />
     <Compile Include="Cmdlets\RemoveGitRepo.cs" />
