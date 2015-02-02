@@ -15,7 +15,7 @@ namespace PoshGit2
         {
             get
             {
-                return _sessionState.Path.CurrentFileSystemLocation.Path;
+                return _sessionState.Path.CurrentLocation.ProviderPath;
             }
         }
     }
