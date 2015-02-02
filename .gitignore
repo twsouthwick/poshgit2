@@ -6,3 +6,4 @@ packages
 *.zip
 ChocolateyPackage/posh-git/
 *.nupkg
+*.user
