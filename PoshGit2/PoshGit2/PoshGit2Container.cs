@@ -36,6 +36,7 @@ namespace PoshGit2
             builder.RegisterType<SessionState>().AsSelf().SingleInstance();
             builder.RegisterType<ConsoleStatusWriter>().As<IStatusWriter>().InstancePerLifetimeScope();
             builder.RegisterType<FileLogger>().As<ILogger>().SingleInstance();
+            builder.RegisterType<DefaultGitPromptSettings>().AsSelf().SingleInstance();
 
             builder.Register(c =>
             {
@@ -45,7 +46,7 @@ namespace PoshGit2
                 return new Option<IRepositoryStatus>(cache.FindRepo(cwd));
             }).As<Option<IRepositoryStatus>>().InstancePerLifetimeScope();
 
-            builder.RegisterAdapter<SessionState, IGitPromptSettings>(s =>
+            builder.RegisterAdapter<SessionState, IGitPromptSettings>((c, s) =>
             {
                 // If available, use from session information
                 if (s.PSVariable != null)
@@ -59,7 +60,7 @@ namespace PoshGit2
                 }
 
                 // Otherwise, use default settings
-                return new DefaultGitPromptSettings();
+                return c.Resolve<DefaultGitPromptSettings>();
             });
 
             return builder.Build();
