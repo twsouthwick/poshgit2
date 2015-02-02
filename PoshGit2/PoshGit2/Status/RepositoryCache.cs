@@ -27,6 +27,11 @@ namespace PoshGit2
 
         public IRepositoryStatus FindRepo(ICurrentWorkingDirectory cwd)
         {
+            if(!cwd.IsValid)
+            {
+                return null;
+            }
+
             var path = cwd.CWD;
             var repo = FindGitRepo(path);
 
