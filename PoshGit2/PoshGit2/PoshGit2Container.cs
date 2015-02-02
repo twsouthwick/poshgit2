@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using PoshGit2.Status;
 using System;
 using System.IO;
 using System.Management.Automation;
@@ -34,6 +35,7 @@ namespace PoshGit2
             builder.RegisterType<FolderWatcher>().As<IFolderWatcher>();
             builder.RegisterType<MutexThrottle>().As<IThrottle>();
             builder.RegisterType<SessionState>().AsSelf().SingleInstance();
+            builder.RegisterType<ConsoleStatusWriter>().As<IStatusWriter>().InstancePerLifetimeScope();
 
             builder.Register(c =>
             {
