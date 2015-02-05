@@ -1,13 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PoshGit2;
+﻿using PoshGit2;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PoshGit.Tests
 {
-    [TestClass]
     public class MutexThrottleTests
     {
-        [TestMethod]
+        [Fact]
         public async Task MutextThrottle()
         {
             var queue = new MutexThrottle();
