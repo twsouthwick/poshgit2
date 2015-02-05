@@ -1,7 +1,9 @@
+param($myget_key, $myget_url)
+
 $sln = "$PSScriptRoot\PoshGit2\PoshGit2.sln";
 $nuspec = "posh-git2.nuspec"
 
-if (-not(Get-Command -Name msbuild -ErrorAction Ignore))
+if ($build -and -not(Get-Command -Name msbuild -ErrorAction Ignore))
 {
 	Write-Warning "Could not find 'msbuild'."
 	exit
@@ -27,6 +29,12 @@ Write-Host "------------------------------------"
 Write-Host ""
 
 msbuild $sln /t:Rebuild /p:Configuration=Release
+
+Write-Host ""
+Write-Host "------------------------------------"
+Write-Host "          Copy Files" 
+Write-Host "------------------------------------"
+Write-Host ""
 
 $targetDir = "${env:Temp}\PoshGit2\" + [System.Guid]::NewGuid().ToString()
 
@@ -62,6 +70,8 @@ copy $PSScriptRoot\PoshGit2\PoshGit2\bin\Release\NativeBinaries\x86\git2-*.dll $
 
 copy $PSScriptRoot\$nuspec $targetDir
 
+Write-Host "Copied to $targetDir"
+
 Write-Host ""
 Write-Host "------------------------------------"
 Write-Host "          Creating nupkg" 
@@ -70,3 +80,22 @@ Write-Host ""
 
 nuget pack $targetDir\$nuspec -NoPackageAnalysis -NonInteractive
 
+if($myget_key -and $myget_url)
+{
+	Write-Host ""
+	Write-Host "------------------------------------"
+	Write-Host "          Pushing nupkg to server" 
+	Write-Host "------------------------------------"
+	Write-Host ""
+
+	$nupkg = Get-ChildItem $PSScriptRoot\*.nupkg
+	
+	if($nupkg.Count -eq 1)
+	{
+		nuget push $nupkg $myget_key -Source $myget_url
+	}
+	else
+	{
+		Write-Warning "Multiple nupkg files found: $nupkg"
+	}
+}
