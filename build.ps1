@@ -3,7 +3,7 @@ param($myget_key, $myget_url)
 $sln = "$PSScriptRoot\PoshGit2\PoshGit2.sln";
 $nuspec = "posh-git2.nuspec"
 
-if ($build -and -not(Get-Command -Name msbuild -ErrorAction Ignore))
+if (-not(Get-Command -Name msbuild -ErrorAction Ignore))
 {
 	Write-Warning "Could not find 'msbuild'."
 	exit
@@ -63,10 +63,6 @@ foreach ($file in $files)
 copy $PSScriptRoot\PoshGit2\PoshGit2\bin\Release\NativeBinaries\amd64\git2-*.dll $targetDir\NativeBinaries\amd64\
 copy $PSScriptRoot\PoshGit2\PoshGit2\bin\Release\NativeBinaries\x86\git2-*.dll $targetDir\NativeBinaries\x86\
 
-#$version = (Get-ChildItem -Path $targetDir\poshgit2.dll).VersionInfo.FileVersion
-
-#& $PSScriptRoot\Update-ModuleManifest.ps1 $targetDir\posh-git2.psd1 $version
-#& $PSScriptRoot\Update-NuspecVersion.ps1 "$PSScriptRoot\posh-git2.nuspec" $version
 
 copy $PSScriptRoot\$nuspec $targetDir
 
@@ -77,6 +73,13 @@ Write-Host "------------------------------------"
 Write-Host "          Creating nupkg" 
 Write-Host "------------------------------------"
 Write-Host ""
+
+$version = (Get-ChildItem -Path $targetDir\poshgit2.dll).VersionInfo.FileVersion
+
+Write-Host "Updating file version: $version"
+
+& $PSScriptRoot\Update-ModuleManifest.ps1 $targetDir\posh-git2.psd1 $version
+& $PSScriptRoot\Update-NuspecVersion.ps1 "$targetDir\$nuspec" $version
 
 nuget pack $targetDir\$nuspec -NoPackageAnalysis -NonInteractive
 

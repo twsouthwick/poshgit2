@@ -87,6 +87,9 @@
     <Compile Include="Status\RepositoryCache.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\build.ps1">
+      <Link>Scripts\build.ps1</Link>
+    </None>
     <None Include="..\..\GitPrompt.ps1">
       <Link>Scripts\GitPrompt.ps1</Link>
     </None>
