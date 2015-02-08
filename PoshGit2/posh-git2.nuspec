@@ -14,11 +14,9 @@
     <tags>PSModule</tags>
   </metadata>
   <files>
-    <file src="**\*.dll" target="content" />
-    <file src="**\*.ps1" target="content" />
-    <file src="**\*.psm1" target="content" />
-    <file src="**\*.psd1" target="content" />
-    <!--<file source="AnotherProject**.cs" target="src" />-->
-    <!-- any file matching the pattern will be ignored -->
+    <file src="**\*.dll" />
+    <file src="**\*.ps1" />
+    <file src="**\*.psm1" />
+    <file src="**\*.psd1" />
   </files>
 </package>
