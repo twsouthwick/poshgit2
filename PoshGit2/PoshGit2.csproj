@@ -87,7 +87,7 @@
     <Compile Include="Status\RepositoryCache.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="build.ps1" />
+    <None Include="Update-Version.ps1" />
     <None Include="GitPrompt.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -105,12 +105,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="posh-git2.psm1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Update-ModuleManifest.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Update-NuspecVersion.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Utils.ps1">
@@ -132,6 +126,7 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
+	<Exec Command="powershell.exe -noprofile -file Update-Version.ps1 $(OutDir)" />
 	<Exec Command="..\.nuget\nuget.exe pack $(OutDir)posh-git2.nuspec -NoPackageAnalysis -NonInteractive -OutputDirectory $(OutDir)" />
 	<ItemGroup>
 		<OutputNupkg Include="$(OutDir)*.nupkg" />
