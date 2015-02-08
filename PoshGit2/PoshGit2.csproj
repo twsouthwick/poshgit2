@@ -87,47 +87,39 @@
     <Compile Include="Status\RepositoryCache.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\build.ps1">
-      <Link>Scripts\build.ps1</Link>
+    <None Include="build.ps1" />
+    <None Include="GitPrompt.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\GitPrompt.ps1">
-      <Link>Scripts\GitPrompt.ps1</Link>
+    <None Include="GitTabExpansion.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\GitTabExpansion.ps1">
-      <Link>Scripts\GitTabExpansion.ps1</Link>
-    </None>
-    <None Include="..\..\GitUtils.ps1">
-      <Link>Scripts\GitUtils.ps1</Link>
-    </None>
-    <None Include="..\..\MakeRelease.ps1">
-      <Link>Scripts\MakeRelease.ps1</Link>
-    </None>
-    <None Include="..\..\posh-git2.nuspec">
-      <Link>Scripts\posh-git2.nuspec</Link>
-    </None>
-    <None Include="..\..\posh-git2.psd1">
-      <Link>Scripts\posh-git2.psd1</Link>
-    </None>
-    <None Include="..\..\posh-git2.psm1">
-      <Link>Scripts\posh-git2.psm1</Link>
-    </None>
-    <None Include="..\..\readme.md">
-      <Link>Scripts\readme.md</Link>
-    </None>
-    <None Include="..\..\Update-ModuleManifest.ps1">
-      <Link>Scripts\Update-ModuleManifest.ps1</Link>
-    </None>
-    <None Include="..\..\Update-NuspecVersion.ps1">
-      <Link>Scripts\Update-NuspecVersion.ps1</Link>
-    </None>
-    <None Include="..\..\Utils.ps1">
-      <Link>Scripts\Utils.ps1</Link>
+    <None Include="GitUtils.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="posh-git2.nuspec">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="posh-git2.psd1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="posh-git2.psm1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Update-ModuleManifest.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Update-NuspecVersion.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Utils.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\LICENSE.txt">
-      <Link>Scripts\LICENSE.txt</Link>
+    <Content Include="LICENSE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -137,11 +129,13 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\LibGit2Sharp.0.20.2.0\build\net40\LibGit2Sharp.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibGit2Sharp.0.20.2.0\build\net40\LibGit2Sharp.props'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
+	<Exec Command="..\.nuget\nuget.exe pack $(OutDir)posh-git2.nuspec -NoPackageAnalysis -NonInteractive -OutputDirectory $(OutDir)" />
+	<ItemGroup>
+		<OutputNupkg Include="$(OutDir)*.nupkg" />
+	</ItemGroup>
+	<Exec Condition=" '$(MYGET_KEY)' != '' AND '$(MYGET_SOURCE)' != '' " Command="..\.nuget\nuget.exe push @(OutputNupkg) $(MYGET_KEY) -Source $(MYGET_Source)" /> 	
   </Target>
-  -->
-</Project>
+ </Project>

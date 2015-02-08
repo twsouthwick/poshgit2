@@ -9,8 +9,16 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>https://github.com/dahlbyk/posh-git/blob/master/LICENSE.txt</licenseUrl>
     <description>A set of PowerShell scripts which provide Git/PowerShell integration</description>
-	<releaseNotes />
+    <releaseNotes />
     <copyright>(c) 2015 Taylor Southwick. All rights reserved.</copyright>
     <tags>PSModule</tags>
   </metadata>
+  <files>
+    <file src="**\*.dll" target="content" />
+    <file src="**\*.ps1"  target="content" />
+    <file src="**\*.psm1" target="content" />
+    <file src="**\*.psd1" target="content" />
+    <!--<file source="AnotherProject**.cs" target="src" />-->
+    <!-- any file matching the pattern will be ignored -->
+  </files>
 </package>
