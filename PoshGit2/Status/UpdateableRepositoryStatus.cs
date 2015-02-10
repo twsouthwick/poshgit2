@@ -10,7 +10,7 @@ namespace PoshGit2
     public sealed class UpdateableRepositoryStatus : IDisposable, IRepositoryStatus
     {
         private readonly IRepository _repository;
-        private readonly IFileWatcher _fileWatcher;
+        private readonly IFolderWatcher _folderWatcher;
         private readonly IThrottle _gate;
         private readonly ICurrentWorkingDirectory _cwd;
 
@@ -22,8 +22,8 @@ namespace PoshGit2
             _repository = repositoryFactory(folder);
             _cwd = cwd;
 
-            _fileWatcher = folderWatcherFactory(folder);
-            _fileWatcher.Subscribe(new DelegateObserver(_ => UpdateStatus()));
+            _folderWatcher = folderWatcherFactory(folder);
+            _folderWatcher.Subscribe(new DelegateObserver(_ => UpdateStatus()));
 
             // _repository.Info.Path returns a path ending with '\'
             GitDir = _repository.Info.Path.Substring(0, _repository.Info.Path.Length - 1);
@@ -152,7 +152,7 @@ namespace PoshGit2
         public void Dispose()
         {
             _repository.Dispose();
-            (_fileWatcher as IDisposable)?.Dispose();
+            (_folderWatcher as IDisposable)?.Dispose();
         }
     }
 }
