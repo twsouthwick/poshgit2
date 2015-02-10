@@ -30,8 +30,7 @@ namespace PoshGit2
             builder.RegisterType<PSCurrentWorkingDirectory>().As<ICurrentWorkingDirectory>().InstancePerLifetimeScope();
             builder.RegisterType<UpdateableRepositoryStatus>().As<IRepositoryStatus>();
             builder.RegisterType<LibGit2Sharp.Repository>().As<LibGit2Sharp.IRepository>();
-            builder.RegisterType<FileWatcher>().As<IFileWatcher>();
-            builder.RegisterType<FolderWatcher>().As<IFolderWatcher>();
+            builder.RegisterType<GitFolderWatcher>().As<IFolderWatcher>();
             builder.RegisterType<MutexThrottle>().As<IThrottle>();
             builder.RegisterType<SessionState>().AsSelf().SingleInstance();
             builder.RegisterType<ConsoleStatusWriter>().As<IStatusWriter>().InstancePerLifetimeScope();
