@@ -64,6 +64,7 @@
     <Compile Include="Status\FileSystemWatcherObserver.cs" />
     <Compile Include="Status\FileWatcher.cs" />
     <Compile Include="Status\FolderWatcher.cs" />
+    <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
     <Compile Include="Utils\FileLogger.cs" />
     <Compile Include="Utils\ILogger.cs" />
@@ -126,11 +127,11 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-	<Exec Command="powershell.exe -noprofile -file Update-Version.ps1 $(OutDir)" />
-	<Exec Command="..\.nuget\nuget.exe pack $(OutDir)posh-git2.nuspec -NoPackageAnalysis -NonInteractive -OutputDirectory $(OutDir)" />
-	<ItemGroup>
-		<OutputNupkg Include="$(OutDir)*.nupkg" />
-	</ItemGroup>
-	<Exec Condition=" '$(MYGET_KEY)' != '' AND '$(MYGET_SOURCE)' != '' " Command="..\.nuget\nuget.exe push @(OutputNupkg) $(MYGET_KEY) -Source $(MYGET_Source)" /> 	
+    <Exec Command="powershell.exe -noprofile -file Update-Version.ps1 $(OutDir)" />
+    <Exec Command="..\.nuget\nuget.exe pack $(OutDir)posh-git2.nuspec -NoPackageAnalysis -NonInteractive -OutputDirectory $(OutDir)" />
+    <ItemGroup>
+      <OutputNupkg Include="$(OutDir)*.nupkg" />
+    </ItemGroup>
+    <Exec Condition=" '$(MYGET_KEY)' != '' AND '$(MYGET_SOURCE)' != '' " Command="..\.nuget\nuget.exe push @(OutputNupkg) $(MYGET_KEY) -Source $(MYGET_Source)" />
   </Target>
- </Project>
+</Project>

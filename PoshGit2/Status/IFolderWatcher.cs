@@ -1,6 +1,7 @@
-﻿namespace PoshGit2
+﻿using System;
+
+namespace PoshGit2
 {
-    public interface IFolderWatcher : IFileWatcher
-    {
-    }
+    public interface IFolderWatcher : IObservable<FileChangedStatus>
+    { }
 }
