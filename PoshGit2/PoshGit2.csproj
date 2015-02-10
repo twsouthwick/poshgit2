@@ -61,9 +61,6 @@
     <Compile Include="Cmdlets\RemoveGitRepo.cs" />
     <Compile Include="Status\ConsoleStatusWriter.cs" />
     <Compile Include="Status\DelegateObserver.cs" />
-    <Compile Include="Status\FileSystemWatcherObserver.cs" />
-    <Compile Include="Status\FileWatcher.cs" />
-    <Compile Include="Status\FolderWatcher.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
     <Compile Include="Utils\FileLogger.cs" />
@@ -73,7 +70,6 @@
     <Compile Include="Status\RepositoryStatusExtensions.cs" />
     <Compile Include="Utils\ICurrentWorkingDirectory.cs" />
     <Compile Include="Status\FileChangedStatus.cs" />
-    <Compile Include="Status\IFileWatcher.cs" />
     <Compile Include="Status\IFolderWatcher.cs" />
     <Compile Include="Utils\IThrottle.cs" />
     <Compile Include="Status\IRepositoryCache.cs" />
