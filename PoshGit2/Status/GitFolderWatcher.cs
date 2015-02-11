@@ -11,8 +11,6 @@ namespace PoshGit2
         private readonly FileSystemWatcher _workingDirectoryWatcher;
         private readonly FileSystemWatcher _gitlockWatcher;
 
-        private bool _isLocked;
-
         public GitFolderWatcher(string folder)
         {
             _folder = folder;
@@ -41,13 +39,13 @@ namespace PoshGit2
         private void GitLockDeleted(object sender, FileSystemEventArgs e)
         {
             Debug.WriteLine("Git lock deleted");
-            _isLocked = false;
+            _workingDirectoryWatcher.EnableRaisingEvents = true;
         }
 
         private void GitLockCreated(object sender, FileSystemEventArgs e)
         {
             Debug.WriteLine("Git lock created");
-            _isLocked = true;
+            _workingDirectoryWatcher.EnableRaisingEvents = false;
         }
 
         private FileSystemWatcher SetupWorkingDirectoryWatcher(string directory)
@@ -66,7 +64,7 @@ namespace PoshGit2
 
         private void FileChanged(object sender, FileSystemEventArgs e)
         {
-            if (_isLocked || e.FullPath.StartsWith(_gitdir, StringComparison.CurrentCultureIgnoreCase))
+            if (e.FullPath.StartsWith(_gitdir, StringComparison.CurrentCultureIgnoreCase))
             {
                 Debug.WriteLine($"Skipping file: {e.FullPath}");
                 return;
