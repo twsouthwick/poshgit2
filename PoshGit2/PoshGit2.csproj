@@ -68,7 +68,7 @@
     <Compile Include="Utils\ISessionState.cs" />
     <Compile Include="Utils\Option.cs" />
     <Compile Include="Settings\PSObjectGitPromptSettings.cs" />
-    <Compile Include="Status\RepositoryStatusExtensions.cs" />
+    <Compile Include="Status\ReadonlyCopyRepositoryStatus.cs" />
     <Compile Include="Utils\ICurrentWorkingDirectory.cs" />
     <Compile Include="Status\FileChangedStatus.cs" />
     <Compile Include="Status\IFolderWatcher.cs" />

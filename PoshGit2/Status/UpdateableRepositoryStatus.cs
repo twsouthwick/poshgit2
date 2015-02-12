@@ -27,6 +27,7 @@ namespace PoshGit2
 
             // _repository.Info.Path returns a path ending with '\'
             GitDir = _repository.Info.Path.Substring(0, _repository.Info.Path.Length - 1);
+            CurrentWorkingDirectory = Path.GetFullPath(Path.Combine(GitDir, ".."));
 
             Working = new ChangedItemsCollection();
             Index = new ChangedItemsCollection();
@@ -107,6 +108,7 @@ namespace PoshGit2
         public ChangedItemsCollection Index { get; set; }
         public bool HasIndex { get { return Index.HasAny; } }
         public string GitDir { get; }
+        public string CurrentWorkingDirectory { get; }
         public int AheadBy { get { return _repository.Head.TrackingDetails.AheadBy ?? 0; } }
         public int BehindBy { get { return _repository.Head.TrackingDetails.BehindBy ?? 0; } }
 

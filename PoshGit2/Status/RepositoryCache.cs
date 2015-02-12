@@ -21,13 +21,13 @@ namespace PoshGit2
         {
             get
             {
-                return _repositories.Values.Select(o => o.Clone()).ToList();
+                return _repositories.Values.Select(o => new ReadonlyCopyRepositoryStatus(o)).ToList();
             }
         }
 
         public IRepositoryStatus FindRepo(ICurrentWorkingDirectory cwd)
         {
-            if(!cwd.IsValid)
+            if (!cwd.IsValid)
             {
                 return null;
             }
@@ -45,7 +45,7 @@ namespace PoshGit2
             {
                 Trace.WriteLine($"Found repo for {repo}");
 
-                return oldStatus.Clone();
+                return new ReadonlyCopyRepositoryStatus(oldStatus, cwd);
             }
 
             try
@@ -56,7 +56,7 @@ namespace PoshGit2
 
                 _repositories.Add(repo, status);
 
-                return status.Clone();
+                return new ReadonlyCopyRepositoryStatus(status, cwd);
             }
             catch (RepositoryNotFoundException)
             {

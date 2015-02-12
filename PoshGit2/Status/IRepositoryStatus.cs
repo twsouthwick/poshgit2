@@ -11,5 +11,6 @@
         bool HasIndex { get; }
         int BehindBy { get; }
         string GitDir { get; }
+        string CurrentWorkingDirectory { get; }
     }
 }
