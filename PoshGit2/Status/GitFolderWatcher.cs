@@ -59,6 +59,7 @@ namespace PoshGit2
             };
 
             filewatcher.Changed += FileChanged;
+            filewatcher.Deleted += FileChanged;
 
             return filewatcher;
         }

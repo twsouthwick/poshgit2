@@ -39,9 +39,9 @@ namespace PoshGit.Tests
 
             await Task.Delay(DelayTime);
 
-            // Verify 3 calls were made for newFile only
-            observer.Received(3).OnNext(Arg.Any<string>());
-            observer.Received(3).OnNext(newFile);
+            // Verify 4 calls were made for newFile only
+            observer.Received(4).OnNext(Arg.Any<string>());
+            observer.Received(4).OnNext(newFile);
         }
 
         [Fact]
@@ -64,8 +64,8 @@ namespace PoshGit.Tests
             await Task.Delay(DelayTime);
 
             // Verify expected calls were made.  The subdirectory notification is not necessary, but occurs
-            observer.Received(4).OnNext(Arg.Any<string>());
-            observer.Received(3).OnNext(newFile);
+            observer.Received(5).OnNext(Arg.Any<string>());
+            observer.Received(4).OnNext(newFile);
             observer.Received(1).OnNext(subdirectory);
         }
 
