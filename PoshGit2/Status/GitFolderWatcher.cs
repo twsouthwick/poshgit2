@@ -25,8 +25,8 @@ namespace PoshGit2
             var filewatcher = new FileSystemWatcher(gitdir)
             {
                 EnableRaisingEvents = true,
-                IncludeSubdirectories = false,
-                Filter = "index.lock",
+                IncludeSubdirectories = true,
+                Filter = "*.lock",
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName
             };
 

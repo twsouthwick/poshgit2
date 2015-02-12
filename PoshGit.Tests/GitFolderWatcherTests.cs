@@ -122,6 +122,33 @@ namespace PoshGit.Tests
         }
 
         [Fact]
+        public async Task WatchSubLockFile()
+        {
+            var directory = CreateTempGitDirectory();
+            var watcher = new GitFolderWatcher(directory);
+            var observer = Substitute.For<IObserver<string>>();
+
+            var subdir = Path.Combine(directory, ".git", "somefolder");
+            Directory.CreateDirectory(subdir);
+
+            watcher.Subscribe(observer);
+
+            // Simulate git lock
+            var lockfile = Path.Combine(subdir, "other.lock");
+            File.WriteAllText(lockfile, "");
+
+            // Remove lock file
+            File.Delete(lockfile);
+
+            // Give the filewatchers some time to react
+            await Task.Delay(DelayTime);
+
+            // Verify that only two file changes were detected (file2.tmp and git lock removed)
+            observer.Received(1).OnNext(Arg.Any<string>());
+            observer.Received(1).OnNext(lockfile);
+        }
+
+        [Fact]
         public async Task SubscriberNotifiedWhenGitLockRemoved()
         {
             var directory = CreateTempGitDirectory();
