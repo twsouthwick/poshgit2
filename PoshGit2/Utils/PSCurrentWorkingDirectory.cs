@@ -3,13 +3,29 @@ using System.Management.Automation;
 
 namespace PoshGit2
 {
-    class PSCurrentWorkingDirectory : ICurrentWorkingDirectory
+    public class Foo 
     {
-        private SessionState _sessionState;
+        public int SomeValue { get; set; }
+    }
 
-        public PSCurrentWorkingDirectory(SessionState sessionState)
+    public class Bar
+    {
+        public int SomeValue()
+        {
+            var foo = new Foo();
+
+            return foo.SomeValue;
+        }
+    }
+    public class PSCurrentWorkingDirectory : ICurrentWorkingDirectory
+    {
+        private readonly SessionState _sessionState;
+        private readonly ICurrentWorkingDirectory _otherCwd;
+
+        public PSCurrentWorkingDirectory(SessionState sessionState, ICurrentWorkingDirectory otherCwd)
         {
             _sessionState = sessionState;
+            _otherCwd = otherCwd;
         }
 
         public bool IsValid
@@ -26,6 +42,11 @@ namespace PoshGit2
             {
                 return _sessionState.Path.CurrentLocation.ProviderPath;
             }
+        }
+
+        public string CreateRelativePath(string path)
+        {
+            return _otherCwd.CreateRelativePath(path);
         }
     }
 }

@@ -4,5 +4,6 @@
     {
         bool IsValid { get; }
         string CWD { get; }
+        string CreateRelativePath(string path);
     }
 }

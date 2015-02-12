@@ -27,7 +27,7 @@ namespace PoshGit2
             var builder = new ContainerBuilder();
 
             builder.RegisterType<RepositoryCache>().As<IRepositoryCache>().SingleInstance();
-            builder.RegisterType<PSCurrentWorkingDirectory>().As<ICurrentWorkingDirectory>().InstancePerLifetimeScope();
+            builder.RegisterType<WindowsCurrentDirectory>().AsSelf().As<ICurrentWorkingDirectory>().SingleInstance();
             builder.RegisterType<UpdateableRepositoryStatus>().As<IRepositoryStatus>();
             builder.RegisterType<LibGit2Sharp.Repository>().As<LibGit2Sharp.IRepository>();
             builder.RegisterType<GitFolderWatcher>().As<IFolderWatcher>();
@@ -44,6 +44,14 @@ namespace PoshGit2
 
                 return new Option<IRepositoryStatus>(cache.FindRepo(cwd));
             }).As<Option<IRepositoryStatus>>().InstancePerLifetimeScope();
+
+            builder.Register(c =>
+            {
+                var windowsCwd = c.Resolve<WindowsCurrentDirectory>();
+                var session = c.Resolve<SessionState>();
+
+                return new PSCurrentWorkingDirectory(session, windowsCwd);
+            }).As<ICurrentWorkingDirectory>().InstancePerLifetimeScope();
 
             builder.RegisterAdapter<SessionState, IGitPromptSettings>((c, s) =>
             {
