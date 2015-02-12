@@ -26,7 +26,7 @@ namespace PoshGit2
             }
         }
 
-        public string CWD
+        public virtual string CWD
         {
             get
             {
