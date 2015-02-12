@@ -1,31 +1,21 @@
 ﻿using Microsoft.PowerShell.Commands;
-using System.Management.Automation;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace PoshGit2
 {
-    public class Foo 
-    {
-        public int SomeValue { get; set; }
-    }
-
-    public class Bar
-    {
-        public int SomeValue()
-        {
-            var foo = new Foo();
-
-            return foo.SomeValue;
-        }
-    }
     public class PSCurrentWorkingDirectory : ICurrentWorkingDirectory
     {
-        private readonly SessionState _sessionState;
-        private readonly ICurrentWorkingDirectory _otherCwd;
+        private const int MAX_PATH = 260;
 
-        public PSCurrentWorkingDirectory(SessionState sessionState, ICurrentWorkingDirectory otherCwd)
+        [DllImport("shlwapi.dll", CharSet = CharSet.Auto)]
+        private static extern bool PathRelativePathTo([Out] StringBuilder pszPath, [In] string pszFrom, [In] FileAttributes dwAttrFrom, [In] string pszTo, [In] FileAttributes dwAttrTo);
+        private readonly ISessionState _sessionState;
+
+        public PSCurrentWorkingDirectory(ISessionState sessionState)
         {
             _sessionState = sessionState;
-            _otherCwd = otherCwd;
         }
 
         public bool IsValid
@@ -46,7 +36,10 @@ namespace PoshGit2
 
         public string CreateRelativePath(string path)
         {
-            return _otherCwd.CreateRelativePath(path);
+            var str = new StringBuilder(MAX_PATH);
+            var success = PathRelativePathTo(str, CWD, FileAttributes.Directory, path, FileAttributes.Normal);
+
+            return success ? str.ToString() : string.Empty;
         }
     }
 }

@@ -65,6 +65,7 @@
     <Compile Include="Status\IStatusWriter.cs" />
     <Compile Include="Utils\FileLogger.cs" />
     <Compile Include="Utils\ILogger.cs" />
+    <Compile Include="Utils\ISessionState.cs" />
     <Compile Include="Utils\Option.cs" />
     <Compile Include="Settings\PSObjectGitPromptSettings.cs" />
     <Compile Include="Status\RepositoryStatusExtensions.cs" />
@@ -82,7 +83,7 @@
     <Compile Include="Cmdlets\GetGitInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status\RepositoryCache.cs" />
-    <Compile Include="Utils\WindowsCurrentDirectory.cs" />
+    <Compile Include="Utils\SessionStateWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Update-Version.ps1" />
