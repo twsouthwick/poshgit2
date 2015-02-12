@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>posh-git2</id>
-    <version>1.5.0.0</version>
+    <version>1.5.1.0</version>
     <authors>dahlbyk</authors>
     <owners>Taylor Southwick</owners>
     <projectUrl>https://github.com/twsouthwick/posh-git/tree/libgit2-cmdlet</projectUrl>
