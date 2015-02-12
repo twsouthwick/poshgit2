@@ -40,6 +40,7 @@ namespace PoshGit2
         {
             Debug.WriteLine("Git lock deleted");
             _workingDirectoryWatcher.EnableRaisingEvents = true;
+            OnNext(FileChangedStatus.Changed);
         }
 
         private void GitLockCreated(object sender, FileSystemEventArgs e)

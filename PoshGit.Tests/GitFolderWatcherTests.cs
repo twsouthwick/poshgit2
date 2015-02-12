@@ -111,7 +111,33 @@ namespace PoshGit.Tests
             // Give the filewatchers some time to react
             await Task.Delay(DelayTime);
 
+            // Verify that only two file changes were detected (file2.tmp and git lock removed)
+            observer.Received(2).OnNext(FileChangedStatus.Changed);
+        }
+
+        [Fact]
+        public async Task SubscriberNotifiedWhenGitLockRemoved()
+        {
+            var directory = CreateTempGitDirectory();
+            var watcher = new GitFolderWatcher(directory);
+            var observer = Substitute.For<IObserver<FileChangedStatus>>();
+
+            watcher.Subscribe(observer);
+
+            // Simulate git lock
+            var lockfile = Path.Combine(directory, ".git", "index.lock");
+            File.WriteAllText(lockfile, "");
+
+            // Create file now that git is locked
+            var file1 = Path.Combine(directory, "file1.tmp");
+            File.WriteAllText(file1, "contents");
+
+            // Remove lock file
+            File.Delete(lockfile);
+
             // Verify that only one file change was detected
+            await Task.Delay(DelayTime);
+
             observer.Received(1).OnNext(FileChangedStatus.Changed);
         }
     }
