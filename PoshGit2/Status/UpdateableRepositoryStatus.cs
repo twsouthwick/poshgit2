@@ -125,15 +125,15 @@ namespace PoshGit2
                     Working = new ChangedItemsCollection
                     {
                         Added = GetCollection(repositoryStatus.Untracked),
-                        Deleted = GetCollection(repositoryStatus.Missing),
-                        Modified = GetCollection(repositoryStatus.Modified)
+                        Modified = GetCollection(repositoryStatus.Modified, repositoryStatus.RenamedInWorkDir),
+                        Deleted = GetCollection(repositoryStatus.Missing)
                     };
 
                     Index = new ChangedItemsCollection
                     {
                         Added = GetCollection(repositoryStatus.Added),
-                        Deleted = GetCollection(repositoryStatus.Removed),
-                        Modified = GetCollection(repositoryStatus.Staged)
+                        Modified = GetCollection(repositoryStatus.Staged, repositoryStatus.RenamedInIndex),
+                        Deleted = GetCollection(repositoryStatus.Removed)
                     };
 
                     Trace.WriteLine($"Done updating repo {GitDir}");
@@ -144,9 +144,9 @@ namespace PoshGit2
             });
         }
 
-        private ICollection<string> GetCollection(IEnumerable<StatusEntry> entries)
+        private ICollection<string> GetCollection(params IEnumerable<StatusEntry>[] entries)
         {
-            return entries.Select(f => f.FilePath).ToList().AsReadOnly();
+            return entries.SelectMany(o => o).Select(f => f.FilePath).ToList().AsReadOnly();
         }
 
         public void Dispose()
