@@ -8,10 +8,17 @@ namespace PoshGit2.Utils
     public class WindowsCurrentDirectory : ICurrentWorkingDirectory
     {
         private const int MAX_PATH = 260;
+        private readonly string _cwd;
+
         [DllImport("shlwapi.dll", CharSet = CharSet.Auto)]
         private static extern bool PathRelativePathTo([Out] StringBuilder pszPath, [In] string pszFrom, [In] FileAttributes dwAttrFrom, [In] string pszTo, [In] FileAttributes dwAttrTo);
 
-        public string CWD { get { return Environment.CurrentDirectory; } }
+        public WindowsCurrentDirectory(string cwd = null)
+        {
+            _cwd = cwd;
+        }
+
+        public string CWD { get { return _cwd ?? Environment.CurrentDirectory; } }
 
         public bool IsValid { get { return true; } }
 

@@ -59,6 +59,7 @@
     <Compile Include="GitFolderWatcherTests.cs" />
     <Compile Include="MutexThrottleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WindowsCurrentDirectoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PoshGit2\PoshGit2.csproj">
