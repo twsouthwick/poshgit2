@@ -23,7 +23,7 @@ namespace PoshGit2
             _cwd = cwd;
 
             _folderWatcher = folderWatcherFactory(folder);
-            _folderWatcher.Subscribe(new DelegateObserver(_ => UpdateStatus()));
+            _folderWatcher.Subscribe(new StringDelegateObserver(_ => UpdateStatus()));
 
             // _repository.Info.Path returns a path ending with '\'
             GitDir = _repository.Info.Path.Substring(0, _repository.Info.Path.Length - 1);
@@ -155,6 +155,25 @@ namespace PoshGit2
         {
             _repository.Dispose();
             (_folderWatcher as IDisposable)?.Dispose();
+        }
+
+        private class StringDelegateObserver : IObserver<string>
+        {
+            private readonly Action<string> _action;
+
+            public StringDelegateObserver(Action<string> action)
+            {
+                _action = action;
+            }
+
+            public void OnCompleted() { }
+
+            public void OnError(Exception error) { }
+
+            public void OnNext(string value)
+            {
+                _action?.Invoke(value);
+            }
         }
     }
 }

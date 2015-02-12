@@ -60,7 +60,6 @@
     <Compile Include="Settings\IGitPromptSettings.cs" />
     <Compile Include="Cmdlets\RemoveGitRepo.cs" />
     <Compile Include="Status\ConsoleStatusWriter.cs" />
-    <Compile Include="Status\DelegateObserver.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
     <Compile Include="Utils\FileLogger.cs" />
@@ -70,7 +69,6 @@
     <Compile Include="Settings\PSObjectGitPromptSettings.cs" />
     <Compile Include="Status\ReadonlyCopyRepositoryStatus.cs" />
     <Compile Include="Utils\ICurrentWorkingDirectory.cs" />
-    <Compile Include="Status\FileChangedStatus.cs" />
     <Compile Include="Status\IFolderWatcher.cs" />
     <Compile Include="Utils\IThrottle.cs" />
     <Compile Include="Status\IRepositoryCache.cs" />

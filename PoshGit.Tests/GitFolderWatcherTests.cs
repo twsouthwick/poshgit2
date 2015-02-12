@@ -28,7 +28,7 @@ namespace PoshGit.Tests
         {
             var directory = CreateTempGitDirectory();
             var watcher = new GitFolderWatcher(directory);
-            var observer = Substitute.For<IObserver<FileChangedStatus>>();
+            var observer = Substitute.For<IObserver<string>>();
 
             watcher.Subscribe(observer);
 
@@ -39,7 +39,9 @@ namespace PoshGit.Tests
 
             await Task.Delay(DelayTime);
 
-            observer.Received(3).OnNext(FileChangedStatus.Changed);
+            // Verify 3 calls were made for newFile only
+            observer.Received(3).OnNext(Arg.Any<string>());
+            observer.Received(3).OnNext(newFile);
         }
 
         [Fact]
@@ -50,7 +52,7 @@ namespace PoshGit.Tests
             Directory.CreateDirectory(subdirectory);
 
             var watcher = new GitFolderWatcher(directory);
-            var observer = Substitute.For<IObserver<FileChangedStatus>>();
+            var observer = Substitute.For<IObserver<string>>();
 
             watcher.Subscribe(observer);
 
@@ -61,8 +63,10 @@ namespace PoshGit.Tests
 
             await Task.Delay(DelayTime);
 
-            // Should be three, but because it's in a subdirectory it is four
-            observer.Received(4).OnNext(FileChangedStatus.Changed);
+            // Verify expected calls were made.  The subdirectory notification is not necessary, but occurs
+            observer.Received(4).OnNext(Arg.Any<string>());
+            observer.Received(3).OnNext(newFile);
+            observer.Received(1).OnNext(subdirectory);
         }
 
         [Fact]
@@ -70,7 +74,7 @@ namespace PoshGit.Tests
         {
             var directory = CreateTempGitDirectory();
             var watcher = new GitFolderWatcher(directory);
-            var observer = Substitute.For<IObserver<FileChangedStatus>>();
+            var observer = Substitute.For<IObserver<string>>();
 
             watcher.Subscribe(observer);
 
@@ -81,7 +85,7 @@ namespace PoshGit.Tests
 
             await Task.Delay(DelayTime);
 
-            observer.Received(0).OnNext(FileChangedStatus.Changed);
+            observer.Received(0).OnNext(Arg.Any<string>());
         }
 
         [Fact]
@@ -89,7 +93,7 @@ namespace PoshGit.Tests
         {
             var directory = CreateTempGitDirectory();
             var watcher = new GitFolderWatcher(directory);
-            var observer = Substitute.For<IObserver<FileChangedStatus>>();
+            var observer = Substitute.For<IObserver<string>>();
 
             watcher.Subscribe(observer);
 
@@ -112,7 +116,9 @@ namespace PoshGit.Tests
             await Task.Delay(DelayTime);
 
             // Verify that only two file changes were detected (file2.tmp and git lock removed)
-            observer.Received(2).OnNext(FileChangedStatus.Changed);
+            observer.Received(2).OnNext(Arg.Any<string>());
+            observer.Received(1).OnNext(file2);
+            observer.Received(1).OnNext(lockfile);
         }
 
         [Fact]
@@ -120,7 +126,7 @@ namespace PoshGit.Tests
         {
             var directory = CreateTempGitDirectory();
             var watcher = new GitFolderWatcher(directory);
-            var observer = Substitute.For<IObserver<FileChangedStatus>>();
+            var observer = Substitute.For<IObserver<string>>();
 
             watcher.Subscribe(observer);
 
@@ -135,10 +141,11 @@ namespace PoshGit.Tests
             // Remove lock file
             File.Delete(lockfile);
 
-            // Verify that only one file change was detected
             await Task.Delay(DelayTime);
 
-            observer.Received(1).OnNext(FileChangedStatus.Changed);
+            // Verify that only one file change was detected
+            observer.Received(1).OnNext(Arg.Any<string>());
+            observer.Received(1).OnNext(lockfile);
         }
     }
 }

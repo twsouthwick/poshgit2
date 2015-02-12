@@ -4,7 +4,7 @@ using System.IO;
 
 namespace PoshGit2
 {
-    public sealed class GitFolderWatcher : ObservableBase<FileChangedStatus>, IFolderWatcher, IDisposable
+    public sealed class GitFolderWatcher : ObservableBase<string>, IFolderWatcher, IDisposable
     {
         private readonly string _folder;
         private readonly string _gitdir;
@@ -40,7 +40,7 @@ namespace PoshGit2
         {
             Debug.WriteLine("Git lock deleted");
             _workingDirectoryWatcher.EnableRaisingEvents = true;
-            OnNext(FileChangedStatus.Changed);
+            OnNext(e.FullPath);
         }
 
         private void GitLockCreated(object sender, FileSystemEventArgs e)
@@ -72,7 +72,7 @@ namespace PoshGit2
             }
 
             Debug.WriteLine($"Processing file: {e.FullPath}");
-            OnNext(FileChangedStatus.Changed);
+            OnNext(e.FullPath);
         }
 
         public void Dispose()
