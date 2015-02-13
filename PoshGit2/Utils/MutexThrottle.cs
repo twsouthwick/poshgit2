@@ -8,7 +8,7 @@ namespace PoshGit2
         private readonly Mutex _mutex = new Mutex();
         private bool _isWaiting;
 
-        public void TryContinueOrBlock(Action action)
+        public bool TryContinueOrBlock(Action action)
         {
             if (_mutex.WaitOne(0))
             {
@@ -21,7 +21,7 @@ namespace PoshGit2
                     _mutex.ReleaseMutex();
                 }
 
-                return;
+                return true;
             }
 
             if (!_isWaiting)
@@ -32,6 +32,8 @@ namespace PoshGit2
                     _mutex.WaitOne();
 
                     action();
+
+                    return true;
                 }
                 finally
                 {
@@ -39,6 +41,8 @@ namespace PoshGit2
                     _mutex.ReleaseMutex();
                 }
             }
+
+            return false;
         }
     }
 }
