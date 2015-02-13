@@ -11,13 +11,13 @@ namespace PoshGit2
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<RepositoryCache>().As<IRepositoryCache>().SingleInstance();
-            builder.RegisterType<PSCurrentWorkingDirectory>().As<ICurrentWorkingDirectory>().InstancePerDependency();
+            builder.RegisterType<PSCurrentWorkingDirectory>().As<ICurrentWorkingDirectory>().InstancePerLifetimeScope();
             builder.RegisterType<UpdateableRepositoryStatus>().As<IRepositoryStatus>();
             builder.RegisterType<LibGit2Sharp.Repository>().As<LibGit2Sharp.IRepository>();
             builder.RegisterType<GitFolderWatcher>().As<IFolderWatcher>();
             builder.RegisterType<MutexThrottle>().As<IThrottle>();
             builder.RegisterType<SessionState>().AsSelf().SingleInstance();
-            builder.RegisterType<SessionStateWrapper>().As<ISessionState>().InstancePerDependency();
+            builder.RegisterType<SessionStateWrapper>().As<ISessionState>().InstancePerLifetimeScope();
             builder.RegisterType<ConsoleStatusWriter>().As<IStatusWriter>().InstancePerLifetimeScope();
             builder.RegisterType<FileLogger>().As<ILogger>().SingleInstance();
             builder.RegisterType<DefaultGitPromptSettings>().AsSelf().SingleInstance();
