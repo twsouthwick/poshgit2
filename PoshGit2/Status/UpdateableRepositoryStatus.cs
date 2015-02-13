@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace PoshGit2
 {
@@ -11,19 +12,18 @@ namespace PoshGit2
     {
         private readonly IRepository _repository;
         private readonly IFolderWatcher _folderWatcher;
-        private readonly IThrottle _gate;
         private readonly ICurrentWorkingDirectory _cwd;
+        private readonly IDisposable _subscription;
 
         private bool _isUpdating;
 
-        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, IThrottle gate, ICurrentWorkingDirectory cwd)
+        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd)
         {
-            _gate = gate;
             _repository = repositoryFactory(folder);
             _cwd = cwd;
 
             _folderWatcher = folderWatcherFactory(folder);
-            _folderWatcher.Subscribe(new StringDelegateObserver(_ => UpdateStatus()));
+            _subscription = _folderWatcher.GetFileObservable().Subscribe(UpdateStatus, _ => { }, () => { });
 
             // _repository.Info.Path returns a path ending with '\'
             GitDir = _repository.Info.Path.Substring(0, _repository.Info.Path.Length - 1);
@@ -32,7 +32,7 @@ namespace PoshGit2
             Working = new ChangedItemsCollection();
             Index = new ChangedItemsCollection();
 
-            UpdateStatus();
+            UpdateStatus(CurrentWorkingDirectory);
         }
 
         public string Branch
@@ -112,38 +112,35 @@ namespace PoshGit2
         public int AheadBy { get { return _repository.Head.TrackingDetails.AheadBy ?? 0; } }
         public int BehindBy { get { return _repository.Head.TrackingDetails.BehindBy ?? 0; } }
 
-        public void UpdateStatus()
+        public void UpdateStatus(string file)
         {
-            _gate.TryContinueOrBlock(() =>
+            _isUpdating = true;
+
+            Trace.WriteLine($"Updating repo {file}");
+
+            try
             {
-                _isUpdating = true;
+                var repositoryStatus = _repository.RetrieveStatus();
 
-                Trace.WriteLine($"Updating repo {GitDir}");
-
-                try
+                Working = new ChangedItemsCollection
                 {
-                    var repositoryStatus = _repository.RetrieveStatus();
+                    Added = GetCollection(repositoryStatus.Untracked),
+                    Modified = GetCollection(repositoryStatus.Modified, repositoryStatus.RenamedInWorkDir),
+                    Deleted = GetCollection(repositoryStatus.Missing)
+                };
 
-                    Working = new ChangedItemsCollection
-                    {
-                        Added = GetCollection(repositoryStatus.Untracked),
-                        Modified = GetCollection(repositoryStatus.Modified, repositoryStatus.RenamedInWorkDir),
-                        Deleted = GetCollection(repositoryStatus.Missing)
-                    };
+                Index = new ChangedItemsCollection
+                {
+                    Added = GetCollection(repositoryStatus.Added),
+                    Modified = GetCollection(repositoryStatus.Staged, repositoryStatus.RenamedInIndex),
+                    Deleted = GetCollection(repositoryStatus.Removed)
+                };
+            }
+            catch (LibGit2SharpException) { }
 
-                    Index = new ChangedItemsCollection
-                    {
-                        Added = GetCollection(repositoryStatus.Added),
-                        Modified = GetCollection(repositoryStatus.Staged, repositoryStatus.RenamedInIndex),
-                        Deleted = GetCollection(repositoryStatus.Removed)
-                    };
+            Trace.WriteLine($"Done updating repo {file}");
 
-                    Trace.WriteLine($"Done updating repo {GitDir}");
-                }
-                catch (LibGit2SharpException) { }
-
-                _isUpdating = false;
-            });
+            _isUpdating = false;
         }
 
         private ICollection<string> GetCollection(params IEnumerable<StatusEntry>[] entries)
@@ -153,27 +150,9 @@ namespace PoshGit2
 
         public void Dispose()
         {
+            _subscription.Dispose();
             _repository.Dispose();
             (_folderWatcher as IDisposable)?.Dispose();
-        }
-
-        private class StringDelegateObserver : IObserver<string>
-        {
-            private readonly Action<string> _action;
-
-            public StringDelegateObserver(Action<string> action)
-            {
-                _action = action;
-            }
-
-            public void OnCompleted() { }
-
-            public void OnError(Exception error) { }
-
-            public void OnNext(string value)
-            {
-                _action?.Invoke(value);
-            }
         }
     }
 }

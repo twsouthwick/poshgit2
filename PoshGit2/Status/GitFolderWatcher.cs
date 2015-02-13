@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reactive.Linq;
 
 namespace PoshGit2
 {
-    public sealed class GitFolderWatcher : ObservableBase<string>, IFolderWatcher, IDisposable
+    public sealed class GitFolderWatcher : IFolderWatcher, IDisposable
     {
         private readonly string _folder;
         private readonly string _gitdir;
         private readonly FileSystemWatcher _workingDirectoryWatcher;
         private readonly FileSystemWatcher _gitlockWatcher;
+        private readonly IObservable<string> _observable;
 
         public GitFolderWatcher(string folder)
         {
@@ -18,6 +20,13 @@ namespace PoshGit2
 
             _workingDirectoryWatcher = SetupWorkingDirectoryWatcher(folder);
             _gitlockWatcher = SetupLockWatcher(_gitdir);
+
+            _observable = Observable.FromEvent<string>(a => OnNext += a, a => OnNext -= a);
+        }
+
+        public IObservable<string> GetFileObservable()
+        {
+            return _observable;
         }
 
         private FileSystemWatcher SetupLockWatcher(string gitdir)
@@ -40,7 +49,7 @@ namespace PoshGit2
         {
             Debug.WriteLine("Git lock deleted");
             _workingDirectoryWatcher.EnableRaisingEvents = true;
-            OnNext(e.FullPath);
+            OnNext?.Invoke(e.FullPath);
         }
 
         private void GitLockCreated(object sender, FileSystemEventArgs e)
@@ -73,8 +82,10 @@ namespace PoshGit2
             }
 
             Debug.WriteLine($"Processing file: {e.FullPath}");
-            OnNext(e.FullPath);
+            OnNext?.Invoke(e.FullPath);
         }
+
+        private event Action<string> OnNext;
 
         public void Dispose()
         {
