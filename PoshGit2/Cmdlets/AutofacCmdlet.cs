@@ -6,11 +6,22 @@ namespace PoshGit2.Cmdlets
 {
     public class AutofacCmdlet : PSCmdlet, IDisposable
     {
+        private static Lazy<IContainer> Container = new Lazy<IContainer>(CreateContainer, true);
+
         private readonly ILifetimeScope _lifetimeScope;
+
+        private static IContainer CreateContainer()
+        {
+            var containerBuilder = new ContainerBuilder();
+
+            containerBuilder.RegisterModule(new PSAutofacModule());
+
+            return containerBuilder.Build();
+        }
 
         public AutofacCmdlet()
         {
-            _lifetimeScope = PoshGit2Container.Instance.BeginLifetimeScope(builder =>
+            _lifetimeScope = Container.Value.BeginLifetimeScope(builder =>
            {
                builder.Register<SessionState>(_ => SessionState).AsSelf();
            });

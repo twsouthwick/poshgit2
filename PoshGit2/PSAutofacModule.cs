@@ -6,26 +6,10 @@ using System.Management.Automation;
 
 namespace PoshGit2
 {
-    internal sealed class PoshGit2Container : IDisposable
+    public class PSAutofacModule : Module
     {
-        private readonly static Lazy<PoshGit2Container> _instance = new Lazy<PoshGit2Container>(true);
-
-        public static IContainer Instance { get { return _instance.Value.Container; } }
-
-        public PoshGit2Container()
+        protected override void Load(ContainerBuilder builder)
         {
-            Container = CreateContainer();
-
-            // Instantiate logger
-            Container.Resolve<ILogger>();
-        }
-
-        public IContainer Container { get; }
-
-        private IContainer CreateContainer()
-        {
-            var builder = new ContainerBuilder();
-
             builder.RegisterType<RepositoryCache>().As<IRepositoryCache>().SingleInstance();
             builder.RegisterType<PSCurrentWorkingDirectory>().As<ICurrentWorkingDirectory>().InstancePerDependency();
             builder.RegisterType<UpdateableRepositoryStatus>().As<IRepositoryStatus>();
@@ -62,16 +46,6 @@ namespace PoshGit2
                 // Otherwise, use default settings
                 return c.Resolve<DefaultGitPromptSettings>();
             });
-
-            return builder.Build();
-        }
-
-        public void Dispose()
-        {
-            if (_instance.IsValueCreated)
-            {
-                _instance.Value.Dispose();
-            }
         }
     }
 }

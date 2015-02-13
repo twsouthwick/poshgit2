@@ -74,7 +74,7 @@
     <Compile Include="Status\IRepositoryCache.cs" />
     <Compile Include="Status\IRepositoryStatus.cs" />
     <Compile Include="Status\ObservableBase.cs" />
-    <Compile Include="PoshGit2Container.cs" />
+    <Compile Include="PSAutofacModule.cs" />
     <Compile Include="Utils\PSCurrentWorkingDirectory.cs" />
     <Compile Include="Utils\MutexThrottle.cs" />
     <Compile Include="Status\UpdateableRepositoryStatus.cs" />
