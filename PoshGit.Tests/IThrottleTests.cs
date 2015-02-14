@@ -1,4 +1,5 @@
 ﻿using PoshGit2;
+using PoshGit2.Utils;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,6 +13,16 @@ namespace PoshGit.Tests
             await TestThrottleAsync(new MutexThrottle());
         }
 
+        [Fact]
+        public async Task SemaphoreThrottle()
+        {
+            await TestThrottleAsync(new SemaphoreThrottle());
+        }
+
+        /// <summary>
+        /// Ensure that the throttle mechanism only allows two entries.  Beyond that, they are rejected.  The Action of the two 
+        /// entries that are allowed must be run synchronously
+        /// </summary>
         private async Task TestThrottleAsync(IThrottle throttle)
         {
             var count = 0;
@@ -60,13 +71,24 @@ namespace PoshGit.Tests
 
             Assert.False(await task3_task);
 
-            task1_wait.SetResult(true);
             task2_wait.SetResult(true);
+            task1_wait.SetResult(true);
 
             Assert.True(await task1_task);
             Assert.True(await task2_task);
 
-            Assert.Equal(2, count);
+            var task4_task = Task.Run(() =>
+            {
+                return throttle.TryContinueOrBlock(() =>
+                 {
+                     Assert.Equal(2, count);
+                     count++;
+                 });
+            });
+
+            Assert.True(await task4_task);
+
+            Assert.Equal(3, count);
         }
     }
 }

@@ -14,13 +14,15 @@ namespace PoshGit2
         private readonly IFolderWatcher _folderWatcher;
         private readonly ICurrentWorkingDirectory _cwd;
         private readonly IDisposable _subscription;
+        private readonly IThrottle _throttle;
 
         private bool _isUpdating;
 
-        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd)
+        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd, IThrottle throttle)
         {
             _repository = repositoryFactory(folder);
             _cwd = cwd;
+            _throttle = throttle;
 
             _folderWatcher = folderWatcherFactory(folder);
             _subscription = _folderWatcher.GetFileObservable().Subscribe(UpdateStatus, _ => { }, () => { });
@@ -114,33 +116,36 @@ namespace PoshGit2
 
         public void UpdateStatus(string file)
         {
-            _isUpdating = true;
-
-            Trace.WriteLine($"Updating repo {file}");
-
-            try
+            _throttle.TryContinueOrBlock(() =>
             {
-                var repositoryStatus = _repository.RetrieveStatus();
+                _isUpdating = true;
 
-                Working = new ChangedItemsCollection
+                Trace.WriteLine($"Updating repo {file}");
+
+                try
                 {
-                    Added = GetCollection(repositoryStatus.Untracked),
-                    Modified = GetCollection(repositoryStatus.Modified, repositoryStatus.RenamedInWorkDir),
-                    Deleted = GetCollection(repositoryStatus.Missing)
-                };
+                    var repositoryStatus = _repository.RetrieveStatus();
 
-                Index = new ChangedItemsCollection
-                {
-                    Added = GetCollection(repositoryStatus.Added),
-                    Modified = GetCollection(repositoryStatus.Staged, repositoryStatus.RenamedInIndex),
-                    Deleted = GetCollection(repositoryStatus.Removed)
-                };
-            }
-            catch (LibGit2SharpException) { }
+                    Working = new ChangedItemsCollection
+                    {
+                        Added = GetCollection(repositoryStatus.Untracked),
+                        Modified = GetCollection(repositoryStatus.Modified, repositoryStatus.RenamedInWorkDir),
+                        Deleted = GetCollection(repositoryStatus.Missing)
+                    };
 
-            Trace.WriteLine($"Done updating repo {file}");
+                    Index = new ChangedItemsCollection
+                    {
+                        Added = GetCollection(repositoryStatus.Added),
+                        Modified = GetCollection(repositoryStatus.Staged, repositoryStatus.RenamedInIndex),
+                        Deleted = GetCollection(repositoryStatus.Removed)
+                    };
+                }
+                catch (LibGit2SharpException) { }
 
-            _isUpdating = false;
+                Trace.WriteLine($"Done updating repo {file}");
+
+                _isUpdating = false;
+            });
         }
 
         private ICollection<string> GetCollection(params IEnumerable<StatusEntry>[] entries)
