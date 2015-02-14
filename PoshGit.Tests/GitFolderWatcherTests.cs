@@ -69,6 +69,7 @@ namespace PoshGit.Tests
             observer.Received(1).OnNext(subdirectory);
         }
 
+#if FILTER_GITFILES
         [Fact]
         public async Task DoNotWatchGitFolder()
         {
@@ -174,5 +175,6 @@ namespace PoshGit.Tests
             observer.Received(1).OnNext(Arg.Any<string>());
             observer.Received(1).OnNext(lockfile);
         }
+#endif
     }
 }

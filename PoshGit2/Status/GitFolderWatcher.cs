@@ -10,7 +10,9 @@ namespace PoshGit2
         private readonly string _folder;
         private readonly string _gitdir;
         private readonly FileSystemWatcher _workingDirectoryWatcher;
+#if FILTER_GITFILES
         private readonly FileSystemWatcher _gitlockWatcher;
+#endif
         private readonly IObservable<string> _observable;
 
         public GitFolderWatcher(string folder)
@@ -19,7 +21,9 @@ namespace PoshGit2
             _gitdir = Path.Combine(folder, ".git");
 
             _workingDirectoryWatcher = SetupWorkingDirectoryWatcher(folder);
+#if FILTER_GITFILES
             _gitlockWatcher = SetupLockWatcher(_gitdir);
+#endif
 
             _observable = Observable.FromEvent<string>(a => OnNext += a, a => OnNext -= a);
         }
@@ -29,6 +33,7 @@ namespace PoshGit2
             return _observable;
         }
 
+#if FILTER_GIT_FILES
         private FileSystemWatcher SetupLockWatcher(string gitdir)
         {
             var filewatcher = new FileSystemWatcher(gitdir)
@@ -57,6 +62,7 @@ namespace PoshGit2
             Debug.WriteLine("Git lock created");
             _workingDirectoryWatcher.EnableRaisingEvents = false;
         }
+#endif
 
         private FileSystemWatcher SetupWorkingDirectoryWatcher(string directory)
         {
@@ -75,11 +81,13 @@ namespace PoshGit2
 
         private void FileChanged(object sender, FileSystemEventArgs e)
         {
+#if FILTER_GIT_FILES
             if (e.FullPath.StartsWith(_gitdir, StringComparison.CurrentCultureIgnoreCase))
             {
                 Debug.WriteLine($"Skipping file: {e.FullPath}");
                 return;
             }
+#endif
 
             Debug.WriteLine($"Processing file: {e.FullPath}");
             OnNext?.Invoke(e.FullPath);
@@ -90,7 +98,9 @@ namespace PoshGit2
         public void Dispose()
         {
             _workingDirectoryWatcher.Dispose();
+#if FILTER_GIT_FILES
             _gitlockWatcher.Dispose();
+#endif
         }
     }
 }
