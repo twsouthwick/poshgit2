@@ -71,7 +71,7 @@
     <Compile Include="Status\ConsoleStatusWriter.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
-    <Compile Include="Status\SampledGitFolderWatcher.cs" />
+    <Compile Include="Status\SampledFolderWatcher.cs" />
     <Compile Include="Utils\FileLogger.cs" />
     <Compile Include="Utils\ILogger.cs" />
     <Compile Include="Utils\ISessionState.cs" />
