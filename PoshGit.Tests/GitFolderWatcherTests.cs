@@ -2,6 +2,7 @@
 using PoshGit2;
 using System;
 using System.IO;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,7 +31,8 @@ namespace PoshGit.Tests
             var watcher = new GitFolderWatcher(directory);
             var observer = Substitute.For<IObserver<string>>();
 
-            watcher.GetFileObservable().Subscribe(observer);
+            var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
+            observable.Subscribe(observer);
 
             var newFile = Path.Combine(directory, "rewrite-file.tmp");
             File.WriteAllText(newFile, "test");
@@ -54,7 +56,8 @@ namespace PoshGit.Tests
             var watcher = new GitFolderWatcher(directory);
             var observer = Substitute.For<IObserver<string>>();
 
-            watcher.GetFileObservable().Subscribe(observer);
+            var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
+            observable.Subscribe(observer);
 
             var newFile = Path.Combine(subdirectory, "write-update-delete.tmp");
             File.WriteAllText(newFile, "test");
@@ -77,7 +80,8 @@ namespace PoshGit.Tests
             var watcher = new GitFolderWatcher(directory);
             var observer = Substitute.For<IObserver<string>>();
 
-            watcher.GetFileObservable().Subscribe(observer);
+            var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
+            observable.Subscribe(observer);
 
             var newFile = Path.Combine(directory, ".git", "write-update-delete.tmp");
             File.WriteAllText(newFile, "test");
@@ -96,7 +100,8 @@ namespace PoshGit.Tests
             var watcher = new GitFolderWatcher(directory);
             var observer = Substitute.For<IObserver<string>>();
 
-            watcher.GetFileObservable().Subscribe(observer);
+            var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
+            observable.Subscribe(observer);
 
             // Simulate git lock
             var lockfile = Path.Combine(directory, ".git", "index.lock");
@@ -132,7 +137,8 @@ namespace PoshGit.Tests
             var subdir = Path.Combine(directory, ".git", "somefolder");
             Directory.CreateDirectory(subdir);
 
-            watcher.GetFileObservable().Subscribe(observer);
+            var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
+            observable.Subscribe(observer);
 
             // Simulate git lock
             var lockfile = Path.Combine(subdir, "other.lock");
@@ -156,7 +162,8 @@ namespace PoshGit.Tests
             var watcher = new GitFolderWatcher(directory);
             var observer = Substitute.For<IObserver<string>>();
 
-            watcher.GetFileObservable().Subscribe(observer);
+            var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
+            observable.Subscribe(observer);
 
             // Simulate git lock
             var lockfile = Path.Combine(directory, ".git", "index.lock");

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 
 namespace PoshGit2
 {
@@ -13,19 +12,16 @@ namespace PoshGit2
         private readonly IRepository _repository;
         private readonly IFolderWatcher _folderWatcher;
         private readonly ICurrentWorkingDirectory _cwd;
-        private readonly IDisposable _subscription;
-        private readonly IThrottle _throttle;
 
         private bool _isUpdating;
 
-        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd, IThrottle throttle)
+        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd)
         {
             _repository = repositoryFactory(folder);
             _cwd = cwd;
-            _throttle = throttle;
 
             _folderWatcher = folderWatcherFactory(folder);
-            _subscription = _folderWatcher.GetFileObservable().Subscribe(UpdateStatus, _ => { }, () => { });
+            _folderWatcher.OnNext += UpdateStatus;
 
             // _repository.Info.Path returns a path ending with '\'
             GitDir = _repository.Info.Path.Substring(0, _repository.Info.Path.Length - 1);
@@ -116,36 +112,33 @@ namespace PoshGit2
 
         public void UpdateStatus(string file)
         {
-            _throttle.TryContinueOrBlock(() =>
+            _isUpdating = true;
+
+            Trace.WriteLine($"Updating repo {file}");
+
+            try
             {
-                _isUpdating = true;
+                var repositoryStatus = _repository.RetrieveStatus();
 
-                Trace.WriteLine($"Updating repo {file}");
-
-                try
+                Working = new ChangedItemsCollection
                 {
-                    var repositoryStatus = _repository.RetrieveStatus();
+                    Added = GetCollection(repositoryStatus.Untracked),
+                    Modified = GetCollection(repositoryStatus.Modified, repositoryStatus.RenamedInWorkDir),
+                    Deleted = GetCollection(repositoryStatus.Missing)
+                };
 
-                    Working = new ChangedItemsCollection
-                    {
-                        Added = GetCollection(repositoryStatus.Untracked),
-                        Modified = GetCollection(repositoryStatus.Modified, repositoryStatus.RenamedInWorkDir),
-                        Deleted = GetCollection(repositoryStatus.Missing)
-                    };
+                Index = new ChangedItemsCollection
+                {
+                    Added = GetCollection(repositoryStatus.Added),
+                    Modified = GetCollection(repositoryStatus.Staged, repositoryStatus.RenamedInIndex),
+                    Deleted = GetCollection(repositoryStatus.Removed)
+                };
+            }
+            catch (LibGit2SharpException) { }
 
-                    Index = new ChangedItemsCollection
-                    {
-                        Added = GetCollection(repositoryStatus.Added),
-                        Modified = GetCollection(repositoryStatus.Staged, repositoryStatus.RenamedInIndex),
-                        Deleted = GetCollection(repositoryStatus.Removed)
-                    };
-                }
-                catch (LibGit2SharpException) { }
+            Trace.WriteLine($"Done updating repo {file}");
 
-                Trace.WriteLine($"Done updating repo {file}");
-
-                _isUpdating = false;
-            });
+            _isUpdating = false;
         }
 
         private ICollection<string> GetCollection(params IEnumerable<StatusEntry>[] entries)
@@ -155,8 +148,9 @@ namespace PoshGit2
 
         public void Dispose()
         {
-            _subscription.Dispose();
             _repository.Dispose();
+
+            _folderWatcher.OnNext -= UpdateStatus;
             (_folderWatcher as IDisposable)?.Dispose();
         }
     }

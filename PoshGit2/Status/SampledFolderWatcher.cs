@@ -1,26 +1,30 @@
 ﻿using System;
-using System.Reactive.Linq;
 
 namespace PoshGit2
 {
     public sealed class SampledFolderWatcher : IFolderWatcher, IDisposable
     {
         private readonly IFolderWatcher _innerFolderWatcher;
-        private readonly IObservable<string> _observable;
+        private readonly IThrottle _throttle;
 
-        public SampledFolderWatcher(string folder, Func<string, IFolderWatcher> factory)
+        public SampledFolderWatcher(string folder, IThrottle throttle, Func<string, IFolderWatcher> factory)
         {
             _innerFolderWatcher = factory(folder);
-            _observable = _innerFolderWatcher.GetFileObservable().Sample(TimeSpan.FromMilliseconds(200));
+            _throttle = throttle;
+
+            _innerFolderWatcher.OnNext += ThrottleOnNext;
         }
 
-        public IObservable<string> GetFileObservable()
+        private void ThrottleOnNext(string obj)
         {
-            return _observable;
+            _throttle.TryContinueOrBlock(() => OnNext?.Invoke(obj));
         }
+
+        public event Action<string> OnNext;
 
         public void Dispose()
         {
+            _innerFolderWatcher.OnNext -= ThrottleOnNext;
             (_innerFolderWatcher as IDisposable)?.Dispose();
         }
     }

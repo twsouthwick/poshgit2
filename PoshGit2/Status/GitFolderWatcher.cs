@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reactive.Linq;
 
 namespace PoshGit2
 {
@@ -13,7 +12,6 @@ namespace PoshGit2
 #if FILTER_GITFILES
         private readonly FileSystemWatcher _gitlockWatcher;
 #endif
-        private readonly IObservable<string> _observable;
 
         public GitFolderWatcher(string folder)
         {
@@ -24,13 +22,6 @@ namespace PoshGit2
 #if FILTER_GITFILES
             _gitlockWatcher = SetupLockWatcher(_gitdir);
 #endif
-
-            _observable = Observable.FromEvent<string>(a => OnNext += a, a => OnNext -= a);
-        }
-
-        public IObservable<string> GetFileObservable()
-        {
-            return _observable;
         }
 
 #if FILTER_GIT_FILES
@@ -93,7 +84,7 @@ namespace PoshGit2
             OnNext?.Invoke(e.FullPath);
         }
 
-        private event Action<string> OnNext;
+        public event Action<string> OnNext;
 
         public void Dispose()
         {

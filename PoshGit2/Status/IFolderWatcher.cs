@@ -4,6 +4,6 @@ namespace PoshGit2
 {
     public interface IFolderWatcher 
     {
-        IObservable<string> GetFileObservable();
+        event Action<string> OnNext;
     }
 }
