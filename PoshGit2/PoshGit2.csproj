@@ -45,6 +45,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -60,6 +61,7 @@
     <Compile Include="Settings\IGitPromptSettings.cs" />
     <Compile Include="Cmdlets\RemoveGitRepo.cs" />
     <Compile Include="Status\ConsoleStatusWriter.cs" />
+    <Compile Include="Status\ExpiringCache.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
     <Compile Include="Status\SampledFolderWatcher.cs" />
