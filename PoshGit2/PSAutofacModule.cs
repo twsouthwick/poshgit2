@@ -10,7 +10,7 @@ namespace PoshGit2
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<RepositoryCache>().As<IRepositoryCache>().SingleInstance();
+            builder.RegisterType<ExpiringCache>().As<IRepositoryCache>().SingleInstance();
             builder.RegisterType<PSCurrentWorkingDirectory>().As<ICurrentWorkingDirectory>().InstancePerLifetimeScope();
             builder.RegisterType<UpdateableRepositoryStatus>().As<IRepositoryStatus>();
             builder.RegisterType<LibGit2Sharp.Repository>().As<LibGit2Sharp.IRepository>();
