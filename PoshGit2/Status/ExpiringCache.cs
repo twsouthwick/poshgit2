@@ -83,6 +83,11 @@ namespace PoshGit2
                 {
                     return null;
                 }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e);
+                    return null;
+                }
             }
         }
 
