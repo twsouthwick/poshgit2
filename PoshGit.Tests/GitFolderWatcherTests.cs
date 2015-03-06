@@ -10,7 +10,7 @@ namespace PoshGit.Tests
 {
     public class GitFolderWatcherTests
     {
-        private const int DelayTime = 10;
+        private const int DelayTime = 30;
 
         private static string CreateTempGitDirectory()
         {
