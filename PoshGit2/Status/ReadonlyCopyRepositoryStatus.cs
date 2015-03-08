@@ -16,6 +16,8 @@ namespace PoshGit2
             HasIndex = status.HasIndex;
             BehindBy = status.BehindBy;
             GitDir = status.GitDir;
+            LocalBranches = status.LocalBranches.ToList();
+            RemoteBranches = status.RemoteBranches.ToList();
 
             if (cwd == null)
             {
@@ -57,5 +59,7 @@ namespace PoshGit2
         public int BehindBy { get; }
         public string GitDir { get; }
         public string CurrentWorkingDirectory { get; }
+        public IEnumerable<string> LocalBranches { get; }
+        public IEnumerable<string> RemoteBranches { get; }
     }
 }

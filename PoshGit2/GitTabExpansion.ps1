@@ -66,24 +66,23 @@ function script:gitBranches($filter, $includeHEAD = $false) {
         $prefix = $matches['from']
         $filter = $matches['to']
     }
-    $branches = @(git branch --no-color | foreach { if($_ -match "^\*?\s*(?<ref>.*)") { $matches['ref'] } }) +
-                @(git branch --no-color -r | foreach { if($_ -match "^  (?<ref>\S+)(?: -> .+)?") { $matches['ref'] } }) +
+    $branches = Get-GitBranch -r +
                 @(if ($includeHEAD) { 'HEAD','FETCH_HEAD','ORIG_HEAD','MERGE_HEAD' })
     $branches |
         where { $_ -ne '(no branch)' -and $_ -like "$filter*" } |
-        foreach { $prefix + $_ }
+        foreach { $prefix + $_ } 
 }
 
 function script:gitFeatures($filter, $command){
 	$featurePrefix = git config --local --get "gitflow.prefix.$command"
-    $branches = @(git branch --no-color | foreach { if($_ -match "^\*?\s*$featurePrefix(?<ref>.*)") { $matches['ref'] } }) 
+    $branches = @(Get-GitBranch | foreach { if($_ -match "^\*?\s*$featurePrefix(?<ref>.*)") { $matches['ref'] } }) 
     $branches |
         where { $_ -ne '(no branch)' -and $_ -like "$filter*" } |
         foreach { $prefix + $_ }
 }
 
 function script:gitRemoteBranches($remote, $ref, $filter) {
-    git branch --no-color -r |
+    Get-GitBranch -r |
         where { $_ -like "  $remote/$filter*" } |
         foreach { $ref + ($_ -replace "  $remote/","") }
 }

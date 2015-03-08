@@ -1,4 +1,6 @@
-﻿namespace PoshGit2
+﻿using System.Collections.Generic;
+
+namespace PoshGit2
 {
     public interface IRepositoryStatus
     {
@@ -12,5 +14,7 @@
         int BehindBy { get; }
         string GitDir { get; }
         string CurrentWorkingDirectory { get; }
+        IEnumerable<string> LocalBranches { get; }
+        IEnumerable<string> RemoteBranches { get; }
     }
 }

@@ -110,6 +110,22 @@ namespace PoshGit2
         public int AheadBy { get { return _repository.Head.TrackingDetails.AheadBy ?? 0; } }
         public int BehindBy { get { return _repository.Head.TrackingDetails.BehindBy ?? 0; } }
 
+        public IEnumerable<string> LocalBranches
+        {
+            get
+            {
+                return _repository.Branches.Where(b => !b.IsRemote).Select(b => b.Name);
+            }
+        }
+
+        public IEnumerable<string> RemoteBranches
+        {
+            get
+            {
+                return _repository.Branches.Where(b => b.IsRemote).Select(b => b.Name);
+            }
+        }
+        
         public void UpdateStatus(string file)
         {
             _isUpdating = true;

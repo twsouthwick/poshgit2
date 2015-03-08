@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cmdlets\GetGitBranch.cs" />
     <Compile Include="Status\ChangedItemsCollection.cs" />
     <Compile Include="Cmdlets\AutofacCmdlet.cs" />
     <Compile Include="Cmdlets\GetRepoStatus.cs" />
