@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -18,6 +19,7 @@ namespace PoshGit2
             GitDir = status.GitDir;
             LocalBranches = status.LocalBranches.ToList();
             RemoteBranches = status.RemoteBranches.ToList();
+            Stashes = status.Stashes.ToList();
 
             if (cwd == null)
             {
@@ -61,5 +63,6 @@ namespace PoshGit2
         public string CurrentWorkingDirectory { get; }
         public IEnumerable<string> LocalBranches { get; }
         public IEnumerable<string> RemoteBranches { get; }
+        public IEnumerable<string> Stashes { get; }
     }
 }

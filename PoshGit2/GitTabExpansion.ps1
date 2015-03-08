@@ -88,7 +88,7 @@ function script:gitRemoteBranches($remote, $ref, $filter) {
 }
 
 function script:gitStashes($filter) {
-    (git stash list) -replace ':.*','' |
+    Get-GitStashList |
         where { $_ -like "$filter*" } |
         foreach { "'$_'" }
 }

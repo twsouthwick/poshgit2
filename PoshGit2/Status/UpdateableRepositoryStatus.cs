@@ -125,7 +125,15 @@ namespace PoshGit2
                 return _repository.Branches.Where(b => b.IsRemote).Select(b => b.Name);
             }
         }
-        
+
+        public IEnumerable<string> Stashes
+        {
+            get
+            {
+                return _repository.Stashes.Select(s => s.Name);
+            }
+        }
+
         public void UpdateStatus(string file)
         {
             _isUpdating = true;
