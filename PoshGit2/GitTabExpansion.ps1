@@ -106,31 +106,34 @@ function script:gitFiles($filter, $files) {
 }
 
 function script:gitIndex($filter) {
-    gitFiles $filter $GitStatus.Index
+    gitFiles $filter (Get-GitStatus).Index
 }
 
 function script:gitAddFiles($filter) {
-    gitFiles $filter (@($GitStatus.Working.Unmerged) + @($GitStatus.Working.Modified) + @($GitStatus.Working.Added))
+	$status = Get-GitStatus
+    gitFiles $filter (@($status.Working.Unmerged) + @($status.Working.Modified) + @($status.Working.Added))
 }
 
 function script:gitCheckoutFiles($filter) {
-    gitFiles $filter (@($GitStatus.Working.Unmerged) + @($GitStatus.Working.Modified) + @($GitStatus.Working.Deleted))
+	$status = Get-GitStatus
+    gitFiles $filter (@($status.Working.Unmerged) + @($status.Working.Modified) + @($status.Working.Deleted))
 }
 
 function script:gitDiffFiles($filter, $staged) {
+	$status = Get-GitStatus
     if ($staged) {
-        gitFiles $filter $GitStatus.Index.Modified
+        gitFiles $filter $status.Index.Modified
     } else {
-        gitFiles $filter (@($GitStatus.Working.Unmerged) + @($GitStatus.Working.Modified) + @($GitStatus.Index.Modified))
+        gitFiles $filter (@($status.Working.Unmerged) + @($status.Working.Modified) + @($status.Index.Modified))
     }
 }
 
 function script:gitMergeFiles($filter) {
-    gitFiles $filter $GitStatus.Working.Unmerged
+    gitFiles $filter (Get-GitStatus).Working.Unmerged
 }
 
 function script:gitDeleted($filter) {
-    gitFiles $filter $GitStatus.Working.Deleted
+    gitFiles $filter (Get-GitStatus).Working.Deleted
 }
 
 function script:gitAliases($filter) {
