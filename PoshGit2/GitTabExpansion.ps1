@@ -56,7 +56,7 @@ function script:gitCommands($filter, $includeAliases) {
 }
 
 function script:gitRemotes($filter) {
-    git remote |
+    Get-GitRemote |
         where { $_ -like "$filter*" }
 }
 

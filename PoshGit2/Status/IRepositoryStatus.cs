@@ -17,5 +17,6 @@ namespace PoshGit2
         IEnumerable<string> LocalBranches { get; }
         IEnumerable<string> RemoteBranches { get; }
         IEnumerable<string> Stashes { get; }
+        IEnumerable<string> Remotes { get; }
     }
 }

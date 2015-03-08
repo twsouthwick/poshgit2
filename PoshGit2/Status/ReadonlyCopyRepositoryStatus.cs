@@ -20,6 +20,7 @@ namespace PoshGit2
             LocalBranches = status.LocalBranches.ToList();
             RemoteBranches = status.RemoteBranches.ToList();
             Stashes = status.Stashes.ToList();
+            Remotes = status.Remotes.ToList();
 
             if (cwd == null)
             {
@@ -64,5 +65,6 @@ namespace PoshGit2
         public IEnumerable<string> LocalBranches { get; }
         public IEnumerable<string> RemoteBranches { get; }
         public IEnumerable<string> Stashes { get; }
+        public IEnumerable<string> Remotes { get; }
     }
 }

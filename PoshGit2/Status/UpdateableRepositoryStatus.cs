@@ -134,6 +134,14 @@ namespace PoshGit2
             }
         }
 
+        public IEnumerable<string> Remotes
+        {
+            get
+            {
+                return _repository.Network.Remotes.Select(r => r.Name);
+            }
+        }
+
         public void UpdateStatus(string file)
         {
             _isUpdating = true;

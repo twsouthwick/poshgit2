@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cmdlets\GetGitRemote.cs" />
     <Compile Include="Cmdlets\GetGitStashList.cs" />
     <Compile Include="Cmdlets\GetGitBranch.cs" />
     <Compile Include="Status\ChangedItemsCollection.cs" />
