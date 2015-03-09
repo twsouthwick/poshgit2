@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LibGit2Sharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace PoshGit2
             RemoteBranches = status.RemoteBranches.ToList();
             Stashes = status.Stashes.ToList();
             Remotes = status.Remotes.ToList();
+            Configuration = status.Configuration.ToList();
 
             if (cwd == null)
             {
@@ -66,5 +68,6 @@ namespace PoshGit2
         public IEnumerable<string> RemoteBranches { get; }
         public IEnumerable<string> Stashes { get; }
         public IEnumerable<string> Remotes { get; }
+        public IEnumerable<ConfigurationEntry<string>> Configuration { get; }
     }
 }

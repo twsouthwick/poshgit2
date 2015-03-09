@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LibGit2Sharp;
+using System.Collections.Generic;
 
 namespace PoshGit2
 {
@@ -18,5 +19,6 @@ namespace PoshGit2
         IEnumerable<string> RemoteBranches { get; }
         IEnumerable<string> Stashes { get; }
         IEnumerable<string> Remotes { get; }
+        IEnumerable<ConfigurationEntry<string>> Configuration { get; }
     }
 }

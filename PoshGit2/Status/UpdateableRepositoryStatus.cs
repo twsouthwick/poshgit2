@@ -142,6 +142,14 @@ namespace PoshGit2
             }
         }
 
+        public IEnumerable<ConfigurationEntry<string>> Configuration
+        {
+            get
+            {
+                return _repository.Config;
+            }
+        }
+
         public void UpdateStatus(string file)
         {
             _isUpdating = true;

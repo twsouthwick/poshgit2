@@ -74,8 +74,8 @@ function script:gitBranches($filter, $includeHEAD = $false) {
 }
 
 function script:gitFeatures($filter, $command){
-	$featurePrefix = git config --local --get "gitflow.prefix.$command"
-    $branches = @(Get-GitBranch | foreach { if($_ -match "^\*?\s*$featurePrefix(?<ref>.*)") { $matches['ref'] } }) 
+	$featurePrefix =  Get-GitConfig | where Key -eq "gitflow.prefix.$command"
+	$branches = @(Get-GitBranch | foreach { if($_ -match "^\*?\s*$featurePrefix(?<ref>.*)") { $matches['ref'] } }) 
     $branches |
         where { $_ -ne '(no branch)' -and $_ -like "$filter*" } |
         foreach { $prefix + $_ }
@@ -137,19 +137,13 @@ function script:gitDeleted($filter) {
 }
 
 function script:gitAliases($filter) {
-    git config --get-regexp ^alias\. | foreach {
-        if($_ -match "^alias\.(?<alias>\S+) .*") {
-            $alias = $Matches['alias']
-            if($alias -like "$filter*") {
-                $alias
-            }
-        }
-    } | Sort
+	Get-GitConfig | where Key -like "alias.$filter*" | sort Key | % { $_.Key.Replace("alias.","") }
 }
 
 function script:expandGitAlias($cmd, $rest) {
-    if((git config --get-regexp "^alias\.$cmd`$") -match "^alias\.$cmd (?<cmd>[^!].*)`$") {
-        return "git $($Matches['cmd'])$rest"
+	$value = Get-GitConfig | where Key -eq "alias.$cmd" | select -First 1
+    if($value)
+        return "git $($value.Value)$rest"
     } else {
         return "git $cmd$rest"
     }
