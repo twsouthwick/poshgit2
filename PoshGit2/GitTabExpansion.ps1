@@ -28,15 +28,10 @@ function script:gitCmdOperations($commands, $command, $filter) {
         where { $_ -like "$filter*" }
 }
 
-
 $script:someCommands = @('add','am','annotate','archive','bisect','blame','branch','bundle','checkout','cherry','cherry-pick','citool','clean','clone','commit','config','describe','diff','difftool','fetch','format-patch','gc','grep','gui','help','init','instaweb','log','merge','mergetool','mv','notes','prune','pull','push','rebase','reflog','remote','rerere','reset','revert','rm','shortlog','show','stash','status','submodule','svn','tag','whatchanged')
-try {
-  if ((git help -a 2>&1 | Select-String flow) -ne $null) {
-      $script:someCommands += 'flow'
-  }
-}
-catch {
-}
+
+# TODO: Add check to include 'flow' command
+# $script:someCommands += 'flow'
 
 function script:gitCommands($filter, $includeAliases) {
     $cmdList = @()
@@ -56,8 +51,7 @@ function script:gitCommands($filter, $includeAliases) {
 }
 
 function script:gitRemotes($filter) {
-    Get-GitRemote |
-        where { $_ -like "$filter*" }
+    (Get-GitStatus).Remotes | where { $_ -like "$filter*" }
 }
 
 function script:gitBranches($filter, $includeHEAD = $false) {
@@ -66,7 +60,7 @@ function script:gitBranches($filter, $includeHEAD = $false) {
         $prefix = $matches['from']
         $filter = $matches['to']
     }
-    $branches = Get-GitBranch -r +
+    $branches = (Get-GitStatus).LocalBranches + (Get-GitStatus).RemoteBranches +
                 @(if ($includeHEAD) { 'HEAD','FETCH_HEAD','ORIG_HEAD','MERGE_HEAD' })
     $branches |
         where { $_ -ne '(no branch)' -and $_ -like "$filter*" } |
@@ -74,27 +68,21 @@ function script:gitBranches($filter, $includeHEAD = $false) {
 }
 
 function script:gitFeatures($filter, $command){
-	$featurePrefix =  Get-GitConfig | where Key -eq "gitflow.prefix.$command"
-	$branches = @(Get-GitBranch | foreach { if($_ -match "^\*?\s*$featurePrefix(?<ref>.*)") { $matches['ref'] } }) 
+	$featurePrefix =  (Get-GitStatus).Configuration | where Key -eq "gitflow.prefix.$command"
+	$branches = @((Get-GitStatus).Branches | foreach { if($_ -match "^\*?\s*$featurePrefix(?<ref>.*)") { $matches['ref'] } }) 
     $branches |
         where { $_ -ne '(no branch)' -and $_ -like "$filter*" } |
         foreach { $prefix + $_ }
 }
 
 function script:gitRemoteBranches($remote, $ref, $filter) {
-    Get-GitBranch -r |
+    (Get-GitStatus).RemoteBranches |
         where { $_ -like "  $remote/$filter*" } |
         foreach { $ref + ($_ -replace "  $remote/","") }
 }
 
 function script:gitStashes($filter) {
-    Get-GitStashList |
-        where { $_ -like "$filter*" } |
-        foreach { "'$_'" }
-}
-
-function script:gitTfsShelvesets($filter) {
-    (git tfs shelve-list) |
+    (Get-GitStatus).Stashes |
         where { $_ -like "$filter*" } |
         foreach { "'$_'" }
 }
@@ -141,8 +129,8 @@ function script:gitAliases($filter) {
 }
 
 function script:expandGitAlias($cmd, $rest) {
-	$value = Get-GitConfig | where Key -eq "alias.$cmd" | select -First 1
-    if($value)
+	$value = (Get-GitStatus).Configuration | where Key -eq "alias.$cmd" | select -First 1
+    if($value) {
         return "git $($value.Value)$rest"
     } else {
         return "git $cmd$rest"
