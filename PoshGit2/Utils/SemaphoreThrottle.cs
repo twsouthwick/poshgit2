@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace PoshGit2.Utils
 {
-    public class SemaphoreThrottle : IThrottle
+    public sealed class SemaphoreThrottle : IThrottle, IDisposable
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(2);
         private readonly object _lock = new object();
@@ -18,7 +18,7 @@ namespace PoshGit2.Utils
             try
             {
                 Monitor.Enter(_lock);
-                action();
+                action?.Invoke();
 
                 return true;
             }
@@ -27,6 +27,11 @@ namespace PoshGit2.Utils
                 Monitor.Exit(_lock);
                 _semaphore.Release();
             }
+        }
+
+        public void Dispose()
+        {
+            _semaphore.Dispose();
         }
     }
 }

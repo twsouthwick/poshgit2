@@ -79,22 +79,14 @@ namespace PoshGit2
             {
                 var up = Path.GetDirectoryName(path);
 
-                if (String.Equals(up, path, StringComparison.OrdinalIgnoreCase))
-                {
-                    return null;
-                }
-                else
-                {
-                    return FindGitRepo(up);
-                }
+                return string.Equals(up, path, StringComparison.OrdinalIgnoreCase) ? null : FindGitRepo(up);
             }
         }
 
         public void Remove(IRepositoryStatus repository)
         {
             var storedRepo = _repositories
-                .Where(r => string.Equals(r.Value.GitDir, repository.GitDir, StringComparison.CurrentCultureIgnoreCase))
-                .FirstOrDefault();
+                .FirstOrDefault(r => string.Equals(r.Value.GitDir, repository.GitDir, StringComparison.CurrentCultureIgnoreCase));
 
             Remove(storedRepo.Key);
         }

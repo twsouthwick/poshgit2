@@ -28,22 +28,25 @@ namespace PoshGit.Tests
         public async Task WatchFolder()
         {
             var directory = CreateTempGitDirectory();
-            var watcher = new GitFolderWatcher(directory);
-            var observer = Substitute.For<IObserver<string>>();
 
-            var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
-            observable.Subscribe(observer);
+            using (var watcher = new GitFolderWatcher(directory))
+            {
+                var observer = Substitute.For<IObserver<string>>();
 
-            var newFile = Path.Combine(directory, "rewrite-file.tmp");
-            File.WriteAllText(newFile, "test");
-            File.WriteAllText(newFile, "something");
-            File.Delete(newFile);
+                var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
+                observable.Subscribe(observer);
 
-            await Task.Delay(DelayTime);
+                var newFile = Path.Combine(directory, "rewrite-file.tmp");
+                File.WriteAllText(newFile, "test");
+                File.WriteAllText(newFile, "something");
+                File.Delete(newFile);
 
-            // Verify 4 calls were made for newFile only
-            observer.Received(4).OnNext(Arg.Any<string>());
-            observer.Received(4).OnNext(newFile);
+                await Task.Delay(DelayTime);
+
+                // Verify 4 calls were made for newFile only
+                observer.Received(4).OnNext(Arg.Any<string>());
+                observer.Received(4).OnNext(newFile);
+            }
         }
 
         [Fact]
@@ -53,23 +56,25 @@ namespace PoshGit.Tests
             var subdirectory = Path.Combine(directory, "subdir");
             Directory.CreateDirectory(subdirectory);
 
-            var watcher = new GitFolderWatcher(directory);
-            var observer = Substitute.For<IObserver<string>>();
+            using (var watcher = new GitFolderWatcher(directory))
+            {
+                var observer = Substitute.For<IObserver<string>>();
 
-            var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
-            observable.Subscribe(observer);
+                var observable = Observable.FromEvent<string>(a => watcher.OnNext += a, a => watcher.OnNext -= a);
+                observable.Subscribe(observer);
 
-            var newFile = Path.Combine(subdirectory, "write-update-delete.tmp");
-            File.WriteAllText(newFile, "test");
-            File.WriteAllText(newFile, "something");
-            File.Delete(newFile);
+                var newFile = Path.Combine(subdirectory, "write-update-delete.tmp");
+                File.WriteAllText(newFile, "test");
+                File.WriteAllText(newFile, "something");
+                File.Delete(newFile);
 
-            await Task.Delay(DelayTime);
+                await Task.Delay(DelayTime);
 
-            // Verify expected calls were made.  The subdirectory notification is not necessary, but occurs
-            observer.Received(5).OnNext(Arg.Any<string>());
-            observer.Received(4).OnNext(newFile);
-            observer.Received(1).OnNext(subdirectory);
+                // Verify expected calls were made.  The subdirectory notification is not necessary, but occurs
+                observer.Received(5).OnNext(Arg.Any<string>());
+                observer.Received(4).OnNext(newFile);
+                observer.Received(1).OnNext(subdirectory);
+            }
         }
 
 #if FILTER_GITFILES

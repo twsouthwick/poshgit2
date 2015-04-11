@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace PoshGit2
 {
-    public class MutexThrottle : IThrottle
+    public sealed class MutexThrottle : IThrottle, IDisposable
     {
         private readonly Mutex _mutex = new Mutex();
         private bool _isWaiting;
@@ -14,7 +14,7 @@ namespace PoshGit2
             {
                 try
                 {
-                    action();
+                    action?.Invoke();
                 }
                 finally
                 {
@@ -31,7 +31,7 @@ namespace PoshGit2
                     _isWaiting = true;
                     _mutex.WaitOne();
 
-                    action();
+                    action?.Invoke();
 
                     return true;
                 }
@@ -43,6 +43,11 @@ namespace PoshGit2
             }
 
             return false;
+        }
+
+        public void Dispose()
+        {
+            _mutex.Dispose();
         }
     }
 }
