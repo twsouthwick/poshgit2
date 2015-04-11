@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PoshGit2
 {
@@ -30,7 +32,7 @@ namespace PoshGit2
             Working = new ChangedItemsCollection();
             Index = new ChangedItemsCollection();
 
-            UpdateStatus(CurrentWorkingDirectory);
+            Task.Run(() => UpdateStatus(CurrentWorkingDirectory));
         }
 
         public string Branch
