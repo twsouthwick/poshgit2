@@ -10,7 +10,7 @@ ModuleVersion = '1.0.0.4'
 GUID = 'd6936d05-6727-4195-ac46-95e07499f37c'
 
 # Author of this module
-Author = 'Someone'
+Author = 'Taylor Southwick (twsouthwick@outlook.com)'
 
 # Copyright statement for this module
 Copyright = '(c) 2013. All rights reserved.'
