@@ -14,11 +14,13 @@ namespace PoshGit2
         private readonly IRepository _repository;
         private readonly IFolderWatcher _folderWatcher;
         private readonly ICurrentWorkingDirectory _cwd;
+        private readonly ILogger _log;
 
         private bool _isUpdating;
 
-        public UpdateableRepositoryStatus(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd)
+        public UpdateableRepositoryStatus(string folder, ILogger log, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd)
         {
+            _log = log;
             _repository = repositoryFactory(folder);
             _cwd = cwd;
 
@@ -156,7 +158,7 @@ namespace PoshGit2
         {
             _isUpdating = true;
 
-            Trace.WriteLine($"Updating repo {file}");
+            _log.Information("Updating repo: {Path}", file);
 
             try
             {
@@ -176,9 +178,12 @@ namespace PoshGit2
                     Deleted = GetCollection(repositoryStatus.Removed)
                 };
             }
-            catch (LibGit2SharpException) { }
+            catch (LibGit2SharpException e)
+            {
+                _log.Warning(e, "Unexpected git exception");
+            }
 
-            Trace.WriteLine($"Done updating repo {file}");
+            _log.Information("Done updating repo {Path}", file);
 
             _isUpdating = false;
         }

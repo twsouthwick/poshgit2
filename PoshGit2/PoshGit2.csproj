@@ -39,12 +39,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\LibGit2Sharp.0.21.0.176\lib\net40\LibGit2Sharp.dll</HintPath>
     </Reference>
-    <Reference Include="Serilog">
-      <HintPath>..\packages\Serilog.1.5.1\lib\net45\Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.FullNetFx">
-      <HintPath>..\packages\Serilog.1.5.1\lib\net45\Serilog.FullNetFx.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
@@ -62,9 +56,9 @@
     <Compile Include="Status\ExpiringCache.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
-    <Compile Include="Status\SampledFolderWatcher.cs" />
-    <Compile Include="FileLogger.cs" />
-    <Compile Include="ILogger.cs" />
+<Compile Include="Status\SampledFolderWatcher.cs" />
+    
+<Compile Include="ILogger.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Status\ReadonlyCopyRepositoryStatus.cs" />
     <Compile Include="ICurrentWorkingDirectory.cs" />

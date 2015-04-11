@@ -11,9 +11,11 @@ namespace PoshGit2
     {
         private readonly IDictionary<string, IRepositoryStatus> _repositories = new Dictionary<string, IRepositoryStatus>(StringComparer.OrdinalIgnoreCase);
         private readonly Func<string, IRepositoryStatus> _factory;
+        private readonly ILogger _log;
 
-        public RepositoryCache(Func<string, IRepositoryStatus> factory)
+        public RepositoryCache(ILogger log,Func<string, IRepositoryStatus> factory)
         {
+            _log = log;
             _factory = factory;
         }
 
@@ -43,14 +45,14 @@ namespace PoshGit2
             IRepositoryStatus oldStatus;
             if (_repositories.TryGetValue(repo, out oldStatus))
             {
-                Trace.WriteLine($"Found repo for {repo}");
+                _log.Information("Found repo: {Path}", repo);
 
                 return new ReadonlyCopyRepositoryStatus(oldStatus, cwd);
             }
 
             try
             {
-                Trace.WriteLine($"Creating new repo for {repo}");
+                _log.Information("Creating repo: {Path}", repo);
 
                 var status = _factory(repo);
 

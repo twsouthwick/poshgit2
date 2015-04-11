@@ -2,6 +2,8 @@
 using PoshGit2.Status;
 using System;
 using System.Management.Automation;
+using Serilog;
+using System.IO;
 
 namespace PoshGit2
 {
@@ -20,8 +22,9 @@ namespace PoshGit2
             builder.RegisterType<SessionState>().AsSelf().SingleInstance();
             builder.RegisterType<SessionStateWrapper>().As<ISessionState>().InstancePerLifetimeScope();
             builder.RegisterType<ConsoleStatusWriter>().As<IStatusWriter>().InstancePerLifetimeScope();
-            builder.RegisterType<FileLogger>().As<ILogger>().SingleInstance();
+            builder.RegisterType<AppDomainExceptionLogger>().As<ILogger>().SingleInstance();
             builder.RegisterType<DefaultGitPromptSettings>().AsSelf().SingleInstance();
+            builder.Register(CreateLogger).SingleInstance();
 
             builder.Register(c =>
             {
@@ -47,6 +50,30 @@ namespace PoshGit2
                 // Otherwise, use default settings
                 return c.Resolve<DefaultGitPromptSettings>();
             });
+        }
+
+        private Serilog.ILogger CreateLogger(IComponentContext arg)
+        {
+            var config = new LoggerConfiguration()
+                .WriteTo.Trace()
+                .WriteTo.RollingFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", "log-{Date}.txt"));
+
+            var seqServer = Environment.GetEnvironmentVariable("poshgit2_seq_server");
+
+            if (string.IsNullOrWhiteSpace(seqServer))
+            {
+                return config.CreateLogger();
+            }
+            else
+            {
+                var logger = config
+                              .WriteTo.Seq(seqServer)
+                              .CreateLogger();
+
+                logger.Information("Seq Server {Address}", seqServer);
+
+                return logger;
+            }
         }
     }
 }

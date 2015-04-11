@@ -12,9 +12,11 @@ namespace PoshGit2
     {
         private readonly MemoryCache _cache = MemoryCache.Default;
         private readonly Func<string, IRepositoryStatus> _factory;
+        private readonly ILogger _log;
 
-        public ExpiringCache(Func<string, IRepositoryStatus> factory)
+        public ExpiringCache(ILogger log, Func<string, IRepositoryStatus> factory)
         {
+            _log = log;
             _factory = factory;
         }
 
@@ -50,26 +52,26 @@ namespace PoshGit2
 
                     if (value == null)
                     {
-                        Trace.WriteLine($"Found an entry that is not IRepositoryStatus");
+                        _log.Warning("Found an entry that is not IRepositoryStatus: {CacheValue}", item.Value?.GetType());
                         _cache.Remove(repo);
                     }
                     else
                     {
-                        Trace.WriteLine($"Found repo for {repo}");
+                        _log.Information("Found repo: {Path}", repo);
                         return new ReadonlyCopyRepositoryStatus(value, cwd);
                     }
                 }
 
                 try
                 {
-                    Trace.WriteLine($"Creating new repo for {repo}");
+                    _log.Information("Creating repo: {Path}", repo);
 
                     var status = _factory(repo);
                     var policy = new CacheItemPolicy
                     {
                         RemovedCallback = arg =>
                         {
-                            Trace.WriteLine($"Removing {repo} from cache");
+                            _log.Information("Removing repo from cache: {Repo}", repo);
                             (arg.CacheItem.Value as IDisposable)?.Dispose();
                         },
                         SlidingExpiration = TimeSpan.FromMinutes(10)
@@ -85,7 +87,7 @@ namespace PoshGit2
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine(e);
+                    _log.Warning(e, "Unknown exception in ExpiringCache");
                     return null;
                 }
             }
