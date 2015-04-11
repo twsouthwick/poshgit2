@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 
-namespace PoshGit2.Cmdlets
+namespace PoshGit2
 {
     [Cmdlet(VerbsCommon.Remove, "GitRepo")]
     public class RemoveGitRepo : AutofacCmdlet

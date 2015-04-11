@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Text;
 
-namespace PoshGit2.Utils
+namespace PoshGit2
 {
     public class FileLogger : ILogger
     {

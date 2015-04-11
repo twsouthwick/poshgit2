@@ -89,6 +89,10 @@
     <Compile Include="PSCurrentDirectoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoshGit2.Cmdlet\PoshGit2.Cmdlet.csproj">
+      <Project>{03d62f36-9f27-40b3-bf0c-845bdf921948}</Project>
+      <Name>PoshGit2.Cmdlets</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoshGit2\PoshGit2.csproj">
       <Project>{0f900a09-be4a-461e-9e69-53b109a6d5ab}</Project>
       <Name>PoshGit2</Name>

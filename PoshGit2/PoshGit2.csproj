@@ -39,13 +39,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\LibGit2Sharp.0.21.0.176\lib\net40\LibGit2Sharp.dll</HintPath>
     </Reference>
+    <Reference Include="Serilog">
+      <HintPath>..\packages\Serilog.1.5.1\lib\net45\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.FullNetFx">
+      <HintPath>..\packages\Serilog.1.5.1\lib\net45\Serilog.FullNetFx.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -55,86 +56,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Status\ChangedItemsCollection.cs" />
-    <Compile Include="Cmdlets\AutofacCmdlet.cs" />
-    <Compile Include="Cmdlets\GetRepoStatus.cs" />
-    <Compile Include="Cmdlets\Write-GitStatus.cs" />
-    <Compile Include="Settings\DefaultGitPromptSettings.cs" />
-    <Compile Include="Settings\IGitPromptSettings.cs" />
-    <Compile Include="Cmdlets\RemoveGitRepo.cs" />
+    <Compile Include="DefaultGitPromptSettings.cs" />
+    <Compile Include="IGitPromptSettings.cs" />
     <Compile Include="Status\ConsoleStatusWriter.cs" />
     <Compile Include="Status\ExpiringCache.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
     <Compile Include="Status\SampledFolderWatcher.cs" />
-    <Compile Include="Utils\FileLogger.cs" />
-    <Compile Include="Utils\ILogger.cs" />
-    <Compile Include="Utils\ISessionState.cs" />
-    <Compile Include="Utils\Option.cs" />
-    <Compile Include="Settings\PSObjectGitPromptSettings.cs" />
+    <Compile Include="FileLogger.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="Option.cs" />
     <Compile Include="Status\ReadonlyCopyRepositoryStatus.cs" />
-    <Compile Include="Utils\ICurrentWorkingDirectory.cs" />
+    <Compile Include="ICurrentWorkingDirectory.cs" />
     <Compile Include="Status\IFolderWatcher.cs" />
-    <Compile Include="Utils\IThrottle.cs" />
+    <Compile Include="IThrottle.cs" />
     <Compile Include="Status\IRepositoryCache.cs" />
     <Compile Include="Status\IRepositoryStatus.cs" />
     <Compile Include="Status\ObservableBase.cs" />
-    <Compile Include="PSAutofacModule.cs" />
-    <Compile Include="Utils\PSCurrentWorkingDirectory.cs" />
-    <Compile Include="Utils\MutexThrottle.cs" />
+    <Compile Include="MutexThrottle.cs" />
     <Compile Include="Status\UpdateableRepositoryStatus.cs" />
-    <Compile Include="Cmdlets\GetGitInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status\RepositoryCache.cs" />
-    <Compile Include="Utils\SemaphoreThrottle.cs" />
-    <Compile Include="Utils\SessionStateWrapper.cs" />
+    <Compile Include="SemaphoreThrottle.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Update-Version.ps1" />
-    <None Include="GitPrompt.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="GitTabExpansion.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="GitUtils.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="posh-git2.nuspec">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="posh-git2.psd1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="posh-git2.psm1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Utils.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-    <Exec Command="powershell.exe -noprofile -file Update-Version.ps1 $(OutDir)" />
-    <Exec Command="..\.nuget\nuget.exe pack $(OutDir)posh-git2.nuspec -NoPackageAnalysis -NonInteractive -OutputDirectory $(OutDir)" />
-    <ItemGroup>
-      <OutputNupkg Include="$(OutDir)*.nupkg" />
-    </ItemGroup>
-    <Exec Condition=" '$(MYGET_KEY)' != '' AND '$(MYGET_SOURCE)' != '' " Command="..\.nuget\nuget.exe push @(OutputNupkg) $(MYGET_KEY) -Source $(MYGET_Source)" />
-  </Target>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props'))" />
   </Target>
 </Project>

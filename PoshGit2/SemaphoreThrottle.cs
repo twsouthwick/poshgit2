@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace PoshGit2.Utils
+namespace PoshGit2
 {
     public sealed class SemaphoreThrottle : IThrottle, IDisposable
     {

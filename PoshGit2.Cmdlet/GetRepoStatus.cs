@@ -1,6 +1,6 @@
 ﻿using System.Management.Automation;
 
-namespace PoshGit2.Cmdlets
+namespace PoshGit2
 {
     [Cmdlet(VerbsCommon.Get, "GitRepo")]
     public class GetRepoStatus : AutofacCmdlet

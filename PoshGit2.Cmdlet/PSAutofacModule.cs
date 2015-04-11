@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using PoshGit2.Status;
-using PoshGit2.Utils;
 using System;
 using System.Management.Automation;
 

@@ -4,7 +4,7 @@
 RootModule = 'posh-git2.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0.4'
+ModuleVersion = '1.0.1.0'
 
 # ID used to uniquely identify this module
 GUID = 'd6936d05-6727-4195-ac46-95e07499f37c'
@@ -40,7 +40,7 @@ CLRVersion = '4.0'
 # FormatsToProcess = @('')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-NestedModules = @("PoshGit2.dll")
+NestedModules = @("PoshGit2.Cmdlet.dll")
 
 # Functions to export from this module
 FunctionsToExport = '*'

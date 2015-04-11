@@ -2,7 +2,7 @@
 using System;
 using System.Management.Automation;
 
-namespace PoshGit2.Cmdlets
+namespace PoshGit2
 {
     public class AutofacCmdlet : PSCmdlet, IDisposable
     {

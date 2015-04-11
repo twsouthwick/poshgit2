@@ -1,5 +1,4 @@
 ﻿using PoshGit2;
-using PoshGit2.Utils;
 using System.Threading.Tasks;
 using Xunit;
 

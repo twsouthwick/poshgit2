@@ -1,7 +1,7 @@
 ﻿using PoshGit2.Status;
 using System.Management.Automation;
 
-namespace PoshGit2.Cmdlets
+namespace PoshGit2
 {
     [Cmdlet(VerbsCommunications.Write, "GitStatus")]
     public class Write_GitStatus : AutofacCmdlet

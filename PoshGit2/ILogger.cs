@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PoshGit2.Utils
+namespace PoshGit2
 {
     public interface ILogger
     {

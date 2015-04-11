@@ -49,7 +49,7 @@ function Update-ModuleManifest (
 	Write-Host "Updated $FilePath"
 }
 
-$version = (Get-ChildItem -Path $outDir\poshgit2.dll).VersionInfo.FileVersion
+$version = (Get-ChildItem -Path $outDir\PoshGit2.Cmdlet.dll).VersionInfo.FileVersion
 	
 Write-Host "Updating file version: $version"
 
