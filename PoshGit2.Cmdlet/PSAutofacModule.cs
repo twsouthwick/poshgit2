@@ -22,9 +22,12 @@ namespace PoshGit2
             builder.RegisterType<SessionState>().AsSelf().SingleInstance();
             builder.RegisterType<SessionStateWrapper>().As<ISessionState>().InstancePerLifetimeScope();
             builder.RegisterType<ConsoleStatusWriter>().As<IStatusWriter>().InstancePerLifetimeScope();
-            builder.RegisterType<AppDomainExceptionLogger>().As<ILogger>().SingleInstance();
+            builder.RegisterType<AppDomainExceptionLogger>().As<ILogger>().InstancePerLifetimeScope();
             builder.RegisterType<DefaultGitPromptSettings>().AsSelf().SingleInstance();
-            builder.Register(CreateLogger).SingleInstance();
+            builder.Register(CreateLogger).Named<Serilog.ILogger>("Logger")
+                .SingleInstance();
+            builder.RegisterDecorator<Serilog.ILogger>((c, l) => l.ForContext("scope", new { Type = "global" }), "Logger")
+                .InstancePerLifetimeScope();
 
             builder.Register(c =>
             {
@@ -55,6 +58,7 @@ namespace PoshGit2
         private Serilog.ILogger CreateLogger(IComponentContext arg)
         {
             var config = new LoggerConfiguration()
+                .Enrich.WithThreadId()
                 .WriteTo.Trace()
                 .WriteTo.RollingFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", "log-{Date}.txt"));
 
@@ -67,8 +71,8 @@ namespace PoshGit2
             else
             {
                 var logger = config
-                              .WriteTo.Seq(seqServer)
-                              .CreateLogger();
+                                   .WriteTo.Seq(seqServer)
+                                   .CreateLogger();
 
                 logger.Information("Seq Server {Address}", seqServer);
 

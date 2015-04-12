@@ -1,6 +1,9 @@
 ﻿using Autofac;
 using System;
 using System.Management.Automation;
+using Autofac.Core;
+using Serilog;
+using System.Collections.Generic;
 
 namespace PoshGit2
 {
@@ -24,6 +27,9 @@ namespace PoshGit2
             _lifetimeScope = Container.Value.BeginLifetimeScope(builder =>
            {
                builder.Register<SessionState>(_ => SessionState).AsSelf();
+               builder.RegisterDecorator<Serilog.ILogger>((c, l) => l.ForContext("scope", new { Type = "cmdlet", Cmdlet = this.GetType().Name }, true), fromKey: "Logger")
+                      .As<Serilog.ILogger>()
+                      .InstancePerLifetimeScope();
            });
         }
 
