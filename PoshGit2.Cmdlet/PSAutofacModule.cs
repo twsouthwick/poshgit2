@@ -1,9 +1,11 @@
 ﻿using Autofac;
+using Autofac.Core;
 using PoshGit2.Status;
-using System;
-using System.Management.Automation;
 using Serilog;
+using System;
 using System.IO;
+using System.Linq;
+using System.Management.Automation;
 
 namespace PoshGit2
 {
@@ -53,6 +55,19 @@ namespace PoshGit2
                 // Otherwise, use default settings
                 return c.Resolve<DefaultGitPromptSettings>();
             });
+        }
+
+        private static void AddILoggerToParameters(object sender, PreparingEventArgs e)
+        {
+            var t = e.Component.Activator.LimitType;
+            var resolvedParameter = new ResolvedParameter((p, i) => p.ParameterType == typeof(ILogger), (p, i) => new SerilogWrapper(i.Resolve<Serilog.ILogger>().ForContext(t)));
+
+            e.Parameters = e.Parameters.Union(new[] { resolvedParameter });
+        }
+
+        protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+        {
+            registration.Preparing += AddILoggerToParameters;
         }
 
         private Serilog.ILogger CreateLogger(IComponentContext arg)
