@@ -63,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacCmdlet.cs" />
-    <Compile Include="AppDomainExceptionLogger.cs" />
+    <Compile Include="SerilogWrapper.cs" />
     <Compile Include="GetGitInfo.cs" />
     <Compile Include="GetRepoStatus.cs" />
     <Compile Include="ISessionState.cs" />

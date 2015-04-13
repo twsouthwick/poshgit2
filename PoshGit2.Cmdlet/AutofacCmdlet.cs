@@ -1,9 +1,6 @@
 ﻿using Autofac;
 using System;
 using System.Management.Automation;
-using Autofac.Core;
-using Serilog;
-using System.Collections.Generic;
 
 namespace PoshGit2
 {
@@ -20,6 +17,25 @@ namespace PoshGit2
             containerBuilder.RegisterModule(new PSAutofacModule());
 
             return containerBuilder.Build();
+        }
+
+        static AutofacCmdlet()
+        {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledExceptionHandler;
+        }
+
+        private static void CurrentDomainUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+        {
+            var log = Container.Value.Resolve<ILogger>();
+
+            if (e.IsTerminating)
+            {
+                log.Fatal(e.ExceptionObject as Exception, "Terminating exception: {Sender}", sender);
+            }
+            else
+            {
+                log.Warning(e.ExceptionObject as Exception, "Non-terminating exception: {Sender}", sender);
+            }
         }
 
         public AutofacCmdlet()

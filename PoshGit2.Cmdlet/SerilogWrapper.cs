@@ -1,17 +1,14 @@
 using System;
-using System.Runtime.ExceptionServices;
 
 namespace PoshGit2
 {
-    public sealed class AppDomainExceptionLogger : ILogger, IDisposable
+    public sealed class SerilogWrapper : ILogger
     {
         private readonly Serilog.ILogger _log;
 
-        public AppDomainExceptionLogger(Serilog.ILogger log)
+        public SerilogWrapper(Serilog.ILogger log)
         {
             _log = log;
-
-            SetupLogging();
         }
 
         public void Debug(string messageTemplate, params object[] propertyValues)
@@ -72,28 +69,6 @@ namespace PoshGit2
         public void Warning(Exception exception, string messageTemplate, params object[] propertyValues)
         {
             _log.Warning(exception, messageTemplate, propertyValues);
-        }
-
-        public void Dispose()
-        {
-            AppDomain.CurrentDomain.FirstChanceException -= FirstChanceException;
-            AppDomain.CurrentDomain.UnhandledException -= UnhandledException;
-        }
-
-        private void SetupLogging()
-        {
-            AppDomain.CurrentDomain.FirstChanceException += FirstChanceException;
-            AppDomain.CurrentDomain.UnhandledException += UnhandledException;
-        }
-
-        private void UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Fatal(e.ExceptionObject as Exception, "UnhandledException: {IsTerminating}", e.IsTerminating);
-        }
-
-        private void FirstChanceException(object sender, FirstChanceExceptionEventArgs e)
-        {
-            Warning(e.Exception, "FirstChanceException");
         }
     }
 }

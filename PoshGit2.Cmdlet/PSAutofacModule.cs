@@ -22,7 +22,7 @@ namespace PoshGit2
             builder.RegisterType<SessionState>().AsSelf().SingleInstance();
             builder.RegisterType<SessionStateWrapper>().As<ISessionState>().InstancePerLifetimeScope();
             builder.RegisterType<ConsoleStatusWriter>().As<IStatusWriter>().InstancePerLifetimeScope();
-            builder.RegisterType<AppDomainExceptionLogger>().As<ILogger>().InstancePerLifetimeScope();
+            builder.RegisterType<SerilogWrapper>().As<ILogger>().InstancePerLifetimeScope();
             builder.RegisterType<DefaultGitPromptSettings>().AsSelf().SingleInstance();
             builder.Register(CreateLogger).Named<Serilog.ILogger>("Logger")
                 .SingleInstance();
