@@ -10,6 +10,8 @@ namespace PoshGit2
 {
     public class PoshGitAutofacModule : Module
     {
+        public bool LogToConsole { get; set; }
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ExpiringCache>().As<IRepositoryCache>().SingleInstance();
@@ -55,8 +57,20 @@ namespace PoshGit2
                 .Enrich.WithThreadId()
                 .Enrich.WithProcessId()
                 .Enrich.WithMachineName()
+                .Destructure.ByTransforming<ReadonlyCopyRepositoryStatus>(s => new
+                {
+                    GitDir = s.GitDir,
+                    Index = s.Index.ToString(),
+                    Working = s.Working.ToString(),
+                    Branch = s.Branch
+                })
                 .WriteTo.Trace()
                 .WriteTo.RollingFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", "log-{Date}.txt"));
+
+            if (LogToConsole)
+            {
+                config = config.WriteTo.ColoredConsole();
+            }
 
             var seqServer = Environment.GetEnvironmentVariable("poshgit2_seq_server");
 

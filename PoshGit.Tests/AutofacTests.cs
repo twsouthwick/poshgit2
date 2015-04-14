@@ -12,19 +12,20 @@ namespace PoshGit.Tests
         public void VerifyAutofacRegistration()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new PSAutofacModule());
-            var container = builder.Build();
 
-            var factory = container.Resolve<Func<string, IFolderWatcher>>();
-            var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            builder.RegisterModule(new PoshGitAutofacModule());
 
-            Directory.CreateDirectory(path);
+            using (var container = builder.Build())
+            {
+                var factory = container.Resolve<Func<string, IFolderWatcher>>();
+                var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
-            var watcher = factory(path);
+                Directory.CreateDirectory(path);
 
-            Assert.IsType<SampledFolderWatcher>(watcher);
+                var watcher = factory(path);
 
-            (watcher as IDisposable)?.Dispose();
+                Assert.IsType<SampledFolderWatcher>(watcher);
+            }
         }
     }
 }
