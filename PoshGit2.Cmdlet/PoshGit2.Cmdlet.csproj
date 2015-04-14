@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacCmdlet.cs" />
+    <Compile Include="PoshGitAutofacModule.cs" />
     <Compile Include="SerilogWrapper.cs" />
     <Compile Include="GetGitInfo.cs" />
     <Compile Include="GetRepoStatus.cs" />
