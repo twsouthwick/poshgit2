@@ -85,7 +85,7 @@
     <Compile Include="IThrottleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadonlyCopyRepositoryStatusTests.cs" />
-    <Compile Include="PSCurrentDirectoryTests.cs" />
+    <Compile Include="WindowsCurrentDirectoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PoshGit2.Cmdlet\PoshGit2.Cmdlet.csproj">

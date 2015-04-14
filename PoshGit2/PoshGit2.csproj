@@ -56,9 +56,8 @@
     <Compile Include="Status\ExpiringCache.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
-<Compile Include="Status\SampledFolderWatcher.cs" />
-    
-<Compile Include="ILogger.cs" />
+    <Compile Include="Status\SampledFolderWatcher.cs" />
+    <Compile Include="ILogger.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Status\ReadonlyCopyRepositoryStatus.cs" />
     <Compile Include="ICurrentWorkingDirectory.cs" />
@@ -72,8 +71,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status\RepositoryCache.cs" />
     <Compile Include="SemaphoreThrottle.cs" />
+    <Compile Include="WindowsCurrentWorkingDirectory.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild">
   </Target>

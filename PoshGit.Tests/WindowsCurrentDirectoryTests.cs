@@ -1,18 +1,14 @@
 ﻿using NSubstitute;
 using PoshGit2;
-using System;
-using System.Linq;
-using System.Management.Automation;
-using System.Reflection;
 using Xunit;
 
 namespace PoshGit.Tests
 {
-    public class PSCurrentDirectoryTests
+    public class WindowsCurrentDirectoryTests
     {
         private static ICurrentWorkingDirectory GetCurrentWorkingDirectory(string cwd)
         {
-            var psCwd = Substitute.For<PSCurrentWorkingDirectory>(Substitute.For<ISessionState>());
+            var psCwd = Substitute.For<WindowsCurrentWorkingDirectory>();
 
             psCwd.CWD.Returns(cwd);
 
