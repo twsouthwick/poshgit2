@@ -1,13 +1,10 @@
-﻿using NSubstitute;
+﻿using LibGit2Sharp;
+using NSubstitute;
 using PoshGit2;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
+using Xunit;
 
 namespace PoshGit.Tests
 {
@@ -85,7 +82,18 @@ namespace PoshGit.Tests
                 var prop1 = property.GetValue(value1);
                 var prop2 = property.GetValue(value2);
 
-                Assert.Equal(prop1, prop2);
+                if (prop1 as IEnumerable<string> != null)
+                {
+                    Assert.Equal((IEnumerable<string>)prop1, (IEnumerable<string>)prop2);
+                }
+                else if (prop1 as IEnumerable<ConfigurationEntry<string>> != null)
+                {
+                    Assert.Equal((IEnumerable<ConfigurationEntry<string>>)prop1, (IEnumerable<ConfigurationEntry<string>>)prop2);
+                }
+                else
+                {
+                    Assert.Equal(prop1, prop2);
+                }
             }
         }
     }
