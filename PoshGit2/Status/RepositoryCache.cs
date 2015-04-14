@@ -1,7 +1,6 @@
 ﻿using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -10,10 +9,10 @@ namespace PoshGit2
     public sealed class RepositoryCache : IDisposable, IRepositoryCache
     {
         private readonly IDictionary<string, IRepositoryStatus> _repositories = new Dictionary<string, IRepositoryStatus>(StringComparer.OrdinalIgnoreCase);
-        private readonly Func<string, IRepositoryStatus> _factory;
+        private readonly Func<string, ICurrentWorkingDirectory, IRepositoryStatus> _factory;
         private readonly ILogger _log;
 
-        public RepositoryCache(ILogger log,Func<string, IRepositoryStatus> factory)
+        public RepositoryCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
         {
             _log = log;
             _factory = factory;
@@ -54,7 +53,7 @@ namespace PoshGit2
             {
                 _log.Information("Creating repo: {Path}", repo);
 
-                var status = _factory(repo);
+                var status = _factory(repo, cwd);
 
                 _repositories.Add(repo, status);
 

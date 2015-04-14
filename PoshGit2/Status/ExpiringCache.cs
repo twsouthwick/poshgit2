@@ -1,7 +1,6 @@
 ﻿using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
@@ -11,10 +10,10 @@ namespace PoshGit2
     public sealed class ExpiringCache : IDisposable, IRepositoryCache
     {
         private readonly MemoryCache _cache = MemoryCache.Default;
-        private readonly Func<string, IRepositoryStatus> _factory;
+        private readonly Func<string, ICurrentWorkingDirectory, IRepositoryStatus> _factory;
         private readonly ILogger _log;
 
-        public ExpiringCache(ILogger log, Func<string, IRepositoryStatus> factory)
+        public ExpiringCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
         {
             _log = log;
             _factory = factory;
@@ -66,7 +65,7 @@ namespace PoshGit2
                 {
                     _log.Information("Creating repo: {Path}", repo);
 
-                    var status = _factory(repo);
+                    var status = _factory(repo, cwd);
                     var policy = new CacheItemPolicy
                     {
                         RemovedCallback = arg =>
