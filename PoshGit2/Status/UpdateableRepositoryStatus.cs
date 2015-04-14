@@ -158,7 +158,7 @@ namespace PoshGit2
         {
             _isUpdating = true;
 
-            _log.Information("Updating repo: {Path}", file);
+            _log.Debug("Updating repo: {Path}", file);
 
             try
             {
@@ -183,7 +183,7 @@ namespace PoshGit2
                 _log.Warning(e, "Unexpected git exception");
             }
 
-            _log.Information("Done updating repo {Path}", file);
+            _log.Debug("Done updating repo {Path}", file);
 
             _isUpdating = false;
         }

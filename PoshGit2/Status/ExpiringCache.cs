@@ -57,7 +57,7 @@ namespace PoshGit2
                     }
                     else
                     {
-                        _log.Information("Found repo: {Path}", repo);
+                        _log.Verbose("Found repo: {Path}", repo);
                         return new ReadonlyCopyRepositoryStatus(value, cwd);
                     }
                 }
