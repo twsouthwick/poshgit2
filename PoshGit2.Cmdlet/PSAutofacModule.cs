@@ -74,6 +74,8 @@ namespace PoshGit2
         {
             var config = new LoggerConfiguration()
                 .Enrich.WithThreadId()
+                .Enrich.WithProcessId()
+                .Enrich.WithMachineName()
                 .WriteTo.Trace()
                 .WriteTo.RollingFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", "log-{Date}.txt"));
 
