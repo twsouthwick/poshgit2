@@ -53,6 +53,7 @@ namespace PoshGit2
 
         private Serilog.ILogger CreateLogger(IComponentContext arg)
         {
+            var processId = System.Diagnostics.Process.GetCurrentProcess().Id;
             var config = new LoggerConfiguration()
                 .Enrich.WithThreadId()
                 .Enrich.WithProcessId()
@@ -65,7 +66,7 @@ namespace PoshGit2
                     Branch = s.Branch
                 })
                 .WriteTo.Trace()
-                .WriteTo.RollingFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", "log-{Date}.txt"));
+                .WriteTo.RollingFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", $"log-{processId}-{{Date}}.txt"));
 
             if (LogToConsole)
             {
