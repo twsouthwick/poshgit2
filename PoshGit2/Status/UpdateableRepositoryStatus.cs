@@ -56,7 +56,7 @@ namespace PoshGit2
                 return "GIT!";
             }
 
-            if (Directory.Exists($"{GitDir}\rebase-merge)"))
+            if (Directory.Exists($@"{GitDir}\rebase-merge)"))
             {
                 var rebase_branch = File.ReadAllText($@"{GitDir}\rebase-merge\head-name").TrimEnd().Replace("refs/heads/", "");
 
