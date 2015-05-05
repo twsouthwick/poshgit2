@@ -1,10 +1,10 @@
-posh-git
+﻿poshgit2
 ========
 
 A set of PowerShell scripts which provide Git/PowerShell integration
 
 ### Prompt for Git repositories
-   The prompt within Git repositories can show the current branch and the state of files (additions, modifications, deletions) within.
+   The prompt within Git repositories can show the current branch and the state of files (additions, modifications, deletions) within.  This is based off of posh-git, but watches the repos in the background with libgit2.  The result is it is faster to display staus, which is very noticeable on larger repos.
    
 ### Tab completion
    Provides tab completion for common commands when using git.  
@@ -13,43 +13,24 @@ A set of PowerShell scripts which provide Git/PowerShell integration
 Usage
 -----
 
-See `profile.example.ps1` as to how you can integrate the tab completion and/or git prompt into your own profile.
-Prompt formatting, among other things, can be customized using `$GitPromptSettings`, `$GitTabSettings` and `$TortoiseGitSettings`.
+See `profile.example.ps1` as to how you can integrate the tab completion and/or git prompt into your own profile. Prompt formatting, among other things, can be customized using `$GitPromptSettings`, `$GitTabSettings`.
 
-Note on performance: displaying file status in the git prompt for a very large repo can be prohibitively slow. Rather than turn off file status entirely, you can disable it on a repo-by-repo basis by adding individual repository paths to $GitPromptSettings.RepositoriesInWhichToDisableFileStatus.
-
-Installing via PsGet
+Installing via OneGet
 --------------------
 
-If you have [PsGet](http://psget.net/) installed just run:
+On Win10, OneGet includes a provider for PSGallery.  You must add a new PS repository located at `https://www.myget.org/feed/Packages/tws-ps`
 
 ```
-Install-Module posh-git
+    Register-PSRepository -Name tws-ps -SourceLocation https://www.myget.org/F/tws-ps/ -InstallationPolicy Trusted
+	Find-Package posh-git2 -Source tws-ps | Install-Package -Scope CurrentUser -Force
 ```
-
-Installing (manual)
--------------------
-
-0. Verify you have PowerShell 2.0 or better with $PSVersionTable.PSVersion
-
-1. Verify execution of scripts is allowed with `Get-ExecutionPolicy` (should be `RemoteSigned` or `Unrestricted`). If scripts are not enabled, run PowerShell as Administrator and call `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Confirm`.
-
-2. Verify that `git` can be run from PowerShell.
-   If the command is not found, you will need to add a git alias or add `%ProgramFiles(x86)%\Git\cmd`
-   (or `%ProgramFiles%\Git\cmd` if you're still on 32-bit) to your PATH environment variable.
-
-3. Clone the posh-git repository to your local machine.
-
-4. From the posh-git repository directory, run `.\install.ps1`.
-
-5. Enjoy!
 
 The Prompt
 ----------
 
 PowerShell generates its prompt by executing a `prompt` function, if one exists. posh-git defines such a function in `profile.example.ps1` that outputs the current working directory followed by an abbreviated `git status`:
 
-    C:\Users\Keith [master]>
+    C:\Users\user [master]>
 
 By default, the status summary has the following format:
 
@@ -90,8 +71,4 @@ For example, a status of `[master +0 ~2 -1 | +1 ~1 -0]` corresponds to the follo
     #
     #        new.file
 
-### Based on work by:
-
- - Keith Dahlby, http://solutionizing.net/
- - Mark Embling, http://www.markembling.info/
- - Jeremy Skinner, http://www.jeremyskinner.co.uk/
+*Based on work by  [PoshGit](https://github.com/dahlbyk/posh-git)*
