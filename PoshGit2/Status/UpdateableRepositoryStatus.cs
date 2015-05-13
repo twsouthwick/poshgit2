@@ -1,28 +1,40 @@
 ﻿using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace PoshGit2
 {
     public sealed class UpdateableRepositoryStatus : IDisposable, IRepositoryStatus
     {
-        private readonly IRepository _repository;
-        private readonly IFolderWatcher _folderWatcher;
+        private const string Elipses = "...";
+
         private readonly ICurrentWorkingDirectory _cwd;
         private readonly ILogger _log;
+
+        // These are set in an initialization method so that it does not stall the console output
+        private IRepository _repository;
+        private IFolderWatcher _folderWatcher;
 
         private bool _isUpdating;
 
         public UpdateableRepositoryStatus(string folder, ILogger log, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd)
         {
             _log = log;
-            _repository = repositoryFactory(folder);
             _cwd = cwd;
+            _isUpdating = true;
+
+            Working = new ChangedItemsCollection();
+            Index = new ChangedItemsCollection();
+
+            Task.Run(() => Initialize(folder, repositoryFactory, folderWatcherFactory));
+        }
+
+        private void Initialize(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory)
+        {
+            _repository = repositoryFactory(folder);
 
             _folderWatcher = folderWatcherFactory(folder);
             _folderWatcher.OnNext += UpdateStatus;
@@ -31,24 +43,19 @@ namespace PoshGit2
             GitDir = _repository.Info.Path.Substring(0, _repository.Info.Path.Length - 1);
             CurrentWorkingDirectory = Path.GetFullPath(Path.Combine(GitDir, ".."));
 
-            Working = new ChangedItemsCollection();
-            Index = new ChangedItemsCollection();
-
-            Task.Run(() => UpdateStatus(CurrentWorkingDirectory));
+            UpdateStatus(CurrentWorkingDirectory);
         }
 
-        public string Branch
+        public string Branch => _isUpdating ? $"{ExpandBranchName()}{Elipses}" : ExpandBranchName();
+
+        private string ExpandBranchName()
         {
-            get
+            // Repository may still be initializing
+            if (_repository == null)
             {
-                var name = GetExtraBranchStatus();
-
-                return _isUpdating ? $"{name}..." : name;
+                return Elipses;
             }
-        }
 
-        private string GetExtraBranchStatus()
-        {
             var branch = _repository.Head.Name;
 
             if (_cwd.CWD.StartsWith(GitDir, StringComparison.CurrentCultureIgnoreCase))
@@ -109,8 +116,8 @@ namespace PoshGit2
         public bool HasUntracked { get; set; }
         public ChangedItemsCollection Index { get; set; }
         public bool HasIndex { get { return Index.HasAny; } }
-        public string GitDir { get; }
-        public string CurrentWorkingDirectory { get; }
+        public string GitDir { get; set; }
+        public string CurrentWorkingDirectory { get; set; }
         public int AheadBy { get { return _repository.Head.TrackingDetails.AheadBy ?? 0; } }
         public int BehindBy { get { return _repository.Head.TrackingDetails.BehindBy ?? 0; } }
 
