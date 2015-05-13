@@ -3,11 +3,11 @@
   <metadata>
     <id>posh-git2</id>
     <version>1.0.2.0</version>
-    <authors>dahlbyk;Taylor Southwick</authors>
+    <authors>Taylor Southwick</authors>
     <owners>Taylor Southwick</owners>
-    <projectUrl>https://github.com/twsouthwick/posh-git/tree/libgit2-cmdlet</projectUrl>
+    <projectUrl>https://github.com/twsouthwick/poshgit2</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>https://github.com/dahlbyk/posh-git/blob/master/LICENSE.txt</licenseUrl>
+    <licenseUrl>https://github.com/twsouthwick/poshgit2/blob/master/LICENSE</licenseUrl>
     <description>A set of PowerShell scripts which provide Git/PowerShell integration</description>
     <releaseNotes />
     <copyright>(c) 2015 Taylor Southwick. All rights reserved.</copyright>
