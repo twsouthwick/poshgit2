@@ -111,55 +111,33 @@ namespace PoshGit2
             return branch;
         }
 
-        public bool HasWorking { get { return Working.HasAny; } }
+        public bool HasWorking => Working.HasAny;
+
         public ChangedItemsCollection Working { get; set; }
+
         public bool HasUntracked { get; set; }
+
         public ChangedItemsCollection Index { get; set; }
-        public bool HasIndex { get { return Index.HasAny; } }
+
+        public bool HasIndex => Index.HasAny;
+
         public string GitDir { get; set; }
+
         public string CurrentWorkingDirectory { get; set; }
-        public int AheadBy { get { return _repository.Head.TrackingDetails.AheadBy ?? 0; } }
-        public int BehindBy { get { return _repository.Head.TrackingDetails.BehindBy ?? 0; } }
 
-        public IEnumerable<string> LocalBranches
-        {
-            get
-            {
-                return _repository.Branches.Where(b => !b.IsRemote).Select(b => b.Name);
-            }
-        }
+        public int AheadBy => _repository?.Head.TrackingDetails.AheadBy ?? 0;
 
-        public IEnumerable<string> RemoteBranches
-        {
-            get
-            {
-                return _repository.Branches.Where(b => b.IsRemote).Select(b => b.Name);
-            }
-        }
+        public int BehindBy => _repository?.Head.TrackingDetails.BehindBy ?? 0;
 
-        public IEnumerable<string> Stashes
-        {
-            get
-            {
-                return _repository.Stashes.Select(s => s.Name);
-            }
-        }
+        public IEnumerable<string> LocalBranches => _repository?.Branches.Where(b => !b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>();
 
-        public IEnumerable<string> Remotes
-        {
-            get
-            {
-                return _repository.Network.Remotes.Select(r => r.Name);
-            }
-        }
+        public IEnumerable<string> RemoteBranches => _repository?.Branches.Where(b => b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>();
 
-        public IEnumerable<ConfigurationEntry<string>> Configuration
-        {
-            get
-            {
-                return _repository.Config;
-            }
-        }
+        public IEnumerable<string> Stashes => _repository?.Stashes.Select(s => s.Name) ?? Enumerable.Empty<string>();
+
+        public IEnumerable<string> Remotes => _repository?.Network.Remotes.Select(r => r.Name) ?? Enumerable.Empty<string>();
+
+        public IEnumerable<ConfigurationEntry<string>> Configuration => _repository?.Config ?? Enumerable.Empty<ConfigurationEntry<string>>();
 
         public void UpdateStatus(string file)
         {
