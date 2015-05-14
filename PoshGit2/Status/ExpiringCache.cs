@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PoshGit2
 {
@@ -19,19 +21,22 @@ namespace PoshGit2
             _factory = factory;
         }
 
-        public IEnumerable<IRepositoryStatus> All
+        public Task<IEnumerable<IRepositoryStatus>> GetAllRepos(CancellationToken cancellationToken)
         {
-            get
-            {
-                return _cache.Select(o => new ReadonlyCopyRepositoryStatus(o.Value as IRepositoryStatus)).ToList();
-            }
+            var all = _cache
+                .Select(o => new ReadonlyCopyRepositoryStatus(o.Value as IRepositoryStatus))
+                .ToList();
+
+            return Task.FromResult<IEnumerable<IRepositoryStatus>>(all);
         }
 
-        public IRepositoryStatus FindRepo(ICurrentWorkingDirectory cwd)
+        public Task<IRepositoryStatus> FindRepo(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
         {
+            var @null = Task.FromResult<IRepositoryStatus>(null);
+
             if (!cwd.IsValid)
             {
-                return null;
+                return @null;
             }
 
             var path = cwd.CWD;
@@ -39,7 +44,7 @@ namespace PoshGit2
 
             if (repo == null)
             {
-                return null;
+                return @null;
             }
 
             lock (_cache)
@@ -57,7 +62,7 @@ namespace PoshGit2
                     else
                     {
                         _log.Verbose("Found repo: {Path}", repo);
-                        return new ReadonlyCopyRepositoryStatus(value, cwd);
+                        return Task.FromResult(new ReadonlyCopyRepositoryStatus(value, cwd) as IRepositoryStatus);
                     }
                 }
 
@@ -78,16 +83,16 @@ namespace PoshGit2
 
                     _cache.Add(new CacheItem(repo, status), policy);
 
-                    return new ReadonlyCopyRepositoryStatus(status, cwd);
+                    return Task.FromResult(new ReadonlyCopyRepositoryStatus(status, cwd) as IRepositoryStatus);
                 }
                 catch (RepositoryNotFoundException)
                 {
-                    return null;
+                    return @null;
                 }
                 catch (Exception e)
                 {
                     _log.Warning(e, "Unknown exception in ExpiringCache");
-                    return null;
+                    return @null;
                 }
             }
         }
@@ -111,9 +116,11 @@ namespace PoshGit2
             }
         }
 
-        public void Remove(IRepositoryStatus repository)
+        public Task RemoveRepo(IRepositoryStatus repository, CancellationToken cancellationToken)
         {
             Remove(repository.GitDir);
+
+            return Task.FromResult(false);
         }
 
         private void Remove(string path)

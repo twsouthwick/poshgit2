@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PoshGit2
 {
@@ -18,19 +20,22 @@ namespace PoshGit2
             _factory = factory;
         }
 
-        public IEnumerable<IRepositoryStatus> All
+        public Task<IEnumerable<IRepositoryStatus>> GetAllRepos(CancellationToken cancellationToken)
         {
-            get
-            {
-                return _repositories.Values.Select(o => new ReadonlyCopyRepositoryStatus(o)).ToList();
-            }
+            var all = _repositories.Values
+                .Select(o => new ReadonlyCopyRepositoryStatus(o))
+                .ToList();
+
+            return Task.FromResult<IEnumerable<IRepositoryStatus>>(all);
         }
 
-        public IRepositoryStatus FindRepo(ICurrentWorkingDirectory cwd)
+        public Task<IRepositoryStatus> FindRepo(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
         {
+            var @null = Task.FromResult<IRepositoryStatus>(null);
+
             if (!cwd.IsValid)
             {
-                return null;
+                return @null;
             }
 
             var path = cwd.CWD;
@@ -38,7 +43,7 @@ namespace PoshGit2
 
             if (repo == null)
             {
-                return null;
+                return @null;
             }
 
             IRepositoryStatus oldStatus;
@@ -46,7 +51,7 @@ namespace PoshGit2
             {
                 _log.Information("Found repo: {Path}", repo);
 
-                return new ReadonlyCopyRepositoryStatus(oldStatus, cwd);
+                return Task.FromResult(new ReadonlyCopyRepositoryStatus(oldStatus, cwd) as IRepositoryStatus);
             }
 
             try
@@ -57,11 +62,11 @@ namespace PoshGit2
 
                 _repositories.Add(repo, status);
 
-                return new ReadonlyCopyRepositoryStatus(status, cwd);
+                return Task.FromResult(new ReadonlyCopyRepositoryStatus(status, cwd) as IRepositoryStatus);
             }
             catch (RepositoryNotFoundException)
             {
-                return null;
+                return @null;
             }
         }
 
@@ -84,12 +89,14 @@ namespace PoshGit2
             }
         }
 
-        public void Remove(IRepositoryStatus repository)
+        public Task RemoveRepo(IRepositoryStatus repository, CancellationToken cancellationToken)
         {
             var storedRepo = _repositories
                 .FirstOrDefault(r => string.Equals(r.Value.GitDir, repository.GitDir, StringComparison.CurrentCultureIgnoreCase));
 
             Remove(storedRepo.Key);
+
+            return Task.FromResult(true);
         }
 
         private void Remove(string path)

@@ -1,5 +1,6 @@
 ﻿using PoshGit2.Status;
 using System.Management.Automation;
+using System.Threading.Tasks;
 
 namespace PoshGit2
 {
@@ -7,15 +8,18 @@ namespace PoshGit2
     public class Write_GitStatus : AutofacCmdlet
     {
         public IStatusWriter Writer { get; set; }
-        public Option<IRepositoryStatus> Status { get; set; }
+
+        public Task<IRepositoryStatus> Status { get; set; }
 
         protected override void ProcessRecord()
         {
             base.ProcessRecord();
 
-            if (Status.HasValue)
+            var status = Status.Result;
+
+            if (status != null)
             {
-                Writer.WriteStatus(Status.Value);
+                Writer.WriteStatus(status);
             }
         }
     }

@@ -52,10 +52,9 @@ namespace PoshGit2
                 return false;
             }
 
-            await _repoSearch.SendResultAsync(_cache.All, token);
+            await _repoSearch.SendResultAsync(await _cache.GetAllRepos(token), token);
 
             return true;
-
         }
 
         private async Task<bool> ProcessGetRepoCommandAsync(RepoSearchCommands.GetRepoCommand command, CancellationToken token)
@@ -67,13 +66,13 @@ namespace PoshGit2
 
             using (var scope = _scope.BeginLifetimeScope(builder => builder.RegisterInstance(command).As<ICurrentWorkingDirectory>()))
             {
-                var repo = scope.Resolve<Option<IRepositoryStatus>>();
+                var repo = await scope.Resolve<Task<IRepositoryStatus>>();
 
-                if (repo.HasValue)
+                if (repo != null)
                 {
-                    _log.Information("{@Repo}", repo.Value);
+                    _log.Information("{@Repo}", repo);
 
-                    await _repoSearch.SendResultAsync(new[] { repo.Value }, token);
+                    await _repoSearch.SendResultAsync(new[] { repo }, token);
                 }
                 else
                 {

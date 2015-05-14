@@ -1,4 +1,7 @@
 ﻿using System.Management.Automation;
+using System.Threading;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PoshGit2
 {
@@ -10,16 +13,18 @@ namespace PoshGit2
 
         public IRepositoryCache RepositoryCache { get; set; }
 
+        public CancellationToken CancellationToken { get; set; }
+
         protected override void ProcessRecord()
         {
             base.ProcessRecord();
 
-            foreach (var repo in Repository)
-            {
-                RepositoryCache.Remove(repo);
-            }
+            // TODO: Add overload for IEnumerable
+            var removing = Repository.Select(repo => RepositoryCache.RemoveRepo(repo, CancellationToken)).ToArray();
 
-            foreach (var repo in RepositoryCache.All)
+            Task.WaitAll(removing);
+
+            foreach (var repo in RepositoryCache.GetAllRepos(CancellationToken).Result)
             {
                 WriteObject(repo);
             }

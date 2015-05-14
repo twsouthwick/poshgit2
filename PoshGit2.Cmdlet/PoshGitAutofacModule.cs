@@ -5,12 +5,16 @@ using Serilog;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PoshGit2
 {
     public class PoshGitAutofacModule : Module
     {
         public bool LogToConsole { get; set; }
+
+        public TimeSpan TimeOut { get; set; } = TimeSpan.FromMinutes(2);
 
         protected override void Load(ContainerBuilder builder)
         {
@@ -29,13 +33,20 @@ namespace PoshGit2
             builder.RegisterDecorator<Serilog.ILogger>((c, l) => l.ForContext("scope", new { Type = "global" }), "Logger")
                 .InstancePerLifetimeScope();
 
+            builder.Register(_ => new CancellationTokenSource(TimeOut))
+                .AsSelf()
+                .InstancePerDependency();
+
+            builder.RegisterAdapter<CancellationTokenSource, CancellationToken>(s => s.Token);
+
             builder.Register(c =>
             {
                 var cache = c.Resolve<IRepositoryCache>();
                 var cwd = c.Resolve<ICurrentWorkingDirectory>();
+                var cancellationToken = c.Resolve<CancellationToken>();
 
-                return new Option<IRepositoryStatus>(cache.FindRepo(cwd));
-            }).As<Option<IRepositoryStatus>>().InstancePerLifetimeScope();
+                return cache.FindRepo(cwd, cancellationToken);
+            }).As<Task<IRepositoryStatus>>().InstancePerLifetimeScope();
         }
 
         private static void AddILoggerToParameters(object sender, PreparingEventArgs e)

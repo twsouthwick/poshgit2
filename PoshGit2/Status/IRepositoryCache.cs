@@ -1,12 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    public interface IRepositoryCache 
+    public interface IRepositoryCache
     {
-        IRepositoryStatus FindRepo(ICurrentWorkingDirectory cwd);
-        IEnumerable<IRepositoryStatus> All { get; }
-        void Remove(IRepositoryStatus repo);
+        Task<IRepositoryStatus> FindRepo(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken);
+        Task<IEnumerable<IRepositoryStatus>> GetAllRepos(CancellationToken cancellationToken);
+        Task RemoveRepo(IRepositoryStatus repo, CancellationToken cancellationToken);
     }
 }
