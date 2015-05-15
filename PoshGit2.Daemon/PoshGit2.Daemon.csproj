@@ -77,6 +77,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoshGit2.NamedPipes\PoshGit2.NamedPipes.csproj">
+      <Project>{2ad22125-3568-4ff8-9095-22a7b01fe6f6}</Project>
+      <Name>PoshGit2.NamedPipes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoshGit2\PoshGit2.csproj">
       <Project>{0f900a09-be4a-461e-9e69-53b109a6d5ab}</Project>
       <Name>PoshGit2</Name>
