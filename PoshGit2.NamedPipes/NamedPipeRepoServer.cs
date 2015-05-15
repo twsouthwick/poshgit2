@@ -96,11 +96,9 @@ namespace PoshGit2
         private async Task RemoveRepo(StreamWriter writer, StreamReader reader, CancellationToken cancellationToken)
         {
             var repoPath = await reader.ReadLineAsync();
+            var result = await _repoCache.RemoveRepoAsync(repoPath, cancellationToken);
 
-            await _repoCache.RemoveRepoAsync(repoPath, cancellationToken);
-
-            // TODO: plumb some sort of success/failure notification
-            await writer.WriteLineAsync(Commands.Success);
+            await writer.WriteLineAsync(result ? Commands.Success : Commands.Failed);
         }
 
         private async Task GetAllRepos(StreamWriter writer, CancellationToken cancellationToken)

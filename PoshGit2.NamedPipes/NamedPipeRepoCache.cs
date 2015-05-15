@@ -79,7 +79,7 @@ namespace PoshGit2
             });
         }
 
-        public Task RemoveRepoAsync(string path, CancellationToken cancellationToken)
+        public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
         {
             return SendReceiveCommandAsync(async (reader, writer) =>
             {

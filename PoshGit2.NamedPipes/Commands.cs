@@ -8,5 +8,6 @@
         public const string Ready = "Ready";
         public const string BadCommand = "BadCommand";
         public const string Success = "Success";
+        public const string Failed = "Failed";
     }
 }

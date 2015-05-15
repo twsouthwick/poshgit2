@@ -60,7 +60,7 @@ namespace PoshGit2
             return _other.GetAllReposAsync(cancellationToken);
         }
 
-        public Task RemoveRepoAsync(string path, CancellationToken cancellationToken)
+        public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
         {
             EnsureServerIsAvailable();
 

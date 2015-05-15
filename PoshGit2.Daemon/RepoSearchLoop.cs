@@ -52,14 +52,21 @@ namespace PoshGit2
 
         private async Task<bool> ProcessRemoveRepoCommandAsync(RepoSearchCommands.RemoveRepoCommand removeCommand, CancellationToken token)
         {
-            if(removeCommand == null)
+            if (removeCommand == null)
             {
                 return false;
             }
 
-            await _cache.RemoveRepoAsync(removeCommand.Path, token);
+            var result = await _cache.RemoveRepoAsync(removeCommand.Path, token);
 
-            _log.Information("Removed repo: {Path}", removeCommand.Path);
+            if (result)
+            {
+                _log.Information("Removed repo: {Path}", removeCommand.Path);
+            }
+            else
+            {
+                _log.Warning("Failed to remove repo: {Path}", removeCommand.Path);
+            }
 
             return true;
         }

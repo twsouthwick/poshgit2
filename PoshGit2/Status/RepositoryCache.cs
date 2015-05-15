@@ -89,22 +89,20 @@ namespace PoshGit2
             }
         }
 
-        public Task RemoveRepoAsync(string path, CancellationToken cancellationToken)
+        public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
         {
             var repoPath = FindGitRepo(path);
 
-            Remove(repoPath);
-
-            return Task.FromResult(true);
+            return Task.FromResult(Remove(repoPath));
         }
 
-        private void Remove(string path)
+        private bool Remove(string path)
         {
             var mainPath = FindGitRepo(path);
 
             if (mainPath == null)
             {
-                return;
+                return false;
             }
 
             IRepositoryStatus status;
@@ -113,7 +111,7 @@ namespace PoshGit2
                 (status as IDisposable)?.Dispose();
             }
 
-            _repositories.Remove(mainPath);
+            return _repositories.Remove(mainPath);
         }
 
         public void Dispose()

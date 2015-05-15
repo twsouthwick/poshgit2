@@ -8,6 +8,6 @@ namespace PoshGit2
     {
         Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken);
         Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken);
-        Task RemoveRepoAsync(string path, CancellationToken cancellationToken);
+        Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken);
     }
 }

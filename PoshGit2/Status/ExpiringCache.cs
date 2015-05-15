@@ -116,23 +116,23 @@ namespace PoshGit2
             }
         }
 
-        public Task RemoveRepoAsync(string path, CancellationToken cancellationToken)
+        public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
         {
-            Remove(path);
-
-            return Task.FromResult(false);
+            return Task.FromResult(Remove(path));
         }
 
-        private void Remove(string path)
+        private bool Remove(string path)
         {
             var mainPath = FindGitRepo(path);
 
             if (mainPath == null)
             {
-                return;
+                return false;
             }
 
-            _cache.Remove(mainPath);
+            var removed = _cache.Remove(mainPath);
+
+            return removed != null;
         }
 
         public void Dispose()
