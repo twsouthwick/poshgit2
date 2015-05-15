@@ -97,7 +97,7 @@ namespace PoshGit2
             }
         }
 
-        private static string FindGitRepo(string path)
+        private string FindGitRepo(string path)
         {
             if (path == null)
             {
@@ -110,9 +110,18 @@ namespace PoshGit2
             }
             else
             {
-                var up = Path.GetDirectoryName(path);
+                try
+                {
+                    var up = Path.GetDirectoryName(path);
 
-                return string.Equals(up, path, StringComparison.OrdinalIgnoreCase) ? null : FindGitRepo(up);
+                    return string.Equals(up, path, StringComparison.OrdinalIgnoreCase) ? null : FindGitRepo(up);
+                }
+                catch (Exception e)
+                {
+                    _log.Error("Invalid repo path: {Path}, {Exception}", path, e);
+
+                    return null;
+                }
             }
         }
 
