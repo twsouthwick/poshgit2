@@ -52,7 +52,7 @@ namespace PoshGit2
                     var cwd = c.Resolve<ICurrentWorkingDirectory>();
                     var cancellationToken = c.Resolve<CancellationToken>();
 
-                    return cache.FindRepo(cwd, cancellationToken);
+                    return cache.FindRepoAsync(cwd, cancellationToken);
                 })
                 .As<Task<IRepositoryStatus>>()
                 .InstancePerLifetimeScope();

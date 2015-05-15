@@ -34,7 +34,7 @@ namespace PoshGit2
             }
         }
 
-        public Task<IRepositoryStatus> FindRepo(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
+        public Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
         {
             return SendReceiveCommandAsync(async (reader, writer) =>
             {
@@ -57,7 +57,7 @@ namespace PoshGit2
             });
         }
 
-        public Task<IEnumerable<IRepositoryStatus>> GetAllRepos(CancellationToken cancellationToken)
+        public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
         {
             return SendReceiveCommandAsync(async (reader, writer) =>
             {
@@ -79,7 +79,7 @@ namespace PoshGit2
             });
         }
 
-        public Task RemoveRepo(IRepositoryStatus repo, CancellationToken cancellationToken)
+        public Task RemoveRepoAsync(IRepositoryStatus repo, CancellationToken cancellationToken)
         {
             return SendReceiveCommandAsync(async (reader, writer) =>
             {

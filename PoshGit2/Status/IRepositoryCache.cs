@@ -6,8 +6,8 @@ namespace PoshGit2
 {
     public interface IRepositoryCache
     {
-        Task<IRepositoryStatus> FindRepo(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken);
-        Task<IEnumerable<IRepositoryStatus>> GetAllRepos(CancellationToken cancellationToken);
-        Task RemoveRepo(IRepositoryStatus repo, CancellationToken cancellationToken);
+        Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken);
+        Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken);
+        Task RemoveRepoAsync(IRepositoryStatus repo, CancellationToken cancellationToken);
     }
 }

@@ -46,25 +46,25 @@ namespace PoshGit2
             });
         }
 
-        public Task<IRepositoryStatus> FindRepo(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
+        public Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
         {
             EnsureServerIsAvailable();
 
-            return _other.FindRepo(cwd, cancellationToken);
+            return _other.FindRepoAsync(cwd, cancellationToken);
         }
 
-        public Task<IEnumerable<IRepositoryStatus>> GetAllRepos(CancellationToken cancellationToken)
+        public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
         {
             EnsureServerIsAvailable();
 
-            return _other.GetAllRepos(cancellationToken);
+            return _other.GetAllReposAsync(cancellationToken);
         }
 
-        public Task RemoveRepo(IRepositoryStatus repo, CancellationToken cancellationToken)
+        public Task RemoveRepoAsync(IRepositoryStatus repo, CancellationToken cancellationToken)
         {
             EnsureServerIsAvailable();
 
-            return _other.RemoveRepo(repo, cancellationToken);
+            return _other.RemoveRepoAsync(repo, cancellationToken);
         }
     }
 }

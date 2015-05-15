@@ -17,7 +17,7 @@ namespace PoshGit2
             try
             {
                 var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                var repo = RepositoryCache.FindRepo(WorkingDirectory, cancellationTokenSource.Token).Result;
+                var repo = RepositoryCache.FindRepoAsync(WorkingDirectory, cancellationTokenSource.Token).Result;
 
                 if (repo != null)
                 {

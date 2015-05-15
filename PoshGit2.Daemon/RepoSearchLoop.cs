@@ -52,7 +52,7 @@ namespace PoshGit2
                 return false;
             }
 
-            var result = await _cache.GetAllRepos(token);
+            var result = await _cache.GetAllReposAsync(token);
 
             _log.Information("Found repos: {@Repos}", result);
 

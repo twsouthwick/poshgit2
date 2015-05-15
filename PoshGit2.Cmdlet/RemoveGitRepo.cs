@@ -20,11 +20,11 @@ namespace PoshGit2
             base.ProcessRecord();
 
             // TODO: Add overload for IEnumerable
-            var removing = Repository.Select(repo => RepositoryCache.RemoveRepo(repo, CancellationToken)).ToArray();
+            var removing = Repository.Select(repo => RepositoryCache.RemoveRepoAsync(repo, CancellationToken)).ToArray();
 
             Task.WaitAll(removing);
 
-            foreach (var repo in RepositoryCache.GetAllRepos(CancellationToken).Result)
+            foreach (var repo in RepositoryCache.GetAllReposAsync(CancellationToken).Result)
             {
                 WriteObject(repo);
             }

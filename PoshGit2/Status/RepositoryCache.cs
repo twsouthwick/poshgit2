@@ -20,7 +20,7 @@ namespace PoshGit2
             _factory = factory;
         }
 
-        public Task<IEnumerable<IRepositoryStatus>> GetAllRepos(CancellationToken cancellationToken)
+        public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
         {
             var all = _repositories.Values
                 .Select(o => new ReadonlyCopyRepositoryStatus(o))
@@ -29,7 +29,7 @@ namespace PoshGit2
             return Task.FromResult<IEnumerable<IRepositoryStatus>>(all);
         }
 
-        public Task<IRepositoryStatus> FindRepo(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
+        public Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
         {
             var @null = Task.FromResult<IRepositoryStatus>(null);
 
@@ -89,7 +89,7 @@ namespace PoshGit2
             }
         }
 
-        public Task RemoveRepo(IRepositoryStatus repository, CancellationToken cancellationToken)
+        public Task RemoveRepoAsync(IRepositoryStatus repository, CancellationToken cancellationToken)
         {
             var storedRepo = _repositories
                 .FirstOrDefault(r => string.Equals(r.Value.GitDir, repository.GitDir, StringComparison.CurrentCultureIgnoreCase));

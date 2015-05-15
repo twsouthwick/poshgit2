@@ -17,7 +17,7 @@ namespace PoshGit2
             {
                 var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
-                foreach (var repo in RepositoryCache.GetAllRepos(cancellationTokenSource.Token).Result)
+                foreach (var repo in RepositoryCache.GetAllReposAsync(cancellationTokenSource.Token).Result)
                 {
                     WriteObject(repo);
                 }

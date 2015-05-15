@@ -99,7 +99,7 @@ namespace PoshGit2
             {
                 var repo = _serializer.Deserialize<ReadWriteRepositoryStatus>(jsonTextReader);
 
-                await _repoCache.RemoveRepo(repo, cancellationToken);
+                await _repoCache.RemoveRepoAsync(repo, cancellationToken);
 
                 // TODO: plumb some sort of success/failure notification
                 await writer.WriteLineAsync(Commands.Success);
@@ -108,7 +108,7 @@ namespace PoshGit2
 
         private async Task GetAllRepos(StreamWriter writer, CancellationToken cancellationToken)
         {
-            var all = await _repoCache.GetAllRepos(cancellationToken);
+            var all = await _repoCache.GetAllReposAsync(cancellationToken);
 
             using (var jsonTextWriter = new JsonTextWriter(writer))
             {
@@ -120,7 +120,7 @@ namespace PoshGit2
         {
             var cwd = new StringCurrentWorkingDirectory(path);
 
-            var repo = await _repoCache.FindRepo(cwd, cancellationToken);
+            var repo = await _repoCache.FindRepoAsync(cwd, cancellationToken);
 
             if (repo == null)
             {
