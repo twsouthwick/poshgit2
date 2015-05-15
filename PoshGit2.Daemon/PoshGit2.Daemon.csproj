@@ -61,9 +61,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\PoshGit2.Cmdlet\PoshGitAutofacModule.cs">
-      <Link>PoshGitAutofacModule.cs</Link>
-    </Compile>
     <Compile Include="CommandLineInputLoop.cs" />
     <Compile Include="IRepoSearchLoop.cs" />
     <Compile Include="TestLoopModule.cs" />

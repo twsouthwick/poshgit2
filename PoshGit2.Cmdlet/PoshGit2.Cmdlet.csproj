@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacCmdlet.cs" />
-    <Compile Include="PoshGitAutofacModule.cs" />
     <Compile Include="GetGitInfo.cs" />
     <Compile Include="GetRepoStatus.cs" />
     <Compile Include="ISessionState.cs" />
@@ -77,6 +76,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoshGit2.Daemon\PoshGit2.Daemon.csproj">
+      <Project>{0a995c58-7a27-49d4-9217-c8452d267c76}</Project>
+      <Name>PoshGit2.Daemon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoshGit2.NamedPipes\PoshGit2.NamedPipes.csproj">
+      <Project>{2ad22125-3568-4ff8-9095-22a7b01fe6f6}</Project>
+      <Name>PoshGit2.NamedPipes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoshGit2.Serilog\PoshGit2.Serilog.csproj">
       <Project>{efde89ad-bb86-4696-9fcb-8ce54e815d3b}</Project>
       <Name>PoshGit2.Serilog</Name>

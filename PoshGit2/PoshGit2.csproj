@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PoshGitAutofacModule.cs" />
     <Compile Include="Status\ChangedItemsCollection.cs" />
     <Compile Include="DefaultGitPromptSettings.cs" />
     <Compile Include="IGitPromptSettings.cs" />

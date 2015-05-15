@@ -17,6 +17,7 @@ namespace PoshGit2
             containerBuilder.RegisterModule(new SerilogModule());
             containerBuilder.RegisterModule(new PoshGitAutofacModule());
             containerBuilder.RegisterModule(new PSAutofacModule());
+            containerBuilder.RegisterModule(new NamedPipeStatusModule());
 
             return containerBuilder.Build();
         }
