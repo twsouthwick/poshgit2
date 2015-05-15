@@ -56,6 +56,7 @@
     <Compile Include="Status\ExpiringCache.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
+    <Compile Include="Status\ReadWriteRepositoryStatus.cs" />
     <Compile Include="Status\SampledFolderWatcher.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="Option.cs" />

@@ -69,13 +69,8 @@ namespace PoshGit2
                 .Enrich.WithThreadId()
                 .Enrich.WithProcessId()
                 .Enrich.WithMachineName()
-                .Destructure.ByTransforming<ReadonlyCopyRepositoryStatus>(s => new
-                {
-                    GitDir = s.GitDir,
-                    Index = s.Index.ToString(),
-                    Working = s.Working.ToString(),
-                    Branch = s.Branch
-                })
+                .Destructure.ByTransforming<ReadonlyCopyRepositoryStatus>(ConvertStatus)
+                .Destructure.ByTransforming<ReadWriteRepositoryStatus>(ConvertStatus)
                 .WriteTo.Trace()
                 .WriteTo.RollingFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", $"log-{processId}-{{Date}}.txt"));
 
@@ -100,6 +95,22 @@ namespace PoshGit2
 
                 return logger;
             }
+        }
+
+        private object ConvertStatus(IRepositoryStatus status)
+        {
+            if(status == null)
+            {
+                return new { };
+            }
+
+            return new
+            {
+                GitDir = status.GitDir,
+                Index = status.Index?.ToString(),
+                Working = status.Working?.ToString(),
+                Branch = status.Branch
+            };
         }
     }
 }
