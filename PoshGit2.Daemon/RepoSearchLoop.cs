@@ -41,8 +41,27 @@ namespace PoshGit2
                     continue;
                 }
 
+                if (await ProcessRemoveRepoCommandAsync(command as RepoSearchCommands.RemoveRepoCommand, token))
+                {
+                    continue;
+                }
+
                 _log.Warning("Unknown command: {Command}", command);
             }
+        }
+
+        private async Task<bool> ProcessRemoveRepoCommandAsync(RepoSearchCommands.RemoveRepoCommand removeCommand, CancellationToken token)
+        {
+            if(removeCommand == null)
+            {
+                return false;
+            }
+
+            await _cache.RemoveRepoAsync(removeCommand.Path, token);
+
+            _log.Information("Removed repo: {Path}", removeCommand.Path);
+
+            return true;
         }
 
         private async Task<bool> ProcessGetAllCommandsAsync(RepoSearchCommands.ShowAllCommand showAllCommand, CancellationToken token)

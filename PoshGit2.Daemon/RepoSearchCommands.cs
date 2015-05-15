@@ -4,6 +4,16 @@
     {
         public interface IRepoSearchCommand { }
 
+        public class RemoveRepoCommand : IRepoSearchCommand
+        {
+            public string Path { get; }
+
+            public RemoveRepoCommand(string path)
+            {
+                Path = path;
+            }
+        }
+
         public class GetRepoCommand : StringCurrentWorkingDirectory, IRepoSearchCommand
         {
             public GetRepoCommand(string cwd)

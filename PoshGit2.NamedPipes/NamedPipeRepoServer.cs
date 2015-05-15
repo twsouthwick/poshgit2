@@ -95,15 +95,12 @@ namespace PoshGit2
 
         private async Task RemoveRepo(StreamWriter writer, StreamReader reader, CancellationToken cancellationToken)
         {
-            using (var jsonTextReader = new JsonTextReader(reader))
-            {
-                var repo = _serializer.Deserialize<ReadWriteRepositoryStatus>(jsonTextReader);
+            var repoPath = await reader.ReadLineAsync();
 
-                await _repoCache.RemoveRepoAsync(repo, cancellationToken);
+            await _repoCache.RemoveRepoAsync(repoPath, cancellationToken);
 
-                // TODO: plumb some sort of success/failure notification
-                await writer.WriteLineAsync(Commands.Success);
-            }
+            // TODO: plumb some sort of success/failure notification
+            await writer.WriteLineAsync(Commands.Success);
         }
 
         private async Task GetAllRepos(StreamWriter writer, CancellationToken cancellationToken)

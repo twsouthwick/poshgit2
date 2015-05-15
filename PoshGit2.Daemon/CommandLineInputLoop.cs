@@ -31,6 +31,8 @@ namespace PoshGit2
 
         private RepoSearchCommands.IRepoSearchCommand Run()
         {
+            const string remove = "#remove ";
+
             Console.Write("> ");
             var line = Console.ReadLine();
 
@@ -41,6 +43,10 @@ namespace PoshGit2
             else if (line == "#all")
             {
                 return RepoSearchCommands.ShowAllCommand.Instance;
+            }
+            else if (line.StartsWith(remove, StringComparison.Ordinal))
+            {
+                return new RepoSearchCommands.RemoveRepoCommand(line.Substring(remove.Length).Trim());
             }
             else
             {

@@ -9,7 +9,7 @@ namespace PoshGit2
     public class RemoveGitRepo : AutofacCmdlet
     {
         [Parameter(Mandatory = true, Position = 0)]
-        public IRepositoryStatus[] Repository { get; set; }
+        public string[] Repository { get; set; }
 
         public IRepositoryCache RepositoryCache { get; set; }
 

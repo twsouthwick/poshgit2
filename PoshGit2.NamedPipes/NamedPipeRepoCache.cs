@@ -79,7 +79,7 @@ namespace PoshGit2
             });
         }
 
-        public Task RemoveRepoAsync(IRepositoryStatus repo, CancellationToken cancellationToken)
+        public Task RemoveRepoAsync(string path, CancellationToken cancellationToken)
         {
             return SendReceiveCommandAsync(async (reader, writer) =>
             {
@@ -92,7 +92,7 @@ namespace PoshGit2
                     return false;
                 }
 
-                await writer.WriteLineAsync(repo.CurrentWorkingDirectory);
+                await writer.WriteLineAsync(path);
 
                 var result = await reader.ReadLineAsync();
 

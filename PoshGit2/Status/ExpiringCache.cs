@@ -116,9 +116,9 @@ namespace PoshGit2
             }
         }
 
-        public Task RemoveRepoAsync(IRepositoryStatus repository, CancellationToken cancellationToken)
+        public Task RemoveRepoAsync(string path, CancellationToken cancellationToken)
         {
-            Remove(repository.GitDir);
+            Remove(path);
 
             return Task.FromResult(false);
         }
