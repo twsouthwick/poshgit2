@@ -40,14 +40,17 @@
     <Reference Include="LibGit2Sharp">
       <HintPath>..\packages\LibGit2Sharp.0.21.0.176\lib\net40\LibGit2Sharp.dll</HintPath>
     </Reference>
-    <Reference Include="Serilog">
-      <HintPath>..\packages\Serilog.1.4.204\lib\net45\Serilog.dll</HintPath>
+    <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.1\lib\net45\Serilog.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Serilog.FullNetFx">
-      <HintPath>..\packages\Serilog.1.4.204\lib\net45\Serilog.FullNetFx.dll</HintPath>
+    <Reference Include="Serilog.FullNetFx, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.1\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Serilog.Sinks.Seq">
-      <HintPath>..\packages\Serilog.Sinks.Seq.1.5.9\lib\net45\Serilog.Sinks.Seq.dll</HintPath>
+    <Reference Include="Serilog.Sinks.Seq, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Seq.1.5.14\lib\net45\Serilog.Sinks.Seq.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -61,25 +64,25 @@
     <Compile Include="..\PoshGit2.Cmdlet\PoshGitAutofacModule.cs">
       <Link>PoshGitAutofacModule.cs</Link>
     </Compile>
-    <Compile Include="..\PoshGit2.Cmdlet\SerilogWrapper.cs">
-      <Link>SerilogWrapper.cs</Link>
-    </Compile>
     <Compile Include="CommandLineInputLoop.cs" />
     <Compile Include="IRepoSearchLoop.cs" />
-    <Compile Include="PoshGitDaemonModule.cs" />
+    <Compile Include="TestLoopModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepoSearchCommands.cs" />
     <Compile Include="RepoSearchLoop.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PoshGit2.NamedPipes\PoshGit2.NamedPipes.csproj">
       <Project>{2ad22125-3568-4ff8-9095-22a7b01fe6f6}</Project>
       <Name>PoshGit2.NamedPipes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoshGit2.Serilog\PoshGit2.Serilog.csproj">
+      <Project>{efde89ad-bb86-4696-9fcb-8ce54e815d3b}</Project>
+      <Name>PoshGit2.Serilog</Name>
     </ProjectReference>
     <ProjectReference Include="..\PoshGit2\PoshGit2.csproj">
       <Project>{0f900a09-be4a-461e-9e69-53b109a6d5ab}</Project>

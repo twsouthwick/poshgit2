@@ -48,14 +48,11 @@ namespace PoshGit.Daemon
 
         private static void RunTestLoop(bool showServer)
         {
-            using (var cancellationTokenSource = new CancellationTokenSource())
+            using (var container = BuildTestLoopContainer(showServer))
             {
-                using (var container = BuildTestLoopContainer(showServer))
-                {
-                    var loop = container.Resolve<RepoSearchLoop>();
+                var loop = container.Resolve<RepoSearchLoop>();
 
-                    loop.RunAsync(CancellationToken.None).Wait();
-                }
+                loop.RunAsync(CancellationToken.None).Wait();
             }
         }
 
@@ -63,8 +60,10 @@ namespace PoshGit.Daemon
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterModule(new PoshGitAutofacModule { LogToConsole = true });
-            builder.RegisterModule(new PoshGitDaemonModule { ShowServer = showServer });
+            builder.RegisterModule(new PoshGitAutofacModule());
+            builder.RegisterModule(new SerilogModule { LogToConsole = true });
+            builder.RegisterModule(new TestLoopModule());
+            builder.RegisterModule(new NamedPipeStatusModule { ShowServer = showServer });
 
             return builder.Build();
         }
@@ -73,10 +72,8 @@ namespace PoshGit.Daemon
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterModule(new PoshGitAutofacModule { LogToConsole = true });
-            builder.RegisterModule(new PoshGitDaemonModule());
-
-            builder.RegisterType<ExpiringCache>().As<IRepositoryCache>().SingleInstance();
+            builder.RegisterModule(new PoshGitAutofacModule());
+            builder.RegisterModule(new SerilogModule { LogToConsole = true });
             builder.RegisterType<NamedPipeRepoServer>().AsSelf().SingleInstance();
 
             return builder.Build();

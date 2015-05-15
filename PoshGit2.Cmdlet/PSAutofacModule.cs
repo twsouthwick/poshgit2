@@ -7,9 +7,17 @@ namespace PoshGit2
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<PSCurrentWorkingDirectory>().As<ICurrentWorkingDirectory>().InstancePerLifetimeScope();
-            builder.RegisterType<SessionState>().AsSelf().SingleInstance();
-            builder.RegisterType<SessionStateWrapper>().As<ISessionState>().InstancePerLifetimeScope();
+            builder.RegisterType<PSCurrentWorkingDirectory>()
+                .As<ICurrentWorkingDirectory>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SessionState>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<SessionStateWrapper>()
+                .As<ISessionState>()
+                .InstancePerLifetimeScope();
 
             builder.RegisterAdapter<ISessionState, IGitPromptSettings>((c, s) =>
             {

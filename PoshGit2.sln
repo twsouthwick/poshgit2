@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.Daemon", "PoshGit2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.NamedPipes", "PoshGit2.NamedPipes\PoshGit2.NamedPipes.csproj", "{2AD22125-3568-4FF8-9095-22A7B01FE6F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.Serilog", "PoshGit2.Serilog\PoshGit2.Serilog.csproj", "{EFDE89AD-BB86-4696-9FCB-8CE54E815D3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{2AD22125-3568-4FF8-9095-22A7B01FE6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AD22125-3568-4FF8-9095-22A7B01FE6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AD22125-3568-4FF8-9095-22A7B01FE6F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFDE89AD-BB86-4696-9FCB-8CE54E815D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFDE89AD-BB86-4696-9FCB-8CE54E815D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFDE89AD-BB86-4696-9FCB-8CE54E815D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFDE89AD-BB86-4696-9FCB-8CE54E815D3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

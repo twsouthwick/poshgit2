@@ -14,6 +14,7 @@ namespace PoshGit2
         {
             var containerBuilder = new ContainerBuilder();
 
+            containerBuilder.RegisterModule(new SerilogModule());
             containerBuilder.RegisterModule(new PoshGitAutofacModule());
             containerBuilder.RegisterModule(new PSAutofacModule());
 

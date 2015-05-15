@@ -23,6 +23,8 @@ namespace PoshGit2
             _cancellationTokenSource = new CancellationTokenSource();
             _repoCache = repoCache;
             _serializer = JsonSerializer.Create();
+
+            log.Information("Server started");
         }
 
         public void Dispose()
