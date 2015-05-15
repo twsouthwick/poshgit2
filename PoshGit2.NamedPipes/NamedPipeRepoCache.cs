@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipes;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +20,7 @@ namespace PoshGit2
             _serializer = JsonSerializer.Create();
         }
 
-        public async Task<IRepositoryStatus> FindRepo(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
+        private async Task<T> SendReceiveCommandAsync<T>(Func<StreamReader, StreamWriter, Task<T>> func)
         {
             using (var pipe = new NamedPipeClientStream(NamedPipeRepoServer.ServerName, NamedPipeRepoServer.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous))
             {
@@ -27,34 +29,75 @@ namespace PoshGit2
                 using (var writer = new NonClosingStreamWriter(pipe) { AutoFlush = true })
                 using (var reader = new NonClosingStreamReader(pipe))
                 {
-                    await writer.WriteLineAsync(Commands.FindRepo);
-
-                    var response = await reader.ReadLineAsync();
-
-                    if (!string.Equals(Commands.Ready, response, StringComparison.Ordinal))
-                    {
-                        return null;
-                    }
-
-                    await writer.WriteLineAsync(cwd.CWD);
-
-                    using (var jsonReader = new JsonTextReader(reader))
-                    {
-                        return _serializer
-                            .Deserialize<ReadWriteRepositoryStatus>(jsonReader) as IRepositoryStatus;
-                    }
+                    return await func(reader, writer);
                 }
             }
         }
 
+        public Task<IRepositoryStatus> FindRepo(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
+        {
+            return SendReceiveCommandAsync(async (reader, writer) =>
+            {
+                await writer.WriteLineAsync(Commands.FindRepo);
+
+                var response = await reader.ReadLineAsync();
+
+                if (!string.Equals(Commands.Ready, response, StringComparison.Ordinal))
+                {
+                    return null;
+                }
+
+                await writer.WriteLineAsync(cwd.CWD);
+
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    return _serializer
+                        .Deserialize<ReadWriteRepositoryStatus>(jsonReader) as IRepositoryStatus;
+                }
+            });
+        }
+
         public Task<IEnumerable<IRepositoryStatus>> GetAllRepos(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return SendReceiveCommandAsync(async (reader, writer) =>
+            {
+                await writer.WriteLineAsync(Commands.GetAllRepos);
+
+                var response = await reader.ReadLineAsync();
+
+                if (!string.Equals(Commands.Ready, response, StringComparison.Ordinal))
+                {
+                    return null;
+                }
+
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    return _serializer
+                        .Deserialize<IEnumerable<ReadWriteRepositoryStatus>>(jsonReader)
+                        .Cast<IRepositoryStatus>();
+                }
+            });
         }
 
         public Task RemoveRepo(IRepositoryStatus repo, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return SendReceiveCommandAsync(async (reader, writer) =>
+            {
+                await writer.WriteLineAsync(Commands.RemoveRepo);
+
+                var response = await reader.ReadLineAsync();
+
+                if (!string.Equals(Commands.Ready, response, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+
+                await writer.WriteLineAsync(repo.CurrentWorkingDirectory);
+
+                var result = await reader.ReadLineAsync();
+
+                return string.Equals(Commands.Success, result, StringComparison.Ordinal);
+            });
         }
     }
 }

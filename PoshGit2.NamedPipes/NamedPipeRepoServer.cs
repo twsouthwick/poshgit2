@@ -71,7 +71,14 @@ namespace PoshGit2
                                 await writer.WriteLineAsync(Commands.Ready);
                                 await FindRepo(writer, await reader.ReadLineAsync(), cancellationToken);
                                 break;
-                            // Nothing else is implemented
+                            case Commands.GetAllRepos:
+                                await writer.WriteLineAsync(Commands.Ready);
+                                await GetAllRepos(writer, cancellationToken);
+                                break;
+                            case Commands.RemoveRepo:
+                                await writer.WriteLineAsync(Commands.Ready);
+                                await RemoveRepo(writer, reader, cancellationToken);
+                                break;
                             default:
                                 await writer.WriteLineAsync(Commands.BadCommand);
                                 break;
@@ -83,6 +90,29 @@ namespace PoshGit2
                     pipe.WaitForPipeDrain();
                     pipe.Disconnect();
                 }
+            }
+        }
+
+        private async Task RemoveRepo(StreamWriter writer, StreamReader reader, CancellationToken cancellationToken)
+        {
+            using (var jsonTextReader = new JsonTextReader(reader))
+            {
+                var repo = _serializer.Deserialize<ReadWriteRepositoryStatus>(jsonTextReader);
+
+                await _repoCache.RemoveRepo(repo, cancellationToken);
+
+                // TODO: plumb some sort of success/failure notification
+                await writer.WriteLineAsync(Commands.Success);
+            }
+        }
+
+        private async Task GetAllRepos(StreamWriter writer, CancellationToken cancellationToken)
+        {
+            var all = await _repoCache.GetAllRepos(cancellationToken);
+
+            using (var jsonTextWriter = new JsonTextWriter(writer))
+            {
+                _serializer.Serialize(jsonTextWriter, all);
             }
         }
 
@@ -103,8 +133,6 @@ namespace PoshGit2
             {
                 _serializer.Serialize(jsonTextWriter, repo);
             }
-
-            await writer.FlushAsync();
         }
     }
 }

@@ -52,7 +52,9 @@ namespace PoshGit2
                 return false;
             }
 
-            await _repoSearch.SendResultAsync(await _cache.GetAllRepos(token), token);
+            var result = await _cache.GetAllRepos(token);
+
+            _log.Information("Found repos: {@Repos}", result);
 
             return true;
         }
@@ -71,14 +73,10 @@ namespace PoshGit2
                 if (repo != null)
                 {
                     _log.Information("{@Repo}", repo);
-
-                    await _repoSearch.SendResultAsync(new[] { repo }, token);
                 }
                 else
                 {
                     _log.Information("No repo found: {@Input}", command);
-
-                    await _repoSearch.SendResultAsync(Enumerable.Empty<IRepositoryStatus>(), token);
                 }
             }
 
