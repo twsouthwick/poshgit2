@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands.cs" />
+    <Compile Include="DaemonStartupRepoCache.cs" />
     <Compile Include="NamedPipeRepoServer.cs" />
     <Compile Include="NonClosingStreamReader.cs" />
     <Compile Include="NonClosingStreamWriter.cs" />

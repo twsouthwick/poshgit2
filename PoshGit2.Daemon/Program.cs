@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using PoshGit2;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace PoshGit.Daemon
@@ -9,20 +10,18 @@ namespace PoshGit.Daemon
     {
         static void Main(string[] args)
         {
-            if (TryStartServer())
+            var argSet = new HashSet<string>(args, StringComparer.OrdinalIgnoreCase);
+
+            var skipServer = argSet.Contains("test");
+            var showServer = argSet.Contains("showServer");
+
+            if (skipServer)
             {
-                return;
+                RunTestLoop(showServer);
             }
-
-#if DEBUG
-            var test = true;
-#else
-            var test = args.Length > 0 && string.Equals("test", args[0], StringComparison.Ordinal);
-#endif
-
-            if (test)
+            else
             {
-                RunTestLoop();
+                TryStartServer();
             }
         }
 
@@ -36,8 +35,6 @@ namespace PoshGit.Daemon
                     return false;
                 }
 
-                Console.WriteLine("Starting server...");
-
                 using (var container = BuildServerContainer())
                 {
                     var server = container.Resolve<NamedPipeRepoServer>();
@@ -49,11 +46,11 @@ namespace PoshGit.Daemon
             }
         }
 
-        private static void RunTestLoop()
+        private static void RunTestLoop(bool showServer)
         {
             using (var cancellationTokenSource = new CancellationTokenSource())
             {
-                using (var container = BuildTestLoopContainer())
+                using (var container = BuildTestLoopContainer(showServer))
                 {
                     var loop = container.Resolve<RepoSearchLoop>();
 
@@ -62,15 +59,16 @@ namespace PoshGit.Daemon
             }
         }
 
-        private static IContainer BuildTestLoopContainer()
+        private static IContainer BuildTestLoopContainer(bool showServer)
         {
             var builder = new ContainerBuilder();
 
             builder.RegisterModule(new PoshGitAutofacModule { LogToConsole = true });
-            builder.RegisterModule(new PoshGitDaemonModule());
+            builder.RegisterModule(new PoshGitDaemonModule { ShowServer = showServer });
 
             return builder.Build();
         }
+
         private static IContainer BuildServerContainer()
         {
             var builder = new ContainerBuilder();
