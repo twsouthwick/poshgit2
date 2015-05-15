@@ -71,7 +71,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepoSearchCommands.cs" />
     <Compile Include="RepoSearchLoop.cs" />
-    <Compile Include="StringCurrentWorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

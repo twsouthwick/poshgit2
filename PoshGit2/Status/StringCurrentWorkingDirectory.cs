@@ -13,6 +13,12 @@ namespace PoshGit2
 
         public override string CWD { get { return _cwd; } }
 
-        public override bool IsValid { get { return Directory.Exists(_cwd) || File.Exists(_cwd); } }
+        public override bool IsValid
+        {
+            get
+            {
+                return Directory.Exists(_cwd) || File.Exists(_cwd);
+            }
+        }
     }
 }
