@@ -24,16 +24,27 @@ namespace PoshGit2
         {
             await Task.Run(() =>
             {
-                var location = Path.GetDirectoryName(this.GetType().Assembly.Location);
+                // Check to see if the server is running
+                bool createdNewServerMutex;
+                using (var serverMutex = new Mutex(true, "PoshGit2_Server", out createdNewServerMutex))
+                { }
 
-                _log.Information("Launching daemon in case it hasn't been started from {WorkingDirectory}", location);
+                if(!createdNewServerMutex )
+                {
+                    return;
+                }
+
+                // If mutex was created, server is not running. Launch process
+                var location = Path.GetDirectoryName(this.GetType().Assembly.Location);
 
                 var psi = new ProcessStartInfo
                 {
                     FileName = "PoshGit2.Daemon.exe",
                     WorkingDirectory = location,
-                    WindowStyle = _showServer ? ProcessWindowStyle.Normal: ProcessWindowStyle.Hidden
+                    WindowStyle = _showServer ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden
                 };
+
+                _log.Debug("Launching daemon as it is not running: {@ProcessStartInfo}", psi);
 
                 try
                 {

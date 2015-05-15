@@ -2,6 +2,7 @@
 using Autofac.Core;
 using Serilog;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -40,13 +41,14 @@ namespace PoshGit2
 
         private Serilog.ILogger CreateLogger(IComponentContext arg)
         {
-            var processId = System.Diagnostics.Process.GetCurrentProcess().Id;
+            var processId = Process.GetCurrentProcess().Id;
             var config = new LoggerConfiguration()
                 .Enrich.WithThreadId()
                 .Enrich.WithProcessId()
                 .Enrich.WithMachineName()
                 .Destructure.ByTransforming<ReadonlyCopyRepositoryStatus>(ConvertStatus)
                 .Destructure.ByTransforming<ReadWriteRepositoryStatus>(ConvertStatus)
+                .Destructure.ByTransforming<ProcessStartInfo>(p => new { Name = p.FileName, Args = p.Arguments, WindowStyle = p.WindowStyle, WorkingDirectory = p.WorkingDirectory })
                 .WriteTo.Trace()
                 .WriteTo.RollingFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", $"log-{processId}-{{Date}}.txt"));
 
