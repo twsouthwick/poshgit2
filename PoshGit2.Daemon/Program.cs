@@ -50,7 +50,7 @@ namespace PoshGit.Daemon
         {
             using (var container = BuildTestLoopContainer(showServer))
             {
-                var loop = container.Resolve<RepoSearchLoop>();
+                var loop = container.Resolve<RepoCacheTestLoop>();
 
                 loop.RunAsync(CancellationToken.None).Wait();
             }
@@ -62,8 +62,11 @@ namespace PoshGit.Daemon
 
             builder.RegisterModule(new PoshGitAutofacModule());
             builder.RegisterModule(new SerilogModule { LogToConsole = true });
-            builder.RegisterModule(new TestLoopModule());
             builder.RegisterModule(new NamedPipeStatusModule { ShowServer = showServer });
+
+            builder.RegisterType<RepoCacheTestLoop>()
+               .AsSelf()
+               .SingleInstance();
 
             return builder.Build();
         }
