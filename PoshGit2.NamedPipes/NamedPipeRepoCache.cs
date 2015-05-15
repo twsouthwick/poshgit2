@@ -38,11 +38,11 @@ namespace PoshGit2
         {
             return SendReceiveCommandAsync(async (reader, writer) =>
             {
-                await writer.WriteLineAsync(Commands.FindRepo);
+                await writer.WriteAsync(NamedPipeCommand.FindRepo);
 
-                var response = await reader.ReadLineAsync();
+                var response = await reader.ReadCommandAsync();
 
-                if (!string.Equals(Commands.Ready, response, StringComparison.Ordinal))
+                if (response != NamedPipeCommand.Ready)
                 {
                     return null;
                 }
@@ -61,11 +61,11 @@ namespace PoshGit2
         {
             return SendReceiveCommandAsync(async (reader, writer) =>
             {
-                await writer.WriteLineAsync(Commands.GetAllRepos);
+                await writer.WriteAsync(NamedPipeCommand.GetAllRepos);
 
-                var response = await reader.ReadLineAsync();
+                var response = await reader.ReadCommandAsync();
 
-                if (!string.Equals(Commands.Ready, response, StringComparison.Ordinal))
+                if (response != NamedPipeCommand.Ready)
                 {
                     return null;
                 }
@@ -83,20 +83,20 @@ namespace PoshGit2
         {
             return SendReceiveCommandAsync(async (reader, writer) =>
             {
-                await writer.WriteLineAsync(Commands.RemoveRepo);
+                await writer.WriteAsync(NamedPipeCommand.RemoveRepo);
 
-                var response = await reader.ReadLineAsync();
+                var response = await reader.ReadCommandAsync();
 
-                if (!string.Equals(Commands.Ready, response, StringComparison.Ordinal))
+                if (response != NamedPipeCommand.Ready)
                 {
                     return false;
                 }
 
                 await writer.WriteLineAsync(path);
 
-                var result = await reader.ReadLineAsync();
+                var result = await reader.ReadCommandAsync();
 
-                return string.Equals(Commands.Success, result, StringComparison.Ordinal);
+                return result == NamedPipeCommand.Success;
             });
         }
     }

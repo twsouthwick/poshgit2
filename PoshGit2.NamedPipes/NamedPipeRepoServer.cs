@@ -61,26 +61,26 @@ namespace PoshGit2
                     using (var reader = new NonClosingStreamReader(pipe))
                     using (var writer = new NonClosingStreamWriter(pipe) { AutoFlush = true })
                     {
-                        var input = await reader.ReadLineAsync();
+                        var input = await reader.ReadCommandAsync();
 
                         _log.Information("Retrieved input {Input}", input);
 
                         switch (input)
                         {
-                            case Commands.FindRepo:
-                                await writer.WriteLineAsync(Commands.Ready);
+                            case NamedPipeCommand.FindRepo:
+                                await writer.WriteAsync(NamedPipeCommand.Ready);
                                 await FindRepo(writer, await reader.ReadLineAsync(), cancellationToken);
                                 break;
-                            case Commands.GetAllRepos:
-                                await writer.WriteLineAsync(Commands.Ready);
+                            case NamedPipeCommand.GetAllRepos:
+                                await writer.WriteAsync(NamedPipeCommand.Ready);
                                 await GetAllRepos(writer, cancellationToken);
                                 break;
-                            case Commands.RemoveRepo:
-                                await writer.WriteLineAsync(Commands.Ready);
+                            case NamedPipeCommand.RemoveRepo:
+                                await writer.WriteAsync(NamedPipeCommand.Ready);
                                 await RemoveRepo(writer, reader, cancellationToken);
                                 break;
                             default:
-                                await writer.WriteLineAsync(Commands.BadCommand);
+                                await writer.WriteAsync(NamedPipeCommand.BadCommand);
                                 break;
                         }
                     }
@@ -98,7 +98,7 @@ namespace PoshGit2
             var repoPath = await reader.ReadLineAsync();
             var result = await _repoCache.RemoveRepoAsync(repoPath, cancellationToken);
 
-            await writer.WriteLineAsync(result ? Commands.Success : Commands.Failed);
+            await writer.WriteAsync(result ? NamedPipeCommand.Success : NamedPipeCommand.Failed);
         }
 
         private async Task GetAllRepos(StreamWriter writer, CancellationToken cancellationToken)

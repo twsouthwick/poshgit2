@@ -1,13 +1,36 @@
-﻿namespace PoshGit2
+﻿using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+
+namespace PoshGit2
 {
-    internal static class Commands
+    internal enum NamedPipeCommand : byte
     {
-        public const string FindRepo = "FindRepo";
-        public const string GetAllRepos = "GetAllRepos";
-        public const string RemoveRepo = "RemoveRepo";
-        public const string Ready = "Ready";
-        public const string BadCommand = "BadCommand";
-        public const string Success = "Success";
-        public const string Failed = "Failed";
+        FindRepo,
+        GetAllRepos,
+        RemoveRepo,
+        Ready,
+        BadCommand,
+        Success,
+        Failed
+    }
+
+    internal static class ReaderWriterExtensions
+    {
+        internal static Task WriteAsync(this StreamWriter writer, NamedPipeCommand command)
+        {
+            return writer.WriteAsync((char)command);
+        }
+
+        internal static async Task<NamedPipeCommand> ReadCommandAsync(this StreamReader reader)
+        {
+            var buffer = new char[1];
+
+            var result = await reader.ReadAsync(buffer, 0, 1);
+
+            Debug.Assert(result == 1);
+
+            return (NamedPipeCommand)buffer[0];
+        }
     }
 }
