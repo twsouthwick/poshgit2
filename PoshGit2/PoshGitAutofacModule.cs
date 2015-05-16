@@ -22,15 +22,8 @@ namespace PoshGit2
             builder.RegisterType<LibGit2Sharp.Repository>()
                 .As<LibGit2Sharp.IRepository>();
 
-            builder.RegisterType<SemaphoreThrottle>()
-                .As<IThrottle>();
-
             builder.RegisterType<GitFolderWatcher>()
-                .As<GitFolderWatcher>();
-
-            builder.RegisterType<SampledFolderWatcher>()
-                .As<IFolderWatcher>()
-                .WithParameter((p, c) => p.ParameterType == typeof(Func<string, IFolderWatcher>), (p, c) => c.Resolve<Func<string, GitFolderWatcher>>());
+                .As<IFolderWatcher>();
 
             builder.RegisterType<ConsoleStatusWriter>()
                 .As<IStatusWriter>()

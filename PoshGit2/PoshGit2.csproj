@@ -58,22 +58,18 @@
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
     <Compile Include="Status\ReadWriteRepositoryStatus.cs" />
-    <Compile Include="Status\SampledFolderWatcher.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Status\ReadonlyCopyRepositoryStatus.cs" />
     <Compile Include="ICurrentWorkingDirectory.cs" />
     <Compile Include="Status\IFolderWatcher.cs" />
-    <Compile Include="IThrottle.cs" />
     <Compile Include="Status\IRepositoryCache.cs" />
     <Compile Include="Status\IRepositoryStatus.cs" />
     <Compile Include="Status\ObservableBase.cs" />
-    <Compile Include="MutexThrottle.cs" />
     <Compile Include="Status\StringCurrentWorkingDirectory.cs" />
     <Compile Include="Status\UpdateableRepositoryStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status\RepositoryCache.cs" />
-    <Compile Include="SemaphoreThrottle.cs" />
     <Compile Include="WindowsCurrentWorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>

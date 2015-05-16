@@ -3,28 +3,30 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PoshGit2
 {
     public sealed class UpdateableRepositoryStatus : IDisposable, IRepositoryStatus
     {
+        private const int MaxUpdateRepoCount = 2;
         private const string Elipses = "...";
 
         private readonly ICurrentWorkingDirectory _cwd;
         private readonly ILogger _log;
+        private readonly SemaphoreSlim _updateGateSemaphore = new SemaphoreSlim(MaxUpdateRepoCount, MaxUpdateRepoCount);
+        private readonly SemaphoreSlim _updateRepoSemaphore = new SemaphoreSlim(1, 1);
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         // These are set in an initialization method so that it does not stall the console output
         private IRepository _repository;
         private IFolderWatcher _folderWatcher;
 
-        private bool _isUpdating;
-
         public UpdateableRepositoryStatus(string folder, ILogger log, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd)
         {
             _log = log;
             _cwd = cwd;
-            _isUpdating = true;
 
             Working = new ChangedItemsCollection();
             Index = new ChangedItemsCollection();
@@ -46,8 +48,113 @@ namespace PoshGit2
             UpdateStatus(CurrentWorkingDirectory);
         }
 
-        public string Branch => _isUpdating ? $"{ExpandBranchName()}{Elipses}" : ExpandBranchName();
+        private bool IsUpdating => _updateGateSemaphore.CurrentCount != MaxUpdateRepoCount;
 
+        public string Branch => IsUpdating ? $"{ExpandBranchName()}{Elipses}" : ExpandBranchName();
+
+        public bool HasWorking => Working.HasAny;
+
+        public ChangedItemsCollection Working { get; set; }
+
+        public bool HasUntracked { get; set; }
+
+        public ChangedItemsCollection Index { get; set; }
+
+        public bool HasIndex => Index.HasAny;
+
+        public string GitDir { get; set; }
+
+        public string CurrentWorkingDirectory { get; set; }
+
+        public int AheadBy => _repository?.Head.TrackingDetails.AheadBy ?? 0;
+
+        public int BehindBy => _repository?.Head.TrackingDetails.BehindBy ?? 0;
+
+        public IEnumerable<string> LocalBranches => _repository?.Branches.Where(b => !b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>();
+
+        public IEnumerable<string> RemoteBranches => _repository?.Branches.Where(b => b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>();
+
+        public IEnumerable<string> Stashes => _repository?.Stashes.Select(s => s.Name) ?? Enumerable.Empty<string>();
+
+        public IEnumerable<string> Remotes => _repository?.Network.Remotes.Select(r => r.Name) ?? Enumerable.Empty<string>();
+
+        public IEnumerable<ConfigurationEntry<string>> Configuration => _repository?.Config ?? Enumerable.Empty<ConfigurationEntry<string>>();
+
+        /// <summary>
+        /// Update the status from a file change asynchronously 
+        /// 
+        /// This gates it so that only one update occurs at a time and at most one update
+        /// is pending.  This is so that when a large number of file updates are triggered,
+        /// we make sure to catch the final one.
+        /// </summary>
+        /// <param name="file"></param>
+        public async void UpdateStatus(string file)
+        {
+            _log.Debug("File '{File}' was modified", file);
+
+            if (!_updateGateSemaphore.Wait(0))
+            {
+                return;
+            }
+
+            try
+            {
+                await _updateRepoSemaphore.WaitAsync(_cancellationTokenSource.Token);
+
+                _log.Information("Update was triggered by '{File}'", file);
+
+                UpdateStatus();
+
+                _log.Information("Update was completed for '{File}'", file);
+
+                // Force a 250ms delay between processing in cases when large number of events
+                // are seen, such as removing a large number of files
+                await Task.Delay(250, _cancellationTokenSource.Token);
+
+                return;
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                _updateRepoSemaphore.Release();
+                _updateGateSemaphore.Release();
+            }
+        }
+
+        private void UpdateStatus()
+        {
+            try
+            {
+                var repositoryStatus = _repository.RetrieveStatus();
+
+                Working = new ChangedItemsCollection
+                {
+                    Added = GetCollection(repositoryStatus.Untracked),
+                    Modified = GetCollection(repositoryStatus.Modified, repositoryStatus.RenamedInWorkDir),
+                    Deleted = GetCollection(repositoryStatus.Missing)
+                };
+
+                Index = new ChangedItemsCollection
+                {
+                    Added = GetCollection(repositoryStatus.Added),
+                    Modified = GetCollection(repositoryStatus.Staged, repositoryStatus.RenamedInIndex),
+                    Deleted = GetCollection(repositoryStatus.Removed)
+                };
+            }
+            catch (LibGit2SharpException e)
+            {
+                _log.Error(e, "Unexpected git exception");
+            }
+            catch (Exception e)
+            {
+                _log.Error(e, "Unexpected exception");
+            }
+        }
+
+        /// <summary>
+        /// Expand branch name to give description such as MERGING, REBASE, CHERRY-PICKING, etc
+        /// </summary>
+        /// <returns></returns>
         private string ExpandBranchName()
         {
             // Repository may still be initializing
@@ -111,68 +218,6 @@ namespace PoshGit2
             return branch;
         }
 
-        public bool HasWorking => Working.HasAny;
-
-        public ChangedItemsCollection Working { get; set; }
-
-        public bool HasUntracked { get; set; }
-
-        public ChangedItemsCollection Index { get; set; }
-
-        public bool HasIndex => Index.HasAny;
-
-        public string GitDir { get; set; }
-
-        public string CurrentWorkingDirectory { get; set; }
-
-        public int AheadBy => _repository?.Head.TrackingDetails.AheadBy ?? 0;
-
-        public int BehindBy => _repository?.Head.TrackingDetails.BehindBy ?? 0;
-
-        public IEnumerable<string> LocalBranches => _repository?.Branches.Where(b => !b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>();
-
-        public IEnumerable<string> RemoteBranches => _repository?.Branches.Where(b => b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>();
-
-        public IEnumerable<string> Stashes => _repository?.Stashes.Select(s => s.Name) ?? Enumerable.Empty<string>();
-
-        public IEnumerable<string> Remotes => _repository?.Network.Remotes.Select(r => r.Name) ?? Enumerable.Empty<string>();
-
-        public IEnumerable<ConfigurationEntry<string>> Configuration => _repository?.Config ?? Enumerable.Empty<ConfigurationEntry<string>>();
-
-        public void UpdateStatus(string file)
-        {
-            _isUpdating = true;
-
-            _log.Debug("Updating repo: {Path}", file);
-
-            try
-            {
-                var repositoryStatus = _repository.RetrieveStatus();
-
-                Working = new ChangedItemsCollection
-                {
-                    Added = GetCollection(repositoryStatus.Untracked),
-                    Modified = GetCollection(repositoryStatus.Modified, repositoryStatus.RenamedInWorkDir),
-                    Deleted = GetCollection(repositoryStatus.Missing)
-                };
-
-                Index = new ChangedItemsCollection
-                {
-                    Added = GetCollection(repositoryStatus.Added),
-                    Modified = GetCollection(repositoryStatus.Staged, repositoryStatus.RenamedInIndex),
-                    Deleted = GetCollection(repositoryStatus.Removed)
-                };
-            }
-            catch (LibGit2SharpException e)
-            {
-                _log.Warning(e, "Unexpected git exception");
-            }
-
-            _log.Debug("Done updating repo {Path}", file);
-
-            _isUpdating = false;
-        }
-
         private ICollection<string> GetCollection(params IEnumerable<StatusEntry>[] entries)
         {
             return entries.SelectMany(o => o).Select(f => f.FilePath).ToList().AsReadOnly();
@@ -184,6 +229,12 @@ namespace PoshGit2
 
             _folderWatcher.OnNext -= UpdateStatus;
             (_folderWatcher as IDisposable)?.Dispose();
+
+            _updateRepoSemaphore.Dispose();
+            _updateGateSemaphore.Dispose();
+
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace PoshGit.Tests
 
                 var watcher = factory(path);
 
-                Assert.IsType<SampledFolderWatcher>(watcher);
+                Assert.IsType<GitFolderWatcher>(watcher);
             }
         }
     }
