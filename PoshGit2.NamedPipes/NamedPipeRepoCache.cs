@@ -11,12 +11,10 @@ namespace PoshGit2
 {
     public class NamedPipeRepoCache : IRepositoryCache
     {
-        private readonly CancellationToken _cancellationToken;
         private readonly JsonSerializer _serializer;
 
-        public NamedPipeRepoCache(CancellationToken cancellationToken)
+        public NamedPipeRepoCache()
         {
-            _cancellationToken = cancellationToken;
             _serializer = JsonSerializer.Create();
         }
 

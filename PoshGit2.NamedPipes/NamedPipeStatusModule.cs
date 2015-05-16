@@ -23,9 +23,10 @@ namespace PoshGit2
         {
             builder.Register(ctx =>
                {
-                   var namedPipe = new NamedPipeRepoCache(ctx.Resolve<CancellationToken>());
-
-                   return new DaemonStartupRepoCache(namedPipe, ctx.Resolve<ILogger>(), ShowServer);
+                   return new DaemonStartupRepoCache(
+                       new NamedPipeRepoCache(), 
+                       ctx.Resolve<ILogger>(), 
+                       ShowServer);
                })
               .OnActivated(a => a.Instance.EnsureServerIsAvailable())
               .As<IRepositoryCache>()
