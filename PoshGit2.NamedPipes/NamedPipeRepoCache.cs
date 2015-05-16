@@ -18,7 +18,48 @@ namespace PoshGit2
             _serializer = JsonSerializer.Create();
         }
 
-        private async Task<T> SendReceiveCommandAsync<T>(Func<StreamReader, StreamWriter, Task<T>> func)
+        public Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
+        {
+            return SendReceiveCommandAsync(async (reader, writer) =>
+            {
+                await writer.WriteLineAsync(cwd.CWD);
+
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    return _serializer
+                        .Deserialize<ReadWriteRepositoryStatus>(jsonReader) as IRepositoryStatus;
+                }
+            }, NamedPipeCommand.FindRepo);
+        }
+
+        public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
+        {
+            return SendReceiveCommandAsync((reader, writer) =>
+            {
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    var result = _serializer
+                        .Deserialize<IEnumerable<ReadWriteRepositoryStatus>>(jsonReader)
+                        .Cast<IRepositoryStatus>();
+
+                    return Task.FromResult(result);
+                }
+            }, NamedPipeCommand.GetAllRepos);
+        }
+
+        public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
+        {
+            return SendReceiveCommandAsync(async (reader, writer) =>
+            {
+                await writer.WriteLineAsync(path);
+
+                var result = await reader.ReadCommandAsync();
+
+                return result == NamedPipeCommand.Success;
+            }, NamedPipeCommand.RemoveRepo);
+        }
+
+        private async Task<T> SendReceiveCommandAsync<T>(Func<StreamReader, StreamWriter, Task<T>> func, NamedPipeCommand command)
         {
             using (var pipe = new NamedPipeClientStream(NamedPipeRepoServer.ServerName, NamedPipeRepoServer.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous))
             {
@@ -27,75 +68,18 @@ namespace PoshGit2
                 using (var writer = new NonClosingStreamWriter(pipe) { AutoFlush = true })
                 using (var reader = new NonClosingStreamReader(pipe))
                 {
+                    await writer.WriteAsync(command);
+
+                    var response = await reader.ReadCommandAsync();
+
+                    if (response != NamedPipeCommand.Ready)
+                    {
+                        return default(T);
+                    }
+
                     return await func(reader, writer);
                 }
             }
-        }
-
-        public Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
-        {
-            return SendReceiveCommandAsync(async (reader, writer) =>
-            {
-                await writer.WriteAsync(NamedPipeCommand.FindRepo);
-
-                var response = await reader.ReadCommandAsync();
-
-                if (response != NamedPipeCommand.Ready)
-                {
-                    return null;
-                }
-
-                await writer.WriteLineAsync(cwd.CWD);
-
-                using (var jsonReader = new JsonTextReader(reader))
-                {
-                    return _serializer
-                        .Deserialize<ReadWriteRepositoryStatus>(jsonReader) as IRepositoryStatus;
-                }
-            });
-        }
-
-        public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
-        {
-            return SendReceiveCommandAsync(async (reader, writer) =>
-            {
-                await writer.WriteAsync(NamedPipeCommand.GetAllRepos);
-
-                var response = await reader.ReadCommandAsync();
-
-                if (response != NamedPipeCommand.Ready)
-                {
-                    return null;
-                }
-
-                using (var jsonReader = new JsonTextReader(reader))
-                {
-                    return _serializer
-                        .Deserialize<IEnumerable<ReadWriteRepositoryStatus>>(jsonReader)
-                        .Cast<IRepositoryStatus>();
-                }
-            });
-        }
-
-        public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
-        {
-            return SendReceiveCommandAsync(async (reader, writer) =>
-            {
-                await writer.WriteAsync(NamedPipeCommand.RemoveRepo);
-
-                var response = await reader.ReadCommandAsync();
-
-                if (response != NamedPipeCommand.Ready)
-                {
-                    return false;
-                }
-
-                await writer.WriteLineAsync(path);
-
-                var result = await reader.ReadCommandAsync();
-
-                return result == NamedPipeCommand.Success;
-            });
         }
     }
 }
