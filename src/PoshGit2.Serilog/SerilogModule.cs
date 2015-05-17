@@ -10,7 +10,23 @@ namespace PoshGit2
 {
     public class SerilogModule : Module
     {
+        public SerilogModule()
+        {
+            var processId = Process.GetCurrentProcess().Id;
+
+            LogToConsole = false;
+            LogToTrace = true;
+            SeqServer = Environment.GetEnvironmentVariable("poshgit2_seq_server");
+            LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", $"log-{processId}-{{Date}}.txt");
+        }
+
         public bool LogToConsole { get; set; }
+
+        public string SeqServer { get; set; }
+
+        public string LogFile { get; set; }
+
+        public bool LogToTrace { get; set; }
 
         protected override void Load(ContainerBuilder builder)
         {
@@ -41,38 +57,35 @@ namespace PoshGit2
 
         private Serilog.ILogger CreateLogger(IComponentContext arg)
         {
-            var processId = Process.GetCurrentProcess().Id;
             var config = new LoggerConfiguration()
                 .Enrich.WithThreadId()
                 .Enrich.WithProcessId()
                 .Enrich.WithMachineName()
                 .Destructure.ByTransforming<ReadonlyCopyRepositoryStatus>(ConvertStatus)
                 .Destructure.ByTransforming<ReadWriteRepositoryStatus>(ConvertStatus)
-                .Destructure.ByTransforming<ProcessStartInfo>(p => new { Name = p.FileName, Args = p.Arguments, WindowStyle = p.WindowStyle, WorkingDirectory = p.WorkingDirectory })
-                .WriteTo.Trace()
-                .WriteTo.RollingFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", $"log-{processId}-{{Date}}.txt"));
+                .Destructure.ByTransforming<ProcessStartInfo>(p => new { Name = p.FileName, Args = p.Arguments, WindowStyle = p.WindowStyle, WorkingDirectory = p.WorkingDirectory });
+
+            if (LogToTrace)
+            {
+                config = config.WriteTo.Trace();
+            }
+
+            if (!string.IsNullOrWhiteSpace(LogFile))
+            {
+                config = config.WriteTo.RollingFile(LogFile);
+            }
 
             if (LogToConsole)
             {
                 config = config.WriteTo.ColoredConsole();
             }
 
-            var seqServer = Environment.GetEnvironmentVariable("poshgit2_seq_server");
-
-            if (string.IsNullOrWhiteSpace(seqServer))
+            if (!string.IsNullOrWhiteSpace(SeqServer))
             {
-                return config.CreateLogger();
+                config = config.WriteTo.Seq(SeqServer);
             }
-            else
-            {
-                var logger = config
-                                   .WriteTo.Seq(seqServer)
-                                   .CreateLogger();
 
-                logger.Information("Seq Server {Address}", seqServer);
-
-                return logger;
-            }
+            return config.CreateLogger();
         }
 
         private object ConvertStatus(IRepositoryStatus status)
