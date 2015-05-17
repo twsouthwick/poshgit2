@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 14.0.22512.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2", "PoshGit2\PoshGit2.csproj", "{0F900A09-BE4A-461E-9E69-53B109A6D5AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2", "src\PoshGit2\PoshGit2.csproj", "{0F900A09-BE4A-461E-9E69-53B109A6D5AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit.Tests", "PoshGit.Tests\PoshGit.Tests.csproj", "{72CC9DCC-8AE9-45DE-8D82-8045CFB8B606}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit.Tests", "test\PoshGit2.Tests\PoshGit.Tests.csproj", "{72CC9DCC-8AE9-45DE-8D82-8045CFB8B606}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{BCE4A09B-B20C-41FA-A797-A03538008B2C}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,13 +13,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{BCE4A0
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.Cmdlet", "PoshGit2.Cmdlet\PoshGit2.Cmdlet.csproj", "{03D62F36-9F27-40B3-BF0C-845BDF921948}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.Cmdlet", "src\PoshGit2.Cmdlet\PoshGit2.Cmdlet.csproj", "{03D62F36-9F27-40B3-BF0C-845BDF921948}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.Daemon", "PoshGit2.Daemon\PoshGit2.Daemon.csproj", "{0A995C58-7A27-49D4-9217-C8452D267C76}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.Server", "src\PoshGit2.Server\PoshGit2.Server.csproj", "{0A995C58-7A27-49D4-9217-C8452D267C76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.NamedPipes", "PoshGit2.NamedPipes\PoshGit2.NamedPipes.csproj", "{2AD22125-3568-4FF8-9095-22A7B01FE6F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.NamedPipes", "src\PoshGit2.NamedPipes\PoshGit2.NamedPipes.csproj", "{2AD22125-3568-4FF8-9095-22A7B01FE6F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.Serilog", "PoshGit2.Serilog\PoshGit2.Serilog.csproj", "{EFDE89AD-BB86-4696-9FCB-8CE54E815D3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.Serilog", "src\PoshGit2.Serilog\PoshGit2.Serilog.csproj", "{EFDE89AD-BB86-4696-9FCB-8CE54E815D3B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{90A36BB2-0CBC-4BCA-BFD1-7CAFBC5DB36A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,5 +58,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0F900A09-BE4A-461E-9E69-53B109A6D5AB} = {8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}
+		{72CC9DCC-8AE9-45DE-8D82-8045CFB8B606} = {90A36BB2-0CBC-4BCA-BFD1-7CAFBC5DB36A}
+		{03D62F36-9F27-40B3-BF0C-845BDF921948} = {8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}
+		{0A995C58-7A27-49D4-9217-C8452D267C76} = {8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}
+		{2AD22125-3568-4FF8-9095-22A7B01FE6F6} = {8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}
+		{EFDE89AD-BB86-4696-9FCB-8CE54E815D3B} = {8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}
 	EndGlobalSection
 EndGlobal

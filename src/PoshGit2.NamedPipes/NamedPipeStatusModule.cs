@@ -23,7 +23,7 @@ namespace PoshGit2
         {
             builder.Register(ctx =>
                {
-                   return new DaemonStartupRepoCache(
+                   return new ServerStartupRepoCache(
                        new NamedPipeRepoCache(), 
                        ctx.Resolve<ILogger>(), 
                        ShowServer);

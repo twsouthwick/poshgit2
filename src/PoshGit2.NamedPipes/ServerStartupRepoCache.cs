@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    public class DaemonStartupRepoCache : IRepositoryCache
+    public class ServerStartupRepoCache : IRepositoryCache
     {
         private readonly ILogger _log;
         private readonly IRepositoryCache _other;
         private readonly bool _showServer;
 
-        public DaemonStartupRepoCache(IRepositoryCache other, ILogger log, bool showServer)
+        public ServerStartupRepoCache(IRepositoryCache other, ILogger log, bool showServer)
         {
             _other = other;
             _log = log;
@@ -39,12 +39,12 @@ namespace PoshGit2
 
                 var psi = new ProcessStartInfo
                 {
-                    FileName = "PoshGit2.Daemon.exe",
+                    FileName = "PoshGit2.Server.exe",
                     WorkingDirectory = location,
                     WindowStyle = _showServer ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden
                 };
 
-                _log.Debug("Launching daemon as it is not running: {@ProcessStartInfo}", psi);
+                _log.Debug("Launching server as it is not running: {@ProcessStartInfo}", psi);
 
                 try
                 {
