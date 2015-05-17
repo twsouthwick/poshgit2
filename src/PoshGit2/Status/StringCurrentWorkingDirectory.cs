@@ -4,21 +4,13 @@ namespace PoshGit2
 {
     public class StringCurrentWorkingDirectory : WindowsCurrentWorkingDirectory
     {
-        private readonly string _cwd;
-
         public StringCurrentWorkingDirectory(string cwd)
         {
-            _cwd = cwd;
+            CWD = cwd;
         }
 
-        public override string CWD { get { return _cwd; } }
+        public override string CWD { get; }
 
-        public override bool IsValid
-        {
-            get
-            {
-                return Directory.Exists(_cwd) || File.Exists(_cwd);
-            }
-        }
+        public override bool IsValid => Directory.Exists(CWD) || File.Exists(CWD);
     }
 }
