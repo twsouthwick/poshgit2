@@ -54,7 +54,7 @@ namespace PoshGit2
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Factory.FromAsync(pipe.BeginWaitForConnection, pipe.EndWaitForConnection, null);
+                    await pipe.WaitForConnectionAsync(cancellationToken);
 
                     _log.Information("Connection started");
 

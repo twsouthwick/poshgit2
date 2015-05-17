@@ -17,11 +17,23 @@ namespace PoshGit.Daemon
 
             if (skipServer)
             {
+                Console.Title = $"PoshGit2.Server Test :: {GetPID()}";
+
                 RunTestLoop(showServer);
             }
             else
             {
+                Console.Title = $"PoshGit2.Server :: {GetPID()}";
+
                 TryStartServer();
+            }
+        }
+
+        private static int GetPID()
+        {
+            using(var process = System.Diagnostics.Process.GetCurrentProcess())
+            {
+                return process.Id;
             }
         }
 

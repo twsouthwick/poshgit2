@@ -11,10 +11,12 @@ namespace PoshGit2
 {
     public class NamedPipeRepoCache : IRepositoryCache
     {
+        private readonly ILogger _log;
         private readonly JsonSerializer _serializer;
 
-        public NamedPipeRepoCache()
+        public NamedPipeRepoCache(ILogger log)
         {
+            _log = log;
             _serializer = JsonSerializer.Create();
         }
 
@@ -29,7 +31,7 @@ namespace PoshGit2
                     return _serializer
                         .Deserialize<ReadWriteRepositoryStatus>(jsonReader) as IRepositoryStatus;
                 }
-            }, NamedPipeCommand.FindRepo);
+            }, NamedPipeCommand.FindRepo, cancellationToken);
         }
 
         public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
@@ -44,7 +46,7 @@ namespace PoshGit2
 
                     return Task.FromResult(result);
                 }
-            }, NamedPipeCommand.GetAllRepos);
+            }, NamedPipeCommand.GetAllRepos, cancellationToken, Enumerable.Empty<IRepositoryStatus>());
         }
 
         public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
@@ -56,29 +58,43 @@ namespace PoshGit2
                 var result = await reader.ReadCommandAsync();
 
                 return result == NamedPipeCommand.Success;
-            }, NamedPipeCommand.RemoveRepo);
+            }, NamedPipeCommand.RemoveRepo, cancellationToken);
         }
 
-        private async Task<T> SendReceiveCommandAsync<T>(Func<StreamReader, StreamWriter, Task<T>> func, NamedPipeCommand command)
+        private async Task<T> SendReceiveCommandAsync<T>(Func<StreamReader, StreamWriter, Task<T>> func, NamedPipeCommand command, CancellationToken cancellationToken, T defaultValue = default(T))
         {
-            using (var pipe = new NamedPipeClientStream(NamedPipeRepoServer.ServerName, NamedPipeRepoServer.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous))
+            // Time out after 2 seconds to access named pipe
+            var innerCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+
+            try
             {
-                pipe.Connect();
-
-                using (var writer = new NonClosingStreamWriter(pipe) { AutoFlush = true })
-                using (var reader = new NonClosingStreamReader(pipe))
+                // Ensure that the named pipe cancellation token gets cancelled if the main token is
+                using (cancellationToken.Register(innerCancellationTokenSource.Cancel))
+                using (var pipe = new NamedPipeClientStream(NamedPipeRepoServer.ServerName, NamedPipeRepoServer.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous))
                 {
-                    await writer.WriteAsync(command);
+                    await pipe.ConnectAsync(innerCancellationTokenSource.Token);
 
-                    var response = await reader.ReadCommandAsync();
-
-                    if (response != NamedPipeCommand.Ready)
+                    using (var writer = new NonClosingStreamWriter(pipe) { AutoFlush = true })
+                    using (var reader = new NonClosingStreamReader(pipe))
                     {
-                        return default(T);
-                    }
+                        await writer.WriteAsync(command);
 
-                    return await func(reader, writer);
+                        var response = await reader.ReadCommandAsync();
+
+                        if (response != NamedPipeCommand.Ready)
+                        {
+                            return defaultValue;
+                        }
+
+                        return await func(reader, writer);
+                    }
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                _log.Error("Named pipe communication with server was cancelled");
+
+                return defaultValue;
             }
         }
     }

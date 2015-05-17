@@ -21,11 +21,13 @@ namespace PoshGit2
 
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<NamedPipeRepoCache>().AsSelf();
+
             builder.Register(ctx =>
                {
                    return new ServerStartupRepoCache(
-                       new NamedPipeRepoCache(), 
-                       ctx.Resolve<ILogger>(), 
+                       ctx.Resolve<NamedPipeRepoCache>(),
+                       ctx.Resolve<ILogger>(),
                        ShowServer);
                })
               .OnActivated(a => a.Instance.EnsureServerIsAvailable())
