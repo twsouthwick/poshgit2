@@ -17,13 +17,13 @@ namespace PoshGit.Daemon
 
             if (skipServer)
             {
-                Console.Title = $"PoshGit2.Server Test :: {GetPID()}";
+                Console.Title = "PoshGit2 Server (Test)";
 
                 RunTestLoop(showServer);
             }
             else
             {
-                Console.Title = $"PoshGit2.Server :: {GetPID()}";
+                Console.Title = "PoshGit2 Server";
 
                 TryStartServer();
             }
