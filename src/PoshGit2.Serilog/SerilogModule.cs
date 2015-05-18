@@ -77,7 +77,7 @@ namespace PoshGit2
 
             if (LogToConsole)
             {
-                config = config.WriteTo.ColoredConsole();
+                config = config.WriteTo.ColoredConsole(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss:ffff} [{Level}] {Message}{NewLine}{Exception}");
             }
 
             if (!string.IsNullOrWhiteSpace(SeqServer))
