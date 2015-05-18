@@ -90,7 +90,7 @@ namespace PoshGit2
         /// <param name="file"></param>
         public async void UpdateStatus(string file)
         {
-            _log.Debug("File '{File}' was modified", file);
+            _log.Debug("File {File} was modified", file);
 
             if (!_updateGateSemaphore.Wait(0))
             {
@@ -101,15 +101,13 @@ namespace PoshGit2
             {
                 await _updateRepoSemaphore.WaitAsync(_cancellationTokenSource.Token);
 
-                _log.Information("Update was triggered by '{File}'", file);
+                _log.Information("Update was triggered by {File}", file);
 
                 UpdateStatus();
 
-                _log.Information("Update was completed for '{File}'", file);
-
-                // Force a 250ms delay between processing in cases when large number of events
+                // Force a 1000ms delay between processing in cases when large number of events
                 // are seen, such as removing a large number of files
-                await Task.Delay(250, _cancellationTokenSource.Token);
+                await Task.Delay(1000, _cancellationTokenSource.Token);
 
                 return;
             }

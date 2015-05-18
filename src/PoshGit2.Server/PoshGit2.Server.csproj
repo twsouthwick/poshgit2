@@ -75,10 +75,6 @@
       <Project>{2ad22125-3568-4ff8-9095-22a7b01fe6f6}</Project>
       <Name>PoshGit2.NamedPipes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PoshGit2.Serilog\PoshGit2.Serilog.csproj">
-      <Project>{efde89ad-bb86-4696-9fcb-8ce54e815d3b}</Project>
-      <Name>PoshGit2.Serilog</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PoshGit2\PoshGit2.csproj">
       <Project>{0f900a09-be4a-461e-9e69-53b109a6d5ab}</Project>
       <Name>PoshGit2</Name>
