@@ -19,7 +19,7 @@ namespace PoshGit2
 
         public NamedPipeRepoServer(IRepositoryCache repoCache, ILogger log)
         {
-            _log = log;
+            _log = log; 
             _cancellationTokenSource = new CancellationTokenSource();
             _repoCache = repoCache;
             _serializer = JsonSerializer.Create();
@@ -56,8 +56,6 @@ namespace PoshGit2
                 {
                     await pipe.WaitForConnectionAsync(cancellationToken);
 
-                    _log.Information("Connection started");
-
                     using (var reader = new NonClosingStreamReader(pipe))
                     using (var writer = new NonClosingStreamWriter(pipe) { AutoFlush = true })
                     {
@@ -79,6 +77,10 @@ namespace PoshGit2
                                 await writer.WriteAsync(NamedPipeCommand.Ready);
                                 await RemoveRepo(writer, reader, cancellationToken);
                                 break;
+                            case NamedPipeCommand.ClearCache:
+                                await writer.WriteAsync(NamedPipeCommand.Ready);
+                                await ProcessClearCacheAsync(writer, cancellationToken);
+                                break;
                             default:
                                 await writer.WriteAsync(NamedPipeCommand.BadCommand);
                                 break;
@@ -93,12 +95,39 @@ namespace PoshGit2
             }
         }
 
+        private async Task ProcessClearCacheAsync(StreamWriter writer, CancellationToken cancellationToken)
+        {
+            if (await _repoCache.ClearCacheAsync(cancellationToken))
+            {
+                await writer.WriteAsync(NamedPipeCommand.Success);
+
+                _log.Information("Cleared cache");
+            }
+            else
+            {
+                await writer.WriteAsync(NamedPipeCommand.Failed);
+
+                _log.Warning("Failed to clear cache");
+            }
+        }
+
         private async Task RemoveRepo(StreamWriter writer, StreamReader reader, CancellationToken cancellationToken)
         {
             var repoPath = await reader.ReadLineAsync();
             var result = await _repoCache.RemoveRepoAsync(repoPath, cancellationToken);
 
-            await writer.WriteAsync(result ? NamedPipeCommand.Success : NamedPipeCommand.Failed);
+            if (result)
+            {
+                await writer.WriteAsync(NamedPipeCommand.Success);
+
+                _log.Information("Removed repo {Repo}", repoPath);
+            }
+            else
+            {
+                await writer.WriteAsync(NamedPipeCommand.Failed);
+
+                _log.Warning("Failed to remove repo {Repo}", repoPath);
+            }
         }
 
         private async Task GetAllRepos(StreamWriter writer, CancellationToken cancellationToken)
@@ -109,6 +138,8 @@ namespace PoshGit2
             {
                 _serializer.Serialize(jsonTextWriter, all);
             }
+
+            _log.Information("Retrieved all repos");
         }
 
         private async Task FindRepo(StreamWriter writer, string path, CancellationToken cancellationToken)
@@ -123,10 +154,14 @@ namespace PoshGit2
 
                 await writer.WriteLineAsync(string.Empty);
             }
-
-            using (var jsonTextWriter = new JsonTextWriter(writer))
+            else
             {
-                _serializer.Serialize(jsonTextWriter, repo);
+                using (var jsonTextWriter = new JsonTextWriter(writer))
+                {
+                    _serializer.Serialize(jsonTextWriter, repo);
+                }
+
+                _log.Information("Found a repo at '{Path}'", path);
             }
         }
     }

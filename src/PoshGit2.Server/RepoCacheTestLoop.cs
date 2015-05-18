@@ -61,6 +61,10 @@ namespace PoshGit2
                 {
                     await ProcessGetAllCommandsAsync(token);
                 }
+                else if(line == "#clear")
+                {
+                    await ProcessClearCacheCommandAsync(token);
+                }
                 else if (line.StartsWith(remove, StringComparison.Ordinal))
                 {
                     var path = line.Substring(remove.Length).Trim();
@@ -90,6 +94,11 @@ namespace PoshGit2
             }
 
             return true;
+        }
+
+        private Task<bool> ProcessClearCacheCommandAsync(CancellationToken token)
+        {
+            return _cache.ClearCacheAsync(token);
         }
 
         private async Task<bool> ProcessGetAllCommandsAsync(CancellationToken token)

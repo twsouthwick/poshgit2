@@ -9,6 +9,7 @@ namespace PoshGit2
         FindRepo,
         GetAllRepos,
         RemoveRepo,
+        ClearCache,
         Ready,
         BadCommand,
         Success,

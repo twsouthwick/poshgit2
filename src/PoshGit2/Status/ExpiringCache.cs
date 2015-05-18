@@ -11,14 +11,23 @@ namespace PoshGit2
 {
     public sealed class ExpiringCache : IDisposable, IRepositoryCache
     {
-        private readonly MemoryCache _cache = MemoryCache.Default;
         private readonly Func<string, ICurrentWorkingDirectory, IRepositoryStatus> _factory;
         private readonly ILogger _log;
+
+        // This is replaced when it is cleared
+        private MemoryCache _cache; 
 
         public ExpiringCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
         {
             _log = log;
             _factory = factory;
+
+            _cache = GetCache();
+        }
+
+        private static MemoryCache GetCache()
+        {
+            return new MemoryCache("PoshGit2");
         }
 
         public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
@@ -128,6 +137,15 @@ namespace PoshGit2
         public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
         {
             return Task.FromResult(Remove(path));
+        }
+
+        public Task<bool> ClearCacheAsync(CancellationToken cancellationToken)
+        {
+            var original = Interlocked.Exchange(ref _cache, GetCache());
+
+            original.Dispose();
+
+            return Task.FromResult(true);
         }
 
         private bool Remove(string path)

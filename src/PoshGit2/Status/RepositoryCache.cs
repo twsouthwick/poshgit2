@@ -96,6 +96,13 @@ namespace PoshGit2
             return Task.FromResult(Remove(repoPath));
         }
 
+        public Task<bool> ClearCacheAsync(CancellationToken cancellationToken)
+        {
+            _repositories.Clear();
+
+            return Task.FromResult(true);
+        }
+
         private bool Remove(string path)
         {
             var mainPath = FindGitRepo(path);

@@ -29,7 +29,7 @@ namespace PoshGit2
                 using (var serverMutex = new Mutex(true, "PoshGit2_Server", out createdNewServerMutex))
                 { }
 
-                if(!createdNewServerMutex )
+                if (!createdNewServerMutex)
                 {
                     return;
                 }
@@ -76,6 +76,13 @@ namespace PoshGit2
             EnsureServerIsAvailable();
 
             return _other.RemoveRepoAsync(path, cancellationToken);
+        }
+
+        public async Task<bool> ClearCacheAsync(CancellationToken token)
+        {
+            EnsureServerIsAvailable();
+
+            return await _other.ClearCacheAsync(token);
         }
     }
 }

@@ -61,6 +61,16 @@ namespace PoshGit2
             }, NamedPipeCommand.RemoveRepo, cancellationToken);
         }
 
+        public Task<bool> ClearCacheAsync(CancellationToken cancellationToken)
+        {
+            return SendReceiveCommandAsync(async (reader, writer) =>
+            {
+                var result = await reader.ReadCommandAsync();
+
+                return result == NamedPipeCommand.Success;
+            }, NamedPipeCommand.ClearCache, cancellationToken);
+        }
+
         private async Task<T> SendReceiveCommandAsync<T>(Func<StreamReader, StreamWriter, Task<T>> func, NamedPipeCommand command, CancellationToken cancellationToken, T defaultValue = default(T))
         {
             // Time out after 2 seconds to access named pipe
