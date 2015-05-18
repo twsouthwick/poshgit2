@@ -136,7 +136,7 @@
     <ItemGroup>
       <OutputNupkg Include="$(OutDir)*.nupkg" />
     </ItemGroup>
-    <Exec Condition=" '$(MYGET_KEY)' != '' AND '$(MYGET_SOURCE)' != '' " Command="..\.nuget\nuget.exe push @(OutputNupkg) $(MYGET_KEY) -Source $(MYGET_Source)" />
+    <Exec Condition=" '$(MYGET_KEY)' != '' AND '$(MYGET_SOURCE)' != '' " Command="..\..\.nuget\nuget.exe push @(OutputNupkg) $(MYGET_KEY) -Source $(MYGET_Source)" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
