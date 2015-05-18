@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using Autofac.Core;
 using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -61,8 +63,8 @@ namespace PoshGit2
                 .Enrich.WithThreadId()
                 .Enrich.WithProcessId()
                 .Enrich.WithMachineName()
-                .Destructure.ByTransforming<ReadonlyCopyRepositoryStatus>(ConvertStatus)
-                .Destructure.ByTransforming<ReadWriteRepositoryStatus>(ConvertStatus)
+                .Destructure.With<RepositoryStatusDestructuringPolicy>()
+                .Destructure.With<CurrentWorkingDirectoryPolicy>()
                 .Destructure.ByTransforming<ProcessStartInfo>(p => new { Name = p.FileName, Args = p.Arguments, WindowStyle = p.WindowStyle, WorkingDirectory = p.WorkingDirectory });
 
             if (LogToTrace)
@@ -88,20 +90,55 @@ namespace PoshGit2
             return config.CreateLogger();
         }
 
-        private object ConvertStatus(IRepositoryStatus status)
+        private class CurrentWorkingDirectoryPolicy : IDestructuringPolicy
         {
-            if (status == null)
+            public bool TryDestructure(object value, ILogEventPropertyValueFactory propertyValueFactory, out LogEventPropertyValue result)
             {
-                return new { };
-            }
+                var cwd = value as ICurrentWorkingDirectory;
 
-            return new
+                if (cwd== null)
+                {
+                    result = null;
+                    return false;
+                }
+
+                var projection = new
+                {
+                    CWD = cwd.CWD,
+                    IsValid = cwd.IsValid
+                };
+
+                result = propertyValueFactory.CreatePropertyValue(projection, true);
+
+                return true;
+            }
+        }
+
+        private class RepositoryStatusDestructuringPolicy : IDestructuringPolicy
+        {
+            public bool TryDestructure(object value, ILogEventPropertyValueFactory propertyValueFactory, out LogEventPropertyValue result)
             {
-                GitDir = status.GitDir,
-                Index = status.Index?.ToString(),
-                Working = status.Working?.ToString(),
-                Branch = status.Branch
-            };
+                var status = value as IRepositoryStatus;
+
+                if (status == null)
+                {
+                    result = null;
+                    return false;
+                }
+
+                var projection = new
+                {
+                    GitDir = status.GitDir,
+                    Index = status.Index?.ToString(),
+                    Working = status.Working?.ToString(),
+                    Branch = status.Branch
+                };
+
+                result = propertyValueFactory.CreatePropertyValue(projection, true);
+
+                return true;
+
+            }
         }
     }
 }
