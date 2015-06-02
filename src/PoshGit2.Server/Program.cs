@@ -31,7 +31,7 @@ namespace PoshGit.Daemon
 
         private static int GetPID()
         {
-            using(var process = System.Diagnostics.Process.GetCurrentProcess())
+            using (var process = System.Diagnostics.Process.GetCurrentProcess())
             {
                 return process.Id;
             }
@@ -88,7 +88,11 @@ namespace PoshGit.Daemon
             var builder = new ContainerBuilder();
 
             builder.RegisterModule(new PoshGitAutofacModule());
-            builder.RegisterModule(new SerilogModule { LogToConsole = true });
+            builder.RegisterModule(new SerilogModule
+            {
+                LogUnhandledExceptions = true,
+                LogToConsole = true
+            });
             builder.RegisterType<NamedPipeRepoServer>().AsSelf().SingleInstance();
 
             return builder.Build();

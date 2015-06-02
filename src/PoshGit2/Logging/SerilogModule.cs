@@ -22,6 +22,8 @@ namespace PoshGit2
             LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PoshGit2", $"log-{processId}-{{Date}}.txt");
         }
 
+        public bool LogUnhandledExceptions { get; set; }
+
         public bool LogToConsole { get; set; }
 
         public string SeqServer { get; set; }
@@ -87,7 +89,29 @@ namespace PoshGit2
                 config = config.WriteTo.Seq(SeqServer);
             }
 
-            return config.CreateLogger();
+            var logger = config.CreateLogger();
+
+            LogExceptions(logger.ForContext("scope", "ExceptionWatcher"));
+
+            return logger;
+        }
+
+        private void LogExceptions(Serilog.ILogger logger)
+        {
+            if (LogUnhandledExceptions)
+            {
+                AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+                {
+                    try
+                    {
+                        logger.Fatal("{@Sender} {@UnhandledException}", s, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Fatal("Exception thrown while showing exception: {@Exception}", ex);
+                    }
+                };
+            }
         }
 
         private class CurrentWorkingDirectoryPolicy : IDestructuringPolicy
@@ -96,7 +120,7 @@ namespace PoshGit2
             {
                 var cwd = value as ICurrentWorkingDirectory;
 
-                if (cwd== null)
+                if (cwd == null)
                 {
                     result = null;
                     return false;
