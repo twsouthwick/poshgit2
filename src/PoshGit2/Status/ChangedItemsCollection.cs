@@ -17,10 +17,10 @@ namespace PoshGit2
 
         public bool HasAny => Added.Any() || Modified.Any() || Deleted.Any() || Unmerged.Any();
 
-        public ICollection<string> Added { get; set; }
-        public ICollection<string> Modified { get; set; }
-        public ICollection<string> Deleted { get; set; }
-        public ICollection<string> Unmerged { get; set; }
+        public IReadOnlyCollection<string> Added { get; set; }
+        public IReadOnlyCollection<string> Modified { get; set; }
+        public IReadOnlyCollection<string> Deleted { get; set; }
+        public IReadOnlyCollection<string> Unmerged { get; set; }
 
         public override string ToString()
         {

@@ -11,7 +11,7 @@ namespace PoshGit2
 
         public string Branch { get; set; }
 
-        public IEnumerable<ConfigurationEntry<string>> Configuration { get; set; }
+        public IReadOnlyCollection<ConfigurationEntry<string>> Configuration { get; set; }
 
         public string CurrentWorkingDirectory { get; set; }
 
@@ -19,13 +19,13 @@ namespace PoshGit2
 
         public ChangedItemsCollection Index { get; set; }
 
-        public IEnumerable<string> LocalBranches { get; set; }
+        public IReadOnlyCollection<string> LocalBranches { get; set; }
 
-        public IEnumerable<string> RemoteBranches { get; set; }
+        public IReadOnlyCollection<string> RemoteBranches { get; set; }
 
-        public IEnumerable<string> Remotes { get; set; }
+        public IReadOnlyCollection<string> Remotes { get; set; }
 
-        public IEnumerable<string> Stashes { get; set; }
+        public IReadOnlyCollection<string> Stashes { get; set; }
 
         public ChangedItemsCollection Working { get; set; }
     }

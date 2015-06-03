@@ -12,10 +12,10 @@ namespace PoshGit2
         int BehindBy { get; }
         string GitDir { get; }
         string CurrentWorkingDirectory { get; }
-        IEnumerable<string> LocalBranches { get; }
-        IEnumerable<string> RemoteBranches { get; }
-        IEnumerable<string> Stashes { get; }
-        IEnumerable<string> Remotes { get; }
-        IEnumerable<ConfigurationEntry<string>> Configuration { get; }
+        IReadOnlyCollection<string> LocalBranches { get; }
+        IReadOnlyCollection<string> RemoteBranches { get; }
+        IReadOnlyCollection<string> Stashes { get; }
+        IReadOnlyCollection<string> Remotes { get; }
+        IReadOnlyCollection<ConfigurationEntry<string>> Configuration { get; }
     }
 }

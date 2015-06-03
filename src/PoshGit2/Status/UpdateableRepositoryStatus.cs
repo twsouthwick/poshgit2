@@ -1,5 +1,6 @@
 ﻿using LibGit2Sharp;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,7 +24,8 @@ namespace PoshGit2
         private IRepository _repository;
         private IFolderWatcher _folderWatcher;
 
-        public UpdateableRepositoryStatus(string folder, ILogger log, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd)
+        public UpdateableRepositoryStatus(string folder, ILogger log, Func<string, IRepository> repositoryFactory,
+            Func<string, IFolderWatcher> folderWatcherFactory, ICurrentWorkingDirectory cwd)
         {
             _log = log;
             _cwd = cwd;
@@ -34,7 +36,8 @@ namespace PoshGit2
             Task.Run(() => Initialize(folder, repositoryFactory, folderWatcherFactory));
         }
 
-        private void Initialize(string folder, Func<string, IRepository> repositoryFactory, Func<string, IFolderWatcher> folderWatcherFactory)
+        private void Initialize(string folder, Func<string, IRepository> repositoryFactory,
+            Func<string, IFolderWatcher> folderWatcherFactory)
         {
             _repository = repositoryFactory(folder);
 
@@ -64,15 +67,15 @@ namespace PoshGit2
 
         public int BehindBy => _repository?.Head.TrackingDetails.BehindBy ?? 0;
 
-        public IEnumerable<string> LocalBranches => _repository?.Branches.Where(b => !b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>();
+        public IReadOnlyCollection<string> LocalBranches => new ReadonlyEnumerableCollection<string>(_repository?.Branches.Where(b => !b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>());
 
-        public IEnumerable<string> RemoteBranches => _repository?.Branches.Where(b => b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>();
+        public IReadOnlyCollection<string> RemoteBranches => new ReadonlyEnumerableCollection<string>(_repository?.Branches.Where(b => b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>());
 
-        public IEnumerable<string> Stashes => _repository?.Stashes.Select(s => s.Name) ?? Enumerable.Empty<string>();
+        public IReadOnlyCollection<string> Stashes => new ReadonlyEnumerableCollection<string>(_repository?.Stashes.Select(s => s.Name) ?? Enumerable.Empty<string>());
 
-        public IEnumerable<string> Remotes => _repository?.Network.Remotes.Select(r => r.Name) ?? Enumerable.Empty<string>();
+        public IReadOnlyCollection<string> Remotes => new ReadonlyEnumerableCollection<string>(_repository?.Network.Remotes.Select(r => r.Name) ?? Enumerable.Empty<string>());
 
-        public IEnumerable<ConfigurationEntry<string>> Configuration => _repository?.Config ?? Enumerable.Empty<ConfigurationEntry<string>>();
+        public IReadOnlyCollection<ConfigurationEntry<string>> Configuration => new ReadonlyEnumerableCollection<ConfigurationEntry<string>>(_repository?.Config ?? Enumerable.Empty<ConfigurationEntry<string>>());
 
         /// <summary>
         /// Update the status from a file change asynchronously 
@@ -210,9 +213,9 @@ namespace PoshGit2
             return branch;
         }
 
-        private ICollection<string> GetCollection(params IEnumerable<StatusEntry>[] entries)
+        private IReadOnlyCollection<string> GetCollection(params IEnumerable<StatusEntry>[] entries)
         {
-            return entries.SelectMany(o => o).Select(f => f.FilePath).ToList().AsReadOnly();
+            return new ReadonlyEnumerableCollection<string>(entries.SelectMany(o => o).Select(f => f.FilePath));
         }
 
         public void Dispose()
@@ -227,6 +230,29 @@ namespace PoshGit2
 
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource.Dispose();
+        }
+
+        private class ReadonlyEnumerableCollection<T> : IReadOnlyCollection<T>
+        {
+            private readonly ICollection<T> _collection;
+
+            public ReadonlyEnumerableCollection(IEnumerable<T> enumerable)
+            {
+                _collection = enumerable.ToList();
+                Count = _collection.Count;
+            }
+
+            public IEnumerator<T> GetEnumerator()
+            {
+                return _collection.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return ((IEnumerable)_collection).GetEnumerator();
+            }
+
+            public int Count { get; }
         }
     }
 }

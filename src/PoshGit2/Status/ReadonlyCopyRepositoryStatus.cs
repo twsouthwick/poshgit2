@@ -10,16 +10,15 @@ namespace PoshGit2
     {
         public ReadonlyCopyRepositoryStatus(IRepositoryStatus status, ICurrentWorkingDirectory cwd = null)
         {
-            // TODO: Clone ChangeItemsCollection entries
             Branch = status.Branch;
             AheadBy = status.AheadBy;
             BehindBy = status.BehindBy;
             GitDir = status.GitDir;
-            LocalBranches = status.LocalBranches.ToList();
-            RemoteBranches = status.RemoteBranches.ToList();
-            Stashes = status.Stashes.ToList();
-            Remotes = status.Remotes.ToList();
-            Configuration = status.Configuration.ToList();
+            LocalBranches = status.LocalBranches;
+            RemoteBranches = status.RemoteBranches;
+            Stashes = status.Stashes;
+            Remotes = status.Remotes;
+            Configuration = status.Configuration;
 
             if (cwd == null)
             {
@@ -46,9 +45,11 @@ namespace PoshGit2
             };
         }
 
-        private ICollection<string> UpdatePaths(IEnumerable<string> paths, ICurrentWorkingDirectory cwd)
+        private IReadOnlyCollection<string> UpdatePaths(IEnumerable<string> paths, ICurrentWorkingDirectory cwd)
         {
-            return paths.Select(p => cwd.CreateRelativePath(Path.GetFullPath(Path.Combine(GitDir, "..", p)))).ToList();
+            return paths.Select(p => cwd.CreateRelativePath(Path.GetFullPath(Path.Combine(GitDir, "..", p))))
+                .ToList()
+                .AsReadOnly();
         }
 
         public string Branch { get; }
@@ -58,10 +59,10 @@ namespace PoshGit2
         public int BehindBy { get; }
         public string GitDir { get; }
         public string CurrentWorkingDirectory { get; }
-        public IEnumerable<string> LocalBranches { get; }
-        public IEnumerable<string> RemoteBranches { get; }
-        public IEnumerable<string> Stashes { get; }
-        public IEnumerable<string> Remotes { get; }
-        public IEnumerable<ConfigurationEntry<string>> Configuration { get; }
+        public IReadOnlyCollection<string> LocalBranches { get; }
+        public IReadOnlyCollection<string> RemoteBranches { get; }
+        public IReadOnlyCollection<string> Stashes { get; }
+        public IReadOnlyCollection<string> Remotes { get; }
+        public IReadOnlyCollection<ConfigurationEntry<string>> Configuration { get; }
     }
 }
