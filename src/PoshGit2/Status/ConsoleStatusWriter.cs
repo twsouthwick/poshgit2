@@ -23,7 +23,7 @@ namespace PoshGit2.Status
 
             WriteBranch(status);
 
-            if (_settings.EnableFileStatus && status.HasIndex)
+            if (_settings.EnableFileStatus && status.Index.HasAny)
             {
                 WriteColor(_settings.BeforeIndexText, _settings.BeforeIndexBackgroundColor, _settings.BeforeIndexForegroundColor);
 
@@ -47,13 +47,13 @@ namespace PoshGit2.Status
                     WriteColor($" !{status.Index.Unmerged.Count}", _settings.IndexBackgroundColor, _settings.IndexForegroundColor);
                 }
 
-                if (status.HasWorking)
+                if (status.Working.HasAny)
                 {
                     WriteColor(_settings.DelimText, _settings.DelimBackgroundColor, _settings.DelimForegroundColor);
                 }
             }
 
-            if (_settings.EnableFileStatus && status.HasWorking)
+            if (_settings.EnableFileStatus && status.Working.HasAny)
             {
                 if (_settings.ShowStatusWhenZero || status.Working.Added.Any())
                 {
@@ -76,10 +76,10 @@ namespace PoshGit2.Status
                 }
             }
 
-            if (status.HasUntracked)
-            {
-                WriteColor(_settings.UntrackedText, _settings.UntrackedBackgroundColor, _settings.UntrackedForegroundColor);
-            }
+            //if (status.HasUntracked)
+            //{
+            //    WriteColor(_settings.UntrackedText, _settings.UntrackedBackgroundColor, _settings.UntrackedForegroundColor);
+            //}
 
             WriteColor(_settings.AfterText, _settings.AfterBackgroundColor, _settings.AfterForegroundColor);
 

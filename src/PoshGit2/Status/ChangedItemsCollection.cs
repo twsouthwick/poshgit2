@@ -15,7 +15,8 @@ namespace PoshGit2
             Unmerged = empty;
         }
 
-        public bool HasAny { get { return Added.Any() || Modified.Any() || Deleted.Any() || Unmerged.Any(); } }
+        public bool HasAny => Added.Any() || Modified.Any() || Deleted.Any() || Unmerged.Any();
+
         public ICollection<string> Added { get; set; }
         public ICollection<string> Modified { get; set; }
         public ICollection<string> Deleted { get; set; }

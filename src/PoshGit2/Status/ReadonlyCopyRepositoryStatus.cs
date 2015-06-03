@@ -11,11 +11,8 @@ namespace PoshGit2
         public ReadonlyCopyRepositoryStatus(IRepositoryStatus status, ICurrentWorkingDirectory cwd = null)
         {
             // TODO: Clone ChangeItemsCollection entries
-            HasWorking = status.HasWorking;
             Branch = status.Branch;
             AheadBy = status.AheadBy;
-            HasUntracked = status.HasUntracked;
-            HasIndex = status.HasIndex;
             BehindBy = status.BehindBy;
             GitDir = status.GitDir;
             LocalBranches = status.LocalBranches.ToList();
@@ -54,13 +51,10 @@ namespace PoshGit2
             return paths.Select(p => cwd.CreateRelativePath(Path.GetFullPath(Path.Combine(GitDir, "..", p)))).ToList();
         }
 
-        public bool HasWorking { get; }
         public string Branch { get; }
         public int AheadBy { get; }
         public ChangedItemsCollection Working { get; }
-        public bool HasUntracked { get; }
         public ChangedItemsCollection Index { get; }
-        public bool HasIndex { get; }
         public int BehindBy { get; }
         public string GitDir { get; }
         public string CurrentWorkingDirectory { get; }

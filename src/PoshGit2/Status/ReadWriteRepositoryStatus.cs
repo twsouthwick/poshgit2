@@ -17,12 +17,6 @@ namespace PoshGit2
 
         public string GitDir { get; set; }
 
-        public bool HasIndex { get; set; }
-
-        public bool HasUntracked { get; set; }
-
-        public bool HasWorking { get; set; }
-
         public ChangedItemsCollection Index { get; set; }
 
         public IEnumerable<string> LocalBranches { get; set; }

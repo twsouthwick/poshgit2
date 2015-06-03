@@ -52,15 +52,9 @@ namespace PoshGit2
 
         public string Branch => IsUpdating ? $"{ExpandBranchName()}{Elipses}" : ExpandBranchName();
 
-        public bool HasWorking => Working.HasAny;
-
         public ChangedItemsCollection Working { get; set; }
 
-        public bool HasUntracked { get; set; }
-
         public ChangedItemsCollection Index { get; set; }
-
-        public bool HasIndex => Index.HasAny;
 
         public string GitDir { get; set; }
 
