@@ -4,7 +4,7 @@
 RootModule = 'posh-git2.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.3.3'
+ModuleVersion = '1.1.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'd6936d05-6727-4195-ac46-95e07499f37c'
