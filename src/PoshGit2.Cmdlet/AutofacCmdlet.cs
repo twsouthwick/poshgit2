@@ -19,6 +19,8 @@ namespace PoshGit2
             containerBuilder.RegisterModule(new PSAutofacModule());
             containerBuilder.RegisterModule(new NamedPipeStatusModule());
 
+            containerBuilder.RegisterType<TabCompleter>().InstancePerLifetimeScope();
+
             return containerBuilder.Build();
         }
 
