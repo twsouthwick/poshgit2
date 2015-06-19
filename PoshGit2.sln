@@ -29,6 +29,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PoshGit2.TabCompletion", "src\PoshGit2.TabCompletion\PoshGit2.TabCompletion.fsproj", "{8AC87F81-D384-474C-9261-84E8141FBB30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoshGit2.TabCompletion.Tests", "test\PoshGit2.TabCompletion.Tests\PoshGit2.TabCompletion.Tests.csproj", "{3C87FB8A-E5CC-4138-B4C1-22678A3C75E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,14 @@ Global
 		{2AD22125-3568-4FF8-9095-22A7B01FE6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AD22125-3568-4FF8-9095-22A7B01FE6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AD22125-3568-4FF8-9095-22A7B01FE6F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AC87F81-D384-474C-9261-84E8141FBB30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AC87F81-D384-474C-9261-84E8141FBB30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AC87F81-D384-474C-9261-84E8141FBB30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AC87F81-D384-474C-9261-84E8141FBB30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C87FB8A-E5CC-4138-B4C1-22678A3C75E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C87FB8A-E5CC-4138-B4C1-22678A3C75E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C87FB8A-E5CC-4138-B4C1-22678A3C75E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C87FB8A-E5CC-4138-B4C1-22678A3C75E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +77,7 @@ Global
 		{03D62F36-9F27-40B3-BF0C-845BDF921948} = {8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}
 		{0A995C58-7A27-49D4-9217-C8452D267C76} = {8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}
 		{2AD22125-3568-4FF8-9095-22A7B01FE6F6} = {8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}
+		{8AC87F81-D384-474C-9261-84E8141FBB30} = {8035D16C-DBDE-4C1F-A0FD-C0A4329B0299}
+		{3C87FB8A-E5CC-4138-B4C1-22678A3C75E7} = {90A36BB2-0CBC-4BCA-BFD1-7CAFBC5DB36A}
 	EndGlobalSection
 EndGlobal
