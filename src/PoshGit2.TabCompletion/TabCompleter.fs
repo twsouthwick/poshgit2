@@ -166,19 +166,26 @@ type TabCompletionResult =
     | Success of IEnumerable<string>
     | Failure
 
+type ITabCompleter =
+    abstract member CompleteAsync : string -> Task<TabCompletionResult>
+
 type TabCompleter(repo : Task<IRepositoryStatus>) = 
     member private this.RepoTask = repo
-    member this.CompleteAsync line = 
-        async { 
-            let! repo = Async.AwaitTask this.RepoTask
-            let result = 
-                match line with
-                | TabCompletion.GitInvoked command -> 
-                    TabCompletion.ProcessGitCommand command repo
-                    |> Seq.sort
-                    |> Seq.distinct
-                    |> Success
-                | _ -> Failure
-            return result
-        }
-        |> Async.StartAsTask
+
+    member this.CompleteAsync line = (this :> ITabCompleter).CompleteAsync line
+
+    interface ITabCompleter with
+        member this.CompleteAsync line = 
+            async { 
+                let! repo = Async.AwaitTask this.RepoTask
+                let result = 
+                    match line with
+                    | TabCompletion.GitInvoked command -> 
+                        TabCompletion.ProcessGitCommand command repo
+                        |> Seq.sort
+                        |> Seq.distinct
+                        |> Success
+                    | _ -> Failure
+                return result
+            }
+            |> Async.StartAsTask

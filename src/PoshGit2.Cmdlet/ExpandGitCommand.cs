@@ -11,7 +11,7 @@ namespace PoshGit2
         [Parameter(Position = 1)]
         public string LastWord { get; set; }
 
-        public TabCompleter Completer { get; set; }
+        public ITabCompleter Completer { get; set; }
 
         protected override void ProcessRecord()
         {
