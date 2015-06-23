@@ -2,11 +2,21 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PoshGit2
 {
+    public static class ServerInfo
+    {
+        public static string Name { get; } = $"PoshGit2_Server{ServerVersion}_Library{LibraryVersion}";
+
+        private static Version LibraryVersion { get; } = typeof(NamedPipeCommand).GetTypeInfo().Assembly.GetName().Version;
+
+        private static Version ServerVersion { get; } = typeof(ServerStartupRepoCache).GetTypeInfo().Assembly.GetName().Version;
+    }
+
     public class ServerStartupRepoCache : IRepositoryCache
     {
         private readonly ILogger _log;
@@ -26,7 +36,7 @@ namespace PoshGit2
             {
                 // Check to see if the server is running
                 bool createdNewServerMutex;
-                using (var serverMutex = new Mutex(true, "PoshGit2_Server", out createdNewServerMutex))
+                using (var serverMutex = new Mutex(true, ServerInfo.Name, out createdNewServerMutex))
                 { }
 
                 if (!createdNewServerMutex)

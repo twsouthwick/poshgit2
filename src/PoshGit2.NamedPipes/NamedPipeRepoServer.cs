@@ -9,7 +9,6 @@ namespace PoshGit2
 {
     public sealed class NamedPipeRepoServer : IDisposable
     {
-        public const string PipeName = "PoshGit2";
         public static readonly string ServerName = Environment.MachineName;
 
         private readonly CancellationTokenSource _cancellationTokenSource;
@@ -50,7 +49,7 @@ namespace PoshGit2
 
         private async Task PrivateRunAsync(CancellationToken cancellationToken)
         {
-            using (var pipe = new NamedPipeServerStream(PipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+            using (var pipe = new NamedPipeServerStream(ServerInfo.Name, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {

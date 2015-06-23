@@ -40,7 +40,7 @@ namespace PoshGit.Daemon
         private static bool TryStartServer()
         {
             bool createdNewServerMutex;
-            using (var serverMutex = new Mutex(true, "PoshGit2_Server", out createdNewServerMutex))
+            using (var serverMutex = new Mutex(true, ServerInfo.Name, out createdNewServerMutex))
             {
                 if (!createdNewServerMutex)
                 {

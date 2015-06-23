@@ -80,7 +80,7 @@ namespace PoshGit2
                 {
                     // Ensure that the named pipe cancellation token gets cancelled if the main token is
                     using (cancellationToken.Register(innerCancellationTokenSource.Cancel))
-                    using (var pipe = new NamedPipeClientStream(NamedPipeRepoServer.ServerName, NamedPipeRepoServer.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous))
+                    using (var pipe = new NamedPipeClientStream(NamedPipeRepoServer.ServerName, ServerInfo.Name, PipeDirection.InOut, PipeOptions.Asynchronous))
                     {
                         await pipe.ConnectAsync(innerCancellationTokenSource.Token);
 
