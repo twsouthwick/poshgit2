@@ -74,37 +74,38 @@ namespace PoshGit2
         private async Task<T> SendReceiveCommandAsync<T>(Func<StreamReader, StreamWriter, Task<T>> func, NamedPipeCommand command, CancellationToken cancellationToken, T defaultValue = default(T))
         {
             // Time out after 2 seconds to access named pipe
-            var innerCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-
-            try
+            using (var innerCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2)))
             {
-                // Ensure that the named pipe cancellation token gets cancelled if the main token is
-                using (cancellationToken.Register(innerCancellationTokenSource.Cancel))
-                using (var pipe = new NamedPipeClientStream(NamedPipeRepoServer.ServerName, NamedPipeRepoServer.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous))
+                try
                 {
-                    await pipe.ConnectAsync(innerCancellationTokenSource.Token);
-
-                    using (var writer = new NonClosingStreamWriter(pipe) { AutoFlush = true })
-                    using (var reader = new NonClosingStreamReader(pipe))
+                    // Ensure that the named pipe cancellation token gets cancelled if the main token is
+                    using (cancellationToken.Register(innerCancellationTokenSource.Cancel))
+                    using (var pipe = new NamedPipeClientStream(NamedPipeRepoServer.ServerName, NamedPipeRepoServer.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous))
                     {
-                        await writer.WriteAsync(command);
+                        await pipe.ConnectAsync(innerCancellationTokenSource.Token);
 
-                        var response = await reader.ReadCommandAsync();
-
-                        if (response != NamedPipeCommand.Ready)
+                        using (var writer = new NonClosingStreamWriter(pipe) { AutoFlush = true })
+                        using (var reader = new NonClosingStreamReader(pipe))
                         {
-                            return defaultValue;
-                        }
+                            await writer.WriteAsync(command);
 
-                        return await func(reader, writer);
+                            var response = await reader.ReadCommandAsync();
+
+                            if (response != NamedPipeCommand.Ready)
+                            {
+                                return defaultValue;
+                            }
+
+                            return await func(reader, writer);
+                        }
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                _log.Error("Named pipe communication with server was cancelled");
+                catch (OperationCanceledException)
+                {
+                    _log.Error("Named pipe communication with server was cancelled");
 
-                return defaultValue;
+                    return defaultValue;
+                }
             }
         }
     }
