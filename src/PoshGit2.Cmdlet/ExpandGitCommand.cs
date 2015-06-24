@@ -1,4 +1,5 @@
 ﻿using System.Management.Automation;
+using System.Threading;
 
 namespace PoshGit2
 {
@@ -13,11 +14,13 @@ namespace PoshGit2
 
         public ITabCompleter Completer { get; set; }
 
+        public CancellationToken Token { get; set; }
+
         protected override void ProcessRecord()
         {
             base.ProcessRecord();
 
-            WriteObject(Completer.CompleteAsync(FullLine).Result);
+            WriteObject(Completer.CompleteAsync(FullLine, Token).Result);
         }
     }
 }

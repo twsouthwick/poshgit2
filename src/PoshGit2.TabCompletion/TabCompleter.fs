@@ -4,6 +4,7 @@ open PoshGit2
 open PoshGit2.Status
 open System
 open System.Collections.Generic
+open System.Threading
 open System.Threading.Tasks
 
 module TabCompletion = 
@@ -167,15 +168,15 @@ type TabCompletionResult =
     | Failure
 
 type ITabCompleter =
-    abstract member CompleteAsync : string -> Task<TabCompletionResult>
+    abstract member CompleteAsync : string -> CancellationToken -> Task<TabCompletionResult>
 
 type TabCompleter(repo : Task<IRepositoryStatus>) = 
     member private this.RepoTask = repo
 
-    member this.CompleteAsync line = (this :> ITabCompleter).CompleteAsync line
+    member this.CompleteAsync line token = (this :> ITabCompleter).CompleteAsync line token
 
     interface ITabCompleter with
-        member this.CompleteAsync line = 
+        member this.CompleteAsync line (token: CancellationToken) = 
             async { 
                 let! repo = Async.AwaitTask this.RepoTask
                 let result = 

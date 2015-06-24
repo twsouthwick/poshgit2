@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,7 +20,7 @@ namespace PoshGit2.TabCompletion
             var repo = Substitute.For<IRepositoryStatus>();
             var completer = new TabCompleter(Task.FromResult(repo));
 
-            var result = await completer.CompleteAsync(cmd);
+            var result = await completer.CompleteAsync(cmd, CancellationToken.None);
 
             Assert.True(result.IsFailure);
         }
@@ -29,7 +30,7 @@ namespace PoshGit2.TabCompletion
         public async Task NullStatus(string command, string[] expected)
         {
             var completer = new TabCompleter(Task.FromResult<IRepositoryStatus>(null));
-            var fullResult = await completer.CompleteAsync(command);
+            var fullResult = await completer.CompleteAsync(command, CancellationToken.None);
             var result = GetResult(fullResult);
 
             Assert.Equal(result, expected.OrderBy(o => o, StringComparer.Ordinal));
@@ -42,7 +43,7 @@ namespace PoshGit2.TabCompletion
         {
             var repo = Substitute.For<IRepositoryStatus>();
             var completer = new TabCompleter(Task.FromResult(repo));
-            var fullResult = await completer.CompleteAsync(command);
+            var fullResult = await completer.CompleteAsync(command, CancellationToken.None);
             var result = GetResult(fullResult);
 
             Assert.Equal(result, expected.OrderBy(o => o, StringComparer.Ordinal));
@@ -71,7 +72,7 @@ namespace PoshGit2.TabCompletion
         {
             var completer = new TabCompleter(CreateStatus());
 
-            var fullResult = await completer.CompleteAsync(command);
+            var fullResult = await completer.CompleteAsync(command, CancellationToken.None);
             var result = GetResult(fullResult);
 
             Assert.Contains(expected, result);
@@ -261,7 +262,7 @@ namespace PoshGit2.TabCompletion
         {
             var completer = new TabCompleter(CreateStatus());
 
-            var fullResult = await completer.CompleteAsync(cmd);
+            var fullResult = await completer.CompleteAsync(cmd, CancellationToken.None);
             var result = GetResult(fullResult);
 
             var e = expected.OrderBy(o => o, StringComparer.Ordinal).ToList();
