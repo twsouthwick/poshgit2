@@ -10,6 +10,7 @@ namespace PoshGit2
         GetAllRepos,
         RemoveRepo,
         ClearCache,
+        ExpandGitCommand,
         Ready,
         BadCommand,
         Success,

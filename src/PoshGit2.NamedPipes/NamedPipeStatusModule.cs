@@ -21,18 +21,24 @@ namespace PoshGit2
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<NamedPipeRepoCache>().AsSelf();
+            builder.RegisterType<NamedPipePoshGitClient>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
 
             builder.Register(ctx =>
                {
-                   return new ServerStartupRepoCache(
-                       ctx.Resolve<NamedPipeRepoCache>(),
+                   var client = ctx.Resolve<NamedPipePoshGitClient>();
+
+                   return new ServerStartupPoshGitClient(
+                       client,
+                       client,
                        ctx.Resolve<ILogger>(),
                        ShowServer);
                })
               .OnActivated(a => a.Instance.EnsureServerIsAvailable())
               .As<IRepositoryCache>()
-              .SingleInstance();
+              .As<ITabCompleter>()
+              .InstancePerLifetimeScope();
         }
     }
 }

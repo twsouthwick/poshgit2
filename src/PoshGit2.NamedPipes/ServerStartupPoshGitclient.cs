@@ -14,18 +14,20 @@ namespace PoshGit2
 
         private static Version LibraryVersion { get; } = typeof(NamedPipeCommand).GetTypeInfo().Assembly.GetName().Version;
 
-        private static Version ServerVersion { get; } = typeof(ServerStartupRepoCache).GetTypeInfo().Assembly.GetName().Version;
+        private static Version ServerVersion { get; } = typeof(ServerStartupPoshGitClient).GetTypeInfo().Assembly.GetName().Version;
     }
 
-    public class ServerStartupRepoCache : IRepositoryCache
+    public class ServerStartupPoshGitClient : IRepositoryCache, ITabCompleter
     {
         private readonly ILogger _log;
-        private readonly IRepositoryCache _other;
+        private readonly IRepositoryCache _repositoryCache;
+        private readonly ITabCompleter _tabCompleter;
         private readonly bool _showServer;
 
-        public ServerStartupRepoCache(IRepositoryCache other, ILogger log, bool showServer)
+        public ServerStartupPoshGitClient(IRepositoryCache repositoryCache, ITabCompleter tabCompleter, ILogger log, bool showServer)
         {
-            _other = other;
+            _repositoryCache = repositoryCache;
+            _tabCompleter = tabCompleter;
             _log = log;
             _showServer = showServer;
         }
@@ -71,28 +73,35 @@ namespace PoshGit2
         {
             EnsureServerIsAvailable();
 
-            return _other.FindRepoAsync(cwd, cancellationToken);
+            return _repositoryCache.FindRepoAsync(cwd, cancellationToken);
         }
 
         public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
         {
             EnsureServerIsAvailable();
 
-            return _other.GetAllReposAsync(cancellationToken);
+            return _repositoryCache.GetAllReposAsync(cancellationToken);
         }
 
         public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
         {
             EnsureServerIsAvailable();
 
-            return _other.RemoveRepoAsync(path, cancellationToken);
+            return _repositoryCache.RemoveRepoAsync(path, cancellationToken);
         }
 
-        public async Task<bool> ClearCacheAsync(CancellationToken token)
+        public Task<bool> ClearCacheAsync(CancellationToken token)
         {
             EnsureServerIsAvailable();
 
-            return await _other.ClearCacheAsync(token);
+            return _repositoryCache.ClearCacheAsync(token);
+        }
+
+        public Task<TabCompletionResult> CompleteAsync(string line, CancellationToken token)
+        {
+            EnsureServerIsAvailable();
+
+            return _tabCompleter.CompleteAsync(line, token);
         }
     }
 }

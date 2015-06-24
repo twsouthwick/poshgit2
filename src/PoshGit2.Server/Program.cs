@@ -49,7 +49,7 @@ namespace PoshGit.Daemon
 
                 using (var container = BuildServerContainer())
                 {
-                    var server = container.Resolve<NamedPipeRepoServer>();
+                    var server = container.Resolve<NamedPipePoshGitServer>();
 
                     server.RunAsync(CancellationToken.None).Wait();
                 }
@@ -76,6 +76,9 @@ namespace PoshGit.Daemon
             builder.RegisterModule(new SerilogModule { LogToConsole = true });
             builder.RegisterModule(new NamedPipeStatusModule { ShowServer = showServer });
 
+            builder.RegisterType<TabCompleter>()
+                .As<ITabCompleter>();
+
             builder.RegisterType<RepoCacheTestLoop>()
                .AsSelf()
                .SingleInstance();
@@ -93,7 +96,13 @@ namespace PoshGit.Daemon
                 LogUnhandledExceptions = true,
                 LogToConsole = true
             });
-            builder.RegisterType<NamedPipeRepoServer>().AsSelf().SingleInstance();
+
+            builder.RegisterType<NamedPipePoshGitServer>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<TabCompleter>()
+                .As<ITabCompleter>();
 
             return builder.Build();
         }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Autofac;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.IO.Pipes;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    public sealed class NamedPipeRepoServer : IDisposable
+    public sealed class NamedPipePoshGitServer : IDisposable
     {
         public static readonly string ServerName = Environment.MachineName;
 
@@ -15,13 +16,15 @@ namespace PoshGit2
         private readonly ILogger _log;
         private readonly IRepositoryCache _repoCache;
         private readonly JsonSerializer _serializer;
+        private readonly ILifetimeScope _lifetimeScope;
 
-        public NamedPipeRepoServer(IRepositoryCache repoCache, ILogger log)
+        public NamedPipePoshGitServer(IRepositoryCache repoCache, ILifetimeScope lifetimeScope, ILogger log)
         {
-            _log = log; 
+            _log = log;
             _cancellationTokenSource = new CancellationTokenSource();
             _repoCache = repoCache;
             _serializer = JsonSerializer.Create();
+            _lifetimeScope = lifetimeScope;
 
             log.Information("Server started");
         }
@@ -80,6 +83,10 @@ namespace PoshGit2
                                 await writer.WriteAsync(NamedPipeCommand.Ready);
                                 await ProcessClearCacheAsync(writer, cancellationToken);
                                 break;
+                            case NamedPipeCommand.ExpandGitCommand:
+                                await writer.WriteAsync(NamedPipeCommand.Ready);
+                                await ProcessExpandGitCommandAsync(writer, reader, cancellationToken);
+                                break;
                             default:
                                 await writer.WriteAsync(NamedPipeCommand.BadCommand);
                                 break;
@@ -92,6 +99,27 @@ namespace PoshGit2
                     pipe.Disconnect();
                 }
             }
+        }
+
+        private async Task ProcessExpandGitCommandAsync(StreamWriter writer, StreamReader reader, CancellationToken cancellationToken)
+        {
+            var cwd = await reader.ReadLineAsync();
+            var line = await reader.ReadLineAsync();
+            var scwd = new StringCurrentWorkingDirectory(cwd);
+
+            using (var scope = _lifetimeScope.BeginLifetimeScope(b => b.RegisterInstance(scwd).As<ICurrentWorkingDirectory>()))
+            {
+                var tabCompleter = scope.Resolve<ITabCompleter>();
+
+                var result = await tabCompleter.CompleteAsync(line, cancellationToken);
+
+                using (var jsonTextWriter = new JsonTextWriter(writer))
+                {
+                    _serializer.Serialize(jsonTextWriter, result);
+                }
+            }
+
+            _log.Information("Expanded git command '{Line}'", line);
         }
 
         private async Task ProcessClearCacheAsync(StreamWriter writer, CancellationToken cancellationToken)

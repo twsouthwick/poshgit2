@@ -50,15 +50,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands.cs" />
-    <Compile Include="ServerStartupRepoCache.cs" />
+    <Compile Include="ServerStartupPoshGitClient.cs" />
     <Compile Include="NamedPipeStatusModule.cs" />
-    <Compile Include="NamedPipeRepoServer.cs" />
+    <Compile Include="NamedPipePoshGitServer.cs" />
     <Compile Include="NonClosingStreamReader.cs" />
     <Compile Include="NonClosingStreamWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="NamedPipeRepoCache.cs" />
+    <Compile Include="NamedPipePoshGitClient.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoshGit2.TabCompletion\PoshGit2.TabCompletion.fsproj">
+      <Project>{8ac87f81-d384-474c-9261-84e8141fbb30}</Project>
+      <Name>PoshGit2.TabCompletion</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoshGit2\PoshGit2.csproj">
       <Project>{0f900a09-be4a-461e-9e69-53b109a6d5ab}</Project>
       <Name>PoshGit2</Name>

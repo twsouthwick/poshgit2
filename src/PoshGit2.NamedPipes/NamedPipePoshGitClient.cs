@@ -9,14 +9,16 @@ using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    public class NamedPipeRepoCache : IRepositoryCache
+    public class NamedPipePoshGitClient : IRepositoryCache, ITabCompleter
     {
         private readonly ILogger _log;
         private readonly JsonSerializer _serializer;
+        private readonly ICurrentWorkingDirectory _cwd;
 
-        public NamedPipeRepoCache(ILogger log)
+        public NamedPipePoshGitClient(ILogger log, ICurrentWorkingDirectory cwd)
         {
             _log = log;
+            _cwd = cwd;
             _serializer = JsonSerializer.Create();
         }
 
@@ -71,6 +73,21 @@ namespace PoshGit2
             }, NamedPipeCommand.ClearCache, cancellationToken);
         }
 
+        public Task<TabCompletionResult> CompleteAsync(string line, CancellationToken cancellationToken)
+        {
+            return SendReceiveCommandAsync(async (reader, writer) =>
+            {
+                await writer.WriteLineAsync(_cwd.CWD);
+                await writer.WriteLineAsync(line);
+
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    return _serializer
+                        .Deserialize<TabCompletionResult>(jsonReader);
+                }
+            }, NamedPipeCommand.ExpandGitCommand, cancellationToken, TabCompletionResult.Failure);
+        }
+
         private async Task<T> SendReceiveCommandAsync<T>(Func<StreamReader, StreamWriter, Task<T>> func, NamedPipeCommand command, CancellationToken cancellationToken, T defaultValue = default(T))
         {
             // Time out after 2 seconds to access named pipe
@@ -80,7 +97,7 @@ namespace PoshGit2
                 {
                     // Ensure that the named pipe cancellation token gets cancelled if the main token is
                     using (cancellationToken.Register(innerCancellationTokenSource.Cancel))
-                    using (var pipe = new NamedPipeClientStream(NamedPipeRepoServer.ServerName, ServerInfo.Name, PipeDirection.InOut, PipeOptions.Asynchronous))
+                    using (var pipe = new NamedPipeClientStream(NamedPipePoshGitServer.ServerName, ServerInfo.Name, PipeDirection.InOut, PipeOptions.Asynchronous))
                     {
                         await pipe.ConnectAsync(innerCancellationTokenSource.Token);
 
