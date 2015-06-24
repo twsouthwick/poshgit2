@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using System;
 using System.Management.Automation;
 
 namespace PoshGit2
@@ -19,8 +20,30 @@ namespace PoshGit2
                 .As<ISessionState>()
                 .InstancePerLifetimeScope();
 
+            // Retrieve the console background color
+            builder.RegisterAdapter<ISessionState, ConsoleColor>((c, s) =>
+            {
+                const ConsoleColor DefaultBackground = ConsoleColor.DarkBlue;
+
+                if (s.PSVariable == null)
+                {
+                    return DefaultBackground;
+                }
+
+                var host = s.PSVariable.GetValue("Host") as System.Management.Automation.Host.PSHost;
+
+                if(host == null)
+                {
+                    return DefaultBackground;
+                }
+
+                return host.UI.RawUI.BackgroundColor;
+            });
+
             builder.RegisterAdapter<ISessionState, IGitPromptSettings>((c, s) =>
             {
+                var defaultSettings = c.Resolve<DefaultGitPromptSettings>();
+
                 // If available, use from session information
                 if (s.PSVariable != null)
                 {
@@ -28,12 +51,12 @@ namespace PoshGit2
 
                     if (psobject != null)
                     {
-                        return new PSObjectGitPromptSettings(psobject);
+                        return new PSObjectGitPromptSettings(psobject, defaultSettings);
                     }
                 }
 
                 // Otherwise, use default settings
-                return c.Resolve<DefaultGitPromptSettings>();
+                return defaultSettings;
             });
         }
     }

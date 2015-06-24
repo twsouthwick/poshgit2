@@ -31,7 +31,7 @@ namespace PoshGit2
 
             builder.RegisterType<DefaultGitPromptSettings>()
                 .AsSelf()
-                .SingleInstance();
+                .InstancePerDependency();
 
             builder.Register(_ => new CancellationTokenSource(TimeOut))
                 .AsSelf()

@@ -1,45 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PoshGit2
+﻿namespace PoshGit2
 {
     public interface IGitPromptSettings
     {
-        ConsoleColor BranchAheadForegroundColor { get; }
-        ConsoleColor AfterBackgroundColor { get; }
-        ConsoleColor DelimForegroundColor { get; }
-        string DescribeStyle { get; }
-        ConsoleColor DelimBackgroundColor { get; }
-        ConsoleColor UntrackedBackgroundColor { get; }
-        ConsoleColor BeforeForegroundColor { get; }
-        ConsoleColor BranchAheadBackgroundColor { get; }
+        PromptColor After { get; }
+        PromptColor Before { get; }
+        PromptColor BeforeIndex { get; }
+        PromptColor Branch { get; }
+        PromptColor BranchAhead { get; }
+        PromptColor BranchBehind { get; }
+        PromptColor BranchBehindAndAhead { get; }
+        PromptColor Delim { get; }
+        PromptColor Index { get; }
+        PromptColor Untracked { get; }
+        PromptColor Working { get; }
         string UntrackedText { get; }
-        ConsoleColor BranchBackgroundColor { get; }
-        ConsoleColor BeforeIndexForegroundColor { get; }
-        bool EnablePromptStatus { get; }
-        bool Debug { get; }
-        bool EnableFileStatus { get; }
-        ConsoleColor DefaultForegroundColor { get; }
         string AfterText { get; }
-        ConsoleColor BranchBehindForegroundColor { get; }
-        IEnumerable<string> RepositoriesInWhichToDisableFileStatus { get; }
-        ConsoleColor BranchForegroundColor { get; }
-        ConsoleColor BranchBehindAndAheadBackgroundColor { get; }
-        ConsoleColor BranchBehindAndAheadForegroundColor { get; }
         string BeforeText { get; }
-        ConsoleColor WorkingBackgroundColor { get; }
-        ConsoleColor WorkingForegroundColor { get; }
-        bool EnableWindowTitle { get; }
-        ConsoleColor BranchBehindBackgroundColor { get; }
         string BeforeIndexText { get; }
-        bool ShowStatusWhenZero { get; }
         string DelimText { get; }
-        ConsoleColor BeforeBackgroundColor { get; }
-        ConsoleColor UntrackedForegroundColor { get; }
-        ConsoleColor IndexForegroundColor { get; }
-        bool AutoRefreshIndex { get; }
-        ConsoleColor IndexBackgroundColor { get; }
-        ConsoleColor AfterForegroundColor { get; }
-        ConsoleColor BeforeIndexBackgroundColor { get; }
+        bool ShowStatusWhenZero { get; }
+        bool EnablePromptStatus { get; }
+        bool EnableFileStatus { get; }
     }
 }

@@ -19,37 +19,37 @@ namespace PoshGit2.Status
                 return;
             }
 
-            WriteColor(_settings.BeforeText, _settings.BeforeBackgroundColor, _settings.BeforeForegroundColor);
+            WriteColor(_settings.BeforeText, _settings.Before);
 
-            WriteBranch(status);
+            WriteColor(status.Branch, GetBranchColor(status));
 
             if (_settings.EnableFileStatus && status.Index.HasAny)
             {
-                WriteColor(_settings.BeforeIndexText, _settings.BeforeIndexBackgroundColor, _settings.BeforeIndexForegroundColor);
+                WriteColor(_settings.BeforeIndexText, _settings.BeforeIndex);
 
                 if (_settings.ShowStatusWhenZero || status.Index.Added.Any())
                 {
-                    WriteColor($" +{status.Index.Added.Count}", _settings.IndexBackgroundColor, _settings.IndexForegroundColor);
+                    WriteColor($" +{status.Index.Added.Count}", _settings.Index);
                 }
 
                 if (_settings.ShowStatusWhenZero || status.Index.Modified.Any())
                 {
-                    WriteColor($" ~{status.Index.Modified.Count}", _settings.IndexBackgroundColor, _settings.IndexForegroundColor);
+                    WriteColor($" ~{status.Index.Modified.Count}", _settings.Index);
                 }
 
                 if (_settings.ShowStatusWhenZero || status.Index.Deleted.Any())
                 {
-                    WriteColor($" -{status.Index.Deleted.Count}", _settings.IndexBackgroundColor, _settings.IndexForegroundColor);
+                    WriteColor($" -{status.Index.Deleted.Count}", _settings.Index);
                 }
 
                 if (status.Index.Unmerged.Any())
                 {
-                    WriteColor($" !{status.Index.Unmerged.Count}", _settings.IndexBackgroundColor, _settings.IndexForegroundColor);
+                    WriteColor($" !{status.Index.Unmerged.Count}", _settings.Index);
                 }
 
                 if (status.Working.HasAny)
                 {
-                    WriteColor(_settings.DelimText, _settings.DelimBackgroundColor, _settings.DelimForegroundColor);
+                    WriteColor(_settings.DelimText, _settings.Delim);
                 }
             }
 
@@ -57,92 +57,63 @@ namespace PoshGit2.Status
             {
                 if (_settings.ShowStatusWhenZero || status.Working.Added.Any())
                 {
-                    WriteColor($" +{status.Working.Added.Count}", _settings.WorkingBackgroundColor, _settings.WorkingForegroundColor);
+                    WriteColor($" +{status.Working.Added.Count}", _settings.Working);
                 }
 
                 if (_settings.ShowStatusWhenZero || status.Index.Modified.Any())
                 {
-                    WriteColor($" ~{status.Working.Modified.Count}", _settings.WorkingBackgroundColor, _settings.WorkingForegroundColor);
+                    WriteColor($" ~{status.Working.Modified.Count}", _settings.Working);
                 }
 
                 if (_settings.ShowStatusWhenZero || status.Index.Deleted.Any())
                 {
-                    WriteColor($" -{status.Working.Deleted.Count}", _settings.WorkingBackgroundColor, _settings.WorkingForegroundColor);
+                    WriteColor($" -{status.Working.Deleted.Count}", _settings.Working);
                 }
 
                 if (status.Index.Unmerged.Any())
                 {
-                    WriteColor($" !{status.Working.Unmerged.Count}", _settings.WorkingBackgroundColor, _settings.WorkingForegroundColor);
+                    WriteColor($" !{status.Working.Unmerged.Count}", _settings.Working);
                 }
             }
 
             //if (status.HasUntracked)
             //{
-            //    WriteColor(_settings.UntrackedText, _settings.UntrackedBackgroundColor, _settings.UntrackedForegroundColor);
+            //    WriteColor(_settings.UntrackedText, _settings.Untracked.Background, _settings.Untracked.Foreground);
             //}
 
-            WriteColor(_settings.AfterText, _settings.AfterBackgroundColor, _settings.AfterForegroundColor);
+            WriteColor(_settings.AfterText, _settings.After);
 
             // TODO: Update Window title
         }
 
 
-        private class StatusColor
-        {
-            public ConsoleColor BackgroundColor { get; set; }
-            public ConsoleColor ForegroundColor { get; set; }
-        }
-
-        private StatusColor GetBranchColor(IRepositoryStatus status)
+        private PromptColor GetBranchColor(IRepositoryStatus status)
         {
             if (status.BehindBy > 0 && status.AheadBy > 0)
             {
-                return new StatusColor
-                {
-                    BackgroundColor = _settings.BranchBehindAndAheadBackgroundColor,
-                    ForegroundColor = _settings.BranchBehindAndAheadForegroundColor
-                };
+                return _settings.BranchBehindAndAhead;
             }
             else if (status.BehindBy > 0)
             {
-                return new StatusColor
-                {
-                    BackgroundColor = _settings.BranchBehindBackgroundColor,
-                    ForegroundColor = _settings.BranchBehindForegroundColor
-                };
+                return _settings.BranchBehind;
             }
             else if (status.AheadBy > 0)
             {
-                return new StatusColor
-                {
-                    BackgroundColor = _settings.BranchAheadBackgroundColor,
-                    ForegroundColor = _settings.BranchAheadForegroundColor
-                };
+                return _settings.BranchAhead;
             }
             else
             {
-                return new StatusColor
-                {
-                    BackgroundColor = _settings.BranchBackgroundColor,
-                    ForegroundColor = _settings.BranchForegroundColor
-                };
+                return _settings.Branch;
             }
         }
 
-        private void WriteBranch(IRepositoryStatus status)
+        private void WriteColor(string msg, PromptColor color)
         {
-            var color = GetBranchColor(status);
+            var previousForeground = Console.ForegroundColor;
+            var previousBackground = Console.BackgroundColor;
 
-            WriteColor(status.Branch, color.BackgroundColor, color.ForegroundColor);
-        }
-
-        private void WriteColor(string msg, ConsoleColor backgroundColor, ConsoleColor foregroundColor)
-        {
-            var previousForegroundColor = Console.ForegroundColor;
-            var previousBackgroundColor = Console.BackgroundColor;
-
-            Console.ForegroundColor = foregroundColor;
-            Console.BackgroundColor = backgroundColor;
+            Console.ForegroundColor = color.Foreground;
+            Console.BackgroundColor = color.Background;
 
             try
             {
@@ -150,8 +121,8 @@ namespace PoshGit2.Status
             }
             finally
             {
-                Console.ForegroundColor = previousForegroundColor;
-                Console.BackgroundColor = previousBackgroundColor;
+                Console.ForegroundColor = previousForeground;
+                Console.BackgroundColor = previousBackground;
             }
         }
     }

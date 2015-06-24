@@ -1,11 +1,5 @@
 if (Get-Module posh-git) { return }
 
-Push-Location $psScriptRoot
-
-. .\GitPrompt.ps1
-
-Pop-Location
-
 ###############################
 ##    Set up tab expansion   ##
 ###############################

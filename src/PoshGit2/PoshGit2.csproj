@@ -66,6 +66,7 @@
     <Compile Include="Logging\SerilogModule.cs" />
     <Compile Include="Logging\SerilogWrapper.cs" />
     <Compile Include="PoshGitAutofacModule.cs" />
+    <Compile Include="PromptColor.cs" />
     <Compile Include="Status\ChangedItemsCollection.cs" />
     <Compile Include="DefaultGitPromptSettings.cs" />
     <Compile Include="IGitPromptSettings.cs" />
@@ -74,7 +75,6 @@
     <Compile Include="Status\GitFolderWatcher.cs" />
     <Compile Include="Status\IStatusWriter.cs" />
     <Compile Include="Status\ReadWriteRepositoryStatus.cs" />
-    <Compile Include="Option.cs" />
     <Compile Include="Status\ReadonlyCopyRepositoryStatus.cs" />
     <Compile Include="ICurrentWorkingDirectory.cs" />
     <Compile Include="Status\IFolderWatcher.cs" />

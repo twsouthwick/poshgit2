@@ -103,9 +103,6 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Update-Version.ps1" />
-    <None Include="GitPrompt.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="posh-git2.nuspec">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
