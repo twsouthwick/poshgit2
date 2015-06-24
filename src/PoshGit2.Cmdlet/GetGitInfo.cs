@@ -8,7 +8,12 @@ namespace PoshGit2
     public class GetGitInfo : AutofacCmdlet
     {
         public IRepositoryCache RepositoryCache { get; set; }
+
         public ICurrentWorkingDirectory WorkingDirectory { get; set; }
+
+        public CancellationToken Token { get; set; }
+
+        public ILogger Log { get; set; }
 
         protected override void ProcessRecord()
         {
@@ -16,15 +21,17 @@ namespace PoshGit2
 
             try
             {
-                var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                var repo = RepositoryCache.FindRepoAsync(WorkingDirectory, cancellationTokenSource.Token).Result;
+                var repo = RepositoryCache.FindRepoAsync(WorkingDirectory, Token).Result;
 
                 if (repo != null)
                 {
                     WriteObject(repo);
                 }
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException)
+            {
+                Log.Error("GetGitInfo timedout");
+            }
         }
     }
 }
