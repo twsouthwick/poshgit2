@@ -11,6 +11,7 @@ environment:
 install:
 - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
 nuget:
+  disable_publish_on_pr: true
   project_feed: true
 before_build:
 - nuget restore
