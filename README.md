@@ -19,7 +19,7 @@ Installing via OneGet
 On Win10, OneGet includes a provider for PSGallery.  You must add a new PS repository located at `https://www.myget.org/F/poshgit2/api/v2`
 
 ```
-Register-PSRepository -Name myget-poshgit2 -SourceLocation https://www.myget.org/F/poshgit2/api/v2 -InstallationPolicy Trusted
+Register-PackageSource -Name poshgit2 -Location https://www.myget.org/F/poshgit2/api/v2 -Trusted -ProviderName PSModule
 Install-Package poshgit2 -Scope CurrentUser
 ```
 
