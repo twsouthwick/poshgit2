@@ -124,7 +124,7 @@
     <Error Condition="!Exists('..\..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LibGit2Sharp.0.21.0.176\build\net40\LibGit2Sharp.props'))" />
   </Target>
   <Target Name="AfterBuild">
-    <Exec Command="powershell.exe -noprofile -file Update-Version.ps1 $(OutDir)" />
+    <Exec Command="powershell.exe -ExecutionPolicy ByPass -NoProfile -file Update-Version.ps1 $(OutDir)" />
     <Exec Command="..\..\.nuget\nuget.exe pack $(OutDir)posh-git2.nuspec -NoPackageAnalysis -NonInteractive -OutputDirectory $(OutDir)" />
     <ItemGroup>
       <OutputNupkg Include="$(OutDir)*.nupkg" />
