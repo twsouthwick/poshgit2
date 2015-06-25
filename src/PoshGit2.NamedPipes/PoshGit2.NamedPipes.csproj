@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands.cs" />
+    <Compile Include="ServerInfo.cs" />
     <Compile Include="ServerStartupPoshGitClient.cs" />
     <Compile Include="NamedPipeStatusModule.cs" />
     <Compile Include="NamedPipePoshGitServer.cs" />

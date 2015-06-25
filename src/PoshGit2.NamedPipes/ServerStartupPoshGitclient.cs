@@ -2,21 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    public static class ServerInfo
-    {
-        public static string Name { get; } = $"PoshGit2_Server{ServerVersion}_Library{LibraryVersion}";
-
-        private static Version LibraryVersion { get; } = typeof(NamedPipeCommand).GetTypeInfo().Assembly.GetName().Version;
-
-        private static Version ServerVersion { get; } = typeof(ServerStartupPoshGitClient).GetTypeInfo().Assembly.GetName().Version;
-    }
-
     public class ServerStartupPoshGitClient : IRepositoryCache, ITabCompleter
     {
         private readonly ILogger _log;

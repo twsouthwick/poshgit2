@@ -49,6 +49,9 @@ namespace PoshGit.Daemon
 
                 using (var container = BuildServerContainer())
                 {
+                    var logger = container.Resolve<ILogger>();
+                    logger.Information("Server name: {Version}", ServerInfo.Name);
+
                     var server = container.Resolve<NamedPipePoshGitServer>();
 
                     server.RunAsync(CancellationToken.None).Wait();
