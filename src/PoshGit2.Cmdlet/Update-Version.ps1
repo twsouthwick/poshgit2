@@ -56,5 +56,5 @@ $version = (Get-ChildItem -Path $outDir\PoshGit2.Cmdlet.dll).VersionInfo.FileVer
 
 Write-Host "Updating file version: $version"
 
-Update-ModuleManifest $outDir\posh-git2.psd1 $version
-Update-NuspecVersion $outDir\posh-git2.nuspec $version
+Update-ModuleManifest $outDir\poshgit2.psd1 $version
+Update-NuspecVersion $outDir\poshgit2.nuspec $version

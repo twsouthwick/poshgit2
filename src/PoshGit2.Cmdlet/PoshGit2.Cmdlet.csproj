@@ -103,13 +103,13 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Update-Version.ps1" />
-    <None Include="posh-git2.nuspec">
+    <None Include="poshgit2.nuspec">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="posh-git2.psd1">
+    <None Include="poshgit2.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="posh-git2.psm1">
+    <None Include="poshgit2.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="LICENSE.txt">
@@ -125,7 +125,7 @@
   </Target>
   <Target Name="AfterBuild">
     <Exec Command="powershell.exe -ExecutionPolicy ByPass -NoProfile -file Update-Version.ps1 $(OutDir)" />
-    <Exec Command="..\..\.nuget\nuget.exe pack $(OutDir)posh-git2.nuspec -NoPackageAnalysis -NonInteractive -OutputDirectory $(OutDir)" />
+    <Exec Command="..\..\.nuget\nuget.exe pack $(OutDir)poshgit2.nuspec -NoPackageAnalysis -NonInteractive -OutputDirectory $(OutDir)" />
     <ItemGroup>
       <OutputNupkg Include="$(OutDir)*.nupkg" />
     </ItemGroup>
