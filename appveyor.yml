@@ -20,3 +20,10 @@ build:
 artifacts:
 - path: 'src\**\*.nupkg'
   name: poshgit2
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/poshgit2/api/v2
+  api_key:
+    secure: g4eIWfNzoYNyrki3K4swxrlu8g8QDF6RSyUJbPAVO4Gj4BPYicfPPweryugIUE3C
+  symbol_server: https://nuget.symbolsource.org/MyGet/poshgit2
+  artifact: poshgit2
