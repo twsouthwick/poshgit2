@@ -2,6 +2,7 @@
 ========
 
 [![Build status](https://ci.appveyor.com/api/projects/status/wltxy9an91vlj5ms/branch/master?svg=true)](https://ci.appveyor.com/project/twsouthwick/poshgit2/branch/master)
+[![Current Version](https://img.shields.io/myget/poshgit2/v/poshgit2.svg)](https://www.myget.org/feed/Packages/poshgit2)
 
 A set of PowerShell scripts which provide Git/PowerShell integration
 
@@ -11,41 +12,40 @@ A set of PowerShell scripts which provide Git/PowerShell integration
 ### Tab completion
    Provides tab completion for common commands when using git.  
    E.g. `git ch<tab>` --> `git checkout`
-   
-Usage
------
-
-This tool is intended to be incorporated as part of the PowerShell prompt.  For example, add the following function to your `profile.ps1` file:
-
-	function prompt {
-		$dir = $pwd.Path.Replace("Microsoft.PowerShell.Core\FileSystem::", "");
-
-		Write-Host ("`n[$dir]") -nonewline -ForegroundColor DarkGreen
-		Write-GitStatus
-		Write-Host ""
-
-		return "$ "
-	}
-
-
 
 Installing via OneGet
 --------------------
 
-On Win10, OneGet includes a provider for PSGallery.  You must add a new PS repository located at `https://ci.appveyor.com/nuget/poshgit2`
+On Win10, OneGet includes a provider for PSGallery.  You must add a new PS repository located at `https://www.myget.org/F/poshgit2/api/v2`
 
 ```
-    Register-PSRepository -Name ci-poshgit2 -SourceLocation https://ci.appveyor.com/nuget/poshgit2 -InstallationPolicy Trusted
-	Find-Package poshgit2 -Source ci-poshgit2 | Install-Package -Scope CurrentUser -Force
+Register-PSRepository -Name myget-poshgit2 -SourceLocation https://www.myget.org/F/poshgit2/api/v2 -InstallationPolicy Trusted
+Install-Package poshgit2 -Scope CurrentUser
 ```
 
 The Prompt
 ----------
 
-PowerShell generates its prompt by executing a `prompt` function, if one exists. posh-git defines such a function in `profile.example.ps1` that outputs the current working directory followed by an abbreviated `git status`:
+This tool is intended to be incorporated as part of the PowerShell prompt.  For example, add the following function to your `profile.ps1` file:
 
-    C:\Users\user [master]>
+```
+function prompt {
+	$dir = $pwd.Path.Replace("Microsoft.PowerShell.Core\FileSystem::", "");
 
+	Write-Host ("`n[$dir]") -nonewline -ForegroundColor DarkGreen
+	Write-GitStatus
+	Write-Host ""
+
+	return "$ "
+}
+```
+
+This results in the following:
+
+```
+[C:\Users\user] [master]
+$
+```
 By default, the status summary has the following format:
 
     [{HEAD-name} +A ~B -C !D | +E ~F -G !H !]
