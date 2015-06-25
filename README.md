@@ -1,6 +1,8 @@
 ﻿poshgit2
 ========
 
+[![Build status](https://ci.appveyor.com/api/projects/status/wltxy9an91vlj5ms/branch/master?svg=true)](https://ci.appveyor.com/project/twsouthwick/poshgit2/branch/master)
+
 A set of PowerShell scripts which provide Git/PowerShell integration
 
 ### Prompt for Git repositories
@@ -13,16 +15,28 @@ A set of PowerShell scripts which provide Git/PowerShell integration
 Usage
 -----
 
-See `profile.example.ps1` as to how you can integrate the tab completion and/or git prompt into your own profile. Prompt formatting, among other things, can be customized using `$GitPromptSettings`, `$GitTabSettings`.
+This tool is intended to be incorporated as part of the PowerShell prompt.  For example, add the following function to your `profile.ps1` file:
+
+	function prompt {
+		$dir = $pwd.Path.Replace("Microsoft.PowerShell.Core\FileSystem::", "");
+
+		Write-Host ("`n[$dir]") -nonewline -ForegroundColor DarkGreen
+		Write-GitStatus
+		Write-Host ""
+
+		return "$ "
+	}
+
+
 
 Installing via OneGet
 --------------------
 
-On Win10, OneGet includes a provider for PSGallery.  You must add a new PS repository located at `https://www.myget.org/feed/Packages/tws-ps`
+On Win10, OneGet includes a provider for PSGallery.  You must add a new PS repository located at `https://ci.appveyor.com/nuget/poshgit2`
 
 ```
-    Register-PSRepository -Name tws-ps -SourceLocation https://www.myget.org/F/tws-ps/ -InstallationPolicy Trusted
-	Find-Package posh-git2 -Source tws-ps | Install-Package -Scope CurrentUser -Force
+    Register-PSRepository -Name ci-poshgit2 -SourceLocation https://ci.appveyor.com/nuget/poshgit2 -InstallationPolicy Trusted
+	Find-Package poshgit2 -Source ci-poshgit2 | Install-Package -Scope CurrentUser -Force
 ```
 
 The Prompt
@@ -71,4 +85,43 @@ For example, a status of `[master +0 ~2 -1 | +1 ~1 -0]` corresponds to the follo
     #
     #        new.file
 
-*Based on work by  [PoshGit](https://github.com/dahlbyk/posh-git)*
+### Parameters
+
+The coloring of `Write-GitStatus` can be modified by defining a `$GitPromptSettings` hashset; Write-GitStatus will pick it up, including any changes made to it during the course of the PowerShell session.  For example;
+
+```csharp
+$GitPromptSettings = New-Object PSObject -Property `
+    @{ 
+        WorkingForegroundColor = [System.ConsoleColor]::Red; 
+        UntrackedForegroundColor = [System.ConsoleColor]::Red
+    }
+```
+
+The following are variables that can be set and will affect the coloring/display of the output:
+
+The following parameters can be changed by setting them in `$GitPromptSettings`.  Those marked as `System.ConsoleColor` must 
+append `ForegroundColor` or `BackgroundColor` to the end of the name.
+
+| Parameter              | Type                   |
+|------------------------|------------------------|
+| After                  | `System.ConsoleColor`  |
+| Before                 | `System.ConsoleColor`  |
+| BeforeIndex            | `System.ConsoleColor`  |
+| Branch                 | `System.ConsoleColor`  |
+| BranchAhead            | `System.ConsoleColor`  |
+| BranchBehind           | `System.ConsoleColor`  |
+| BranchBehindAndAhead   | `System.ConsoleColor`  |
+| Delim                  | `System.ConsoleColor`  |
+| Index                  | `System.ConsoleColor`  |
+| Untracked              | `System.ConsoleColor`  |
+| Working                | `System.ConsoleColor`  |
+| UntrackedText          | `System.String`        |
+| AfterText              | `System.String`        |
+| BeforeText             | `System.String`        |
+| BeforeIndexText        | `System.String`        |
+| DelimText              | `System.String`        |
+| ShowStatusWhenZero     | `System.Bool`          |
+| EnablePromptStatus     | `System.Bool`          |
+| EnableFileStatus       | `System.Bool`          |
+
+*Based on work by  [Posh-Git](https://github.com/dahlbyk/posh-git)*
