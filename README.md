@@ -7,7 +7,7 @@
 A set of PowerShell scripts which provide Git/PowerShell integration
 
 ### Prompt for Git repositories
-   The prompt within Git repositories can show the current branch and the state of files (additions, modifications, deletions) within.  This is based off of posh-git, but watches the repos in the background with libgit2.  The result is it is faster to display staus, which is very noticeable on larger repos.
+   The prompt within Git repositories can show the current branch and the state of files (additions, modifications, deletions) within.  This is based off of [posh-git](https://github.com/dahlbyk/posh-git), but watches the repos in out-of-proc with libgit2.  The result is it is faster to display staus and expand tabs, which is very noticeable on larger repos.
    
 ### Tab completion
    Provides tab completion for common commands when using git.  
@@ -123,5 +123,3 @@ append `ForegroundColor` or `BackgroundColor` to the end of the name.
 | ShowStatusWhenZero     | `System.Bool`          |
 | EnablePromptStatus     | `System.Bool`          |
 | EnableFileStatus       | `System.Bool`          |
-
-*Based on work by  [Posh-Git](https://github.com/dahlbyk/posh-git)*
