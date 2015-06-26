@@ -80,7 +80,6 @@
     <Compile Include="Status\IFolderWatcher.cs" />
     <Compile Include="Status\IRepositoryCache.cs" />
     <Compile Include="Status\IRepositoryStatus.cs" />
-    <Compile Include="Status\ObservableBase.cs" />
     <Compile Include="Status\StringCurrentWorkingDirectory.cs" />
     <Compile Include="Status\UpdateableRepositoryStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
