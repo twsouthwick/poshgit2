@@ -98,6 +98,12 @@ namespace PoshGit2
             {
                 await _updateRepoSemaphore.WaitAsync(_cancellationTokenSource.Token);
 
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    _log.Debug("Cancellation token was triggered");
+                    return;
+                }
+
                 _log.Information("Update was triggered by {File}", file);
 
                 UpdateStatus();
@@ -108,11 +114,19 @@ namespace PoshGit2
 
                 return;
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException e)
+            {
+                _log.Warning("Operation canceled {Exception}", e);
+            }
             finally
             {
-                _updateRepoSemaphore.Release();
-                _updateGateSemaphore.Release();
+                // If a cancellation is requested, the semaphores may be in a disposed state and if
+                // they are not, they will be disposed very soon
+                if (!_cancellationTokenSource.IsCancellationRequested)
+                {
+                    _updateRepoSemaphore.Release();
+                    _updateGateSemaphore.Release();
+                }
             }
         }
 
