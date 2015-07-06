@@ -68,23 +68,23 @@
     <Compile Include="PoshGitAutofacModule.cs" />
     <Compile Include="PromptColor.cs" />
     <Compile Include="Status\ChangedItemsCollection.cs" />
-    <Compile Include="DefaultGitPromptSettings.cs" />
+    <Compile Include="Settings\DefaultGitPromptSettings.cs" />
     <Compile Include="IGitPromptSettings.cs" />
-    <Compile Include="Status\ConsoleStatusWriter.cs" />
+    <Compile Include="Writers\ConsoleStatusWriter.cs" />
     <Compile Include="Status\ExpiringCache.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
-    <Compile Include="Status\IStatusWriter.cs" />
+    <Compile Include="IStatusWriter.cs" />
     <Compile Include="Status\ReadWriteRepositoryStatus.cs" />
     <Compile Include="Status\ReadonlyCopyRepositoryStatus.cs" />
     <Compile Include="ICurrentWorkingDirectory.cs" />
     <Compile Include="Status\IFolderWatcher.cs" />
     <Compile Include="Status\IRepositoryCache.cs" />
     <Compile Include="Status\IRepositoryStatus.cs" />
-    <Compile Include="Status\StringCurrentWorkingDirectory.cs" />
+    <Compile Include="IO\StringCurrentWorkingDirectory.cs" />
     <Compile Include="Status\UpdateableRepositoryStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status\RepositoryCache.cs" />
-    <Compile Include="WindowsCurrentWorkingDirectory.cs" />
+    <Compile Include="IO\WindowsCurrentWorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

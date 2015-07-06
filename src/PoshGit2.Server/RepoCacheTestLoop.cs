@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using PoshGit2.IO;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace PoshGit2.Status
+namespace PoshGit2.Writers
 {
     public class ConsoleStatusWriter : IStatusWriter
     {

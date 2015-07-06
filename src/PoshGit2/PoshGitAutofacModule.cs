@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using PoshGit2.Status;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,11 +24,11 @@ namespace PoshGit2
             builder.RegisterType<GitFolderWatcher>()
                 .As<IFolderWatcher>();
 
-            builder.RegisterType<ConsoleStatusWriter>()
+            builder.RegisterType<Writers.ConsoleStatusWriter>()
                 .As<IStatusWriter>()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<DefaultGitPromptSettings>()
+            builder.RegisterType<Settings.DefaultGitPromptSettings>()
                 .AsSelf()
                 .InstancePerDependency();
 

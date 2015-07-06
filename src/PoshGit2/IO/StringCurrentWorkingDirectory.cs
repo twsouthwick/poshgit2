@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace PoshGit2
+namespace PoshGit2.IO
 {
     public class StringCurrentWorkingDirectory : WindowsCurrentWorkingDirectory
     {

@@ -1,7 +1,6 @@
 ﻿namespace PoshGit2
 
 open PoshGit2
-open PoshGit2.Status
 open System
 open System.Collections.Generic
 open System.Threading

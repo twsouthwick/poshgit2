@@ -69,7 +69,7 @@
     <Compile Include="GetRepoStatus.cs" />
     <Compile Include="ISessionState.cs" />
     <Compile Include="PSAutofacModule.cs" />
-    <Compile Include="PSCurrentWorkingDirectory.cs" />
+    <Compile Include="IO\PSCurrentWorkingDirectory.cs" />
     <Compile Include="ExpandGitCommand.cs" />
     <Compile Include="SessionStateWrapper.cs" />
     <Compile Include="PSObjectGitPromptSettings.cs" />

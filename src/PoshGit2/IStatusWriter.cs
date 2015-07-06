@@ -1,4 +1,4 @@
-﻿namespace PoshGit2.Status
+﻿namespace PoshGit2
 {
     public interface IStatusWriter
     {

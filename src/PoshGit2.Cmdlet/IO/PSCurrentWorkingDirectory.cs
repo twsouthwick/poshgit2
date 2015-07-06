@@ -1,6 +1,6 @@
 ﻿using Microsoft.PowerShell.Commands;
 
-namespace PoshGit2
+namespace PoshGit2.IO
 {
     public class PSCurrentWorkingDirectory : WindowsCurrentWorkingDirectory
     {

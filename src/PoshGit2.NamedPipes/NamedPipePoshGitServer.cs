@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Newtonsoft.Json;
+using PoshGit2.IO;
 using System;
 using System.IO;
 using System.IO.Pipes;

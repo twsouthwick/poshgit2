@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace PoshGit2
+namespace PoshGit2.IO
 {
     public abstract class WindowsCurrentWorkingDirectory : ICurrentWorkingDirectory
     {

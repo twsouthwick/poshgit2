@@ -1,5 +1,6 @@
 ﻿using NSubstitute;
 using PoshGit2;
+using PoshGit2.IO;
 using Xunit;
 
 namespace PoshGit.Tests

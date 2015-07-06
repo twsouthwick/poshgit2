@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PoshGit2
+namespace PoshGit2.Settings
 {
     public class DefaultGitPromptSettings : IGitPromptSettings
     {

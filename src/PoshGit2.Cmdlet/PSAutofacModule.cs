@@ -8,7 +8,7 @@ namespace PoshGit2
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<PSCurrentWorkingDirectory>()
+            builder.RegisterType<IO.PSCurrentWorkingDirectory>()
                 .As<ICurrentWorkingDirectory>()
                 .InstancePerLifetimeScope();
 
@@ -42,7 +42,7 @@ namespace PoshGit2
 
             builder.RegisterAdapter<ISessionState, IGitPromptSettings>((c, s) =>
             {
-                var defaultSettings = c.Resolve<DefaultGitPromptSettings>();
+                var defaultSettings = c.Resolve<Settings.DefaultGitPromptSettings>();
 
                 // If available, use from session information
                 if (s.PSVariable != null)

@@ -1,5 +1,4 @@
-﻿using PoshGit2.Status;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 using System.Threading.Tasks;
 
 namespace PoshGit2
