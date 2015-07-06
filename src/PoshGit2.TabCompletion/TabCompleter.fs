@@ -163,7 +163,7 @@ module TabCompletion =
         | _ -> Seq.empty<string>
 
 type TabCompletionResult = 
-    | Success of IEnumerable<string>
+    | Success of string seq
     | Failure
 
 type ITabCompleter =
