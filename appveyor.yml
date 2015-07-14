@@ -27,3 +27,5 @@ deploy:
     secure: g4eIWfNzoYNyrki3K4swxrlu8g8QDF6RSyUJbPAVO4Gj4BPYicfPPweryugIUE3C
   symbol_server: https://nuget.symbolsource.org/MyGet/poshgit2
   artifact: poshgit2
+  on:
+    branch: master
