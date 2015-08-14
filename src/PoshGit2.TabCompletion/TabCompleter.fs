@@ -94,7 +94,11 @@ module TabCompletion =
                 |> applyFilter' filter
             | false -> localAndRemote |> applyFilter' filter
         
-        let gitRemoteBranches remote ref filter = repo.RemoteBranches |> Seq.map (sprintf "%s/%s" ref)
+        let gitRemoteBranches remote ref branch = 
+            let beginning = sprintf "%s/%s" remote branch
+            repo.RemoteBranches 
+            |> Seq.filter (fun b -> b.StartsWith(beginning, StringComparison.Ordinal)) 
+            |> Seq.map (fun b -> b.Substring(remote.Length + 1))
         
         let (|Match|_|) pattern input = 
             let m = System.Text.RegularExpressions.Regex.Match(input, pattern)
@@ -131,6 +135,8 @@ module TabCompletion =
             | Some a -> a :> string seq
             | None -> Seq.empty<string>
         
+        let prepend c str = c + str
+
         match line with
         | EmptyString -> commands :> seq<string>
         | Match subcommandRegex (cmd :: op :: []) -> cmd |> getSubCommand |> applyFilter op
@@ -142,7 +148,7 @@ module TabCompletion =
         | Match @"^branch.* (?<branch>\S*)$" (branch :: []) -> gitBranches branch false
         | Match @"^(?<cmd>\S*)$" (cmd :: []) -> gitCommands cmd true
         | Match @"^help (?<cmd>\S*)$" (cmd :: []) -> gitCommands cmd false
-        //| Match @"^push.* (?<remote>\S+) (?<ref>[^\s\:]*\:)(?<branch>\S*)$" (remote :: ref :: branch :: []) -> gitRemoteBranches remote ref branch
+        | Match @"^push.* (?<remote>\S+) (?<ref>[^\s\:]*\:)(?<branch>\S*)$" (remote :: ref :: branch :: []) -> gitRemoteBranches remote ref branch |> Seq.map (prepend ":")
         | Match @"^(?:push|pull).* (?:\S+) (?<branch>[^\s\:]*)$" (branch :: []) -> gitBranches branch false
         | Match @"^(?:push|pull|fetch).* (?<remote>\S*)$" (remote :: []) -> gitRemotes remote
         //| Match @"^reset.* HEAD(?:\s+--)? (?<path>\S*)$" (path :: []) -> gitIndex path

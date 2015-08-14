@@ -5,11 +5,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PoshGit2.TabCompletion
 {
     public class TabCompletionTests
     {
+        private readonly ITestOutputHelper _log;
+
+        public TabCompletionTests(ITestOutputHelper log)
+        {
+            _log = log;
+        }
+
         [InlineData("gi")]
         [InlineData("git")]
         [InlineData("git.")]
@@ -137,8 +145,8 @@ namespace PoshGit2.TabCompletion
         [InlineData("git push oth", new string[] { "other" })]
         [InlineData("git push origin ", new string[] { "feature1", "feature2", "master", "origin/cutfeature", "origin/remotefeature" })]
         [InlineData("git push origin fe", new string[] { "feature1", "feature2" })]
-        //[InlineData("git push origin :", new string[] { ":remotefeature", ":cutfeature" })]
-        //[InlineData("git push origin :re", new string[] { ":remotefeature" })]
+        [InlineData("git push origin :", new string[] { ":remotefeature", ":cutfeature" })]
+        [InlineData("git push origin :re", new string[] { ":remotefeature" })]
 
         // git pull
         [InlineData("git pull ", new string[] { "origin", "other" })]
@@ -265,8 +273,11 @@ namespace PoshGit2.TabCompletion
             var fullResult = await completer.CompleteAsync(cmd, CancellationToken.None);
             var result = GetResult(fullResult);
 
-            var e = expected.OrderBy(o => o, StringComparer.Ordinal).ToList();
-            var e2 = result.ToList();
+            _log.WriteLine("Expected output:");
+            _log.WriteLine(string.Join(Environment.NewLine, expected));
+            _log.WriteLine(string.Empty);
+            _log.WriteLine("Actual output:");
+            _log.WriteLine(string.Join(Environment.NewLine, result));
 
             Assert.Equal(expected.OrderBy(o => o, StringComparer.Ordinal), result);
         }
