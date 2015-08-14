@@ -43,7 +43,7 @@ module TabCompletion =
             |> Map.ofArray
         
         let gitIndex filter = 
-            [| getUnmerged; getModified; getAdded |]
+            [| getUnmerged; getModified; getAdded; getDeleted |]
             |> Seq.map (fun f -> f repo.Index)
             |> Seq.map (applyFilter filter)
             |> Seq.concat
@@ -151,7 +151,7 @@ module TabCompletion =
         | Match @"^push.* (?<remote>\S+) (?<ref>[^\s\:]*\:)(?<branch>\S*)$" (remote :: ref :: branch :: []) -> gitRemoteBranches remote ref branch |> Seq.map (prepend ":")
         | Match @"^(?:push|pull).* (?:\S+) (?<branch>[^\s\:]*)$" (branch :: []) -> gitBranches branch false
         | Match @"^(?:push|pull|fetch).* (?<remote>\S*)$" (remote :: []) -> gitRemotes remote
-        //| Match @"^reset.* HEAD(?:\s+--)? (?<path>\S*)$" (path :: []) -> gitIndex path
+        | Match @"^reset.* HEAD(?:\s+--)? (?<path>\S*)$" (path :: []) -> gitIndex path
         | Match @"^commit.*-C\s+(?<ref>\S*)$" (ref :: []) -> gitBranches ref true
         | Match @"^add.* (?<files>\S*)$" (file :: []) -> file |> gitAddFiles
         | Match @"^checkout.* -- (?<files>\S*)$" (files :: []) -> gitCheckoutFiles files

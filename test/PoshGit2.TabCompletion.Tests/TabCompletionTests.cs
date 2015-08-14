@@ -259,6 +259,10 @@ namespace PoshGit2.TabCompletion
         // git reset <branch>
         [InlineData("git reset ", new[] { "FETCH_HEAD", "HEAD", "MERGE_HEAD", "ORIG_HEAD", "feature1", "feature2", "master", "origin/cutfeature", "origin/remotefeature" })]
 
+        // git reset HEAD <file>
+        [InlineData("git reset HEAD ", new[] { "index-added", "index-deleted", "index-modified", "index-unmerged" })]
+        [InlineData("git reset HEAD index-a", new[] { "index-added" })]
+
         // git revert <branch>
         [InlineData("git revert ", new[] { "FETCH_HEAD", "HEAD", "MERGE_HEAD", "ORIG_HEAD", "feature1", "feature2", "master", "origin/cutfeature", "origin/remotefeature" })]
 
@@ -309,6 +313,7 @@ namespace PoshGit2.TabCompletion
             status.Remotes.Returns(new[] { "origin", "other" });
             status.RemoteBranches.Returns(new[] { "origin/remotefeature", "origin/cutfeature" });
             status.Stashes.Returns(new[] { "stash", "wip" });
+
             return Task.FromResult(status);
         }
 
