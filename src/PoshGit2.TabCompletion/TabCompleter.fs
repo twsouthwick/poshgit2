@@ -151,16 +151,16 @@ module TabCompletion =
         | Match @"^push.* (?<remote>\S+) (?<ref>[^\s\:]*\:)(?<branch>\S*)$" (remote :: ref :: branch :: []) -> gitRemoteBranches remote ref branch |> Seq.map (prepend ":")
         | Match @"^(?:push|pull).* (?:\S+) (?<branch>[^\s\:]*)$" (branch :: []) -> gitBranches branch false
         | Match @"^(?:push|pull|fetch).* (?<remote>\S*)$" (remote :: []) -> gitRemotes remote
-        | Match @"^reset.* HEAD(?:\s+--)? (?<path>\S*)$" (path :: []) -> gitIndex path
+        | Match @"^reset.* HEAD(?:\s+--)? [""']?(?<path>[\S ]*)$" (path :: []) -> gitIndex path
         | Match @"^commit.*-C\s+(?<ref>\S*)$" (ref :: []) -> gitBranches ref true
-        | Match @"^add.* (?<files>\S*)$" (file :: []) -> file |> gitAddFiles
-        | Match @"^checkout.* -- (?<files>\S*)$" (files :: []) -> gitCheckoutFiles files
-        | Match @"^rm.* (?<index>\S*)$" (file :: []) -> file |> gitDeleted
-        | Match @"^(?:diff|difftool)(?:.* (?<staged>(?:--cached|--staged))|.*) (?<files>\S*)$" 
+        | Match @"^add\s+[""']?(?<files>[\S ]*)$" (file :: []) -> file |> gitAddFiles
+        | Match @"^checkout\s+--\s+[""']?(?<files>[\S ]*)$" (files :: []) -> gitCheckoutFiles files
+        | Match @"^rm\s+[""']?(?<files>[\S ]*)$" (file :: []) -> file |> gitDeleted
+        | Match @"^(?:diff|difftool)(?:.* (?<staged>(?:--cached|--staged))|.*) [""']?(?<files>[\S ]*)$" 
           (StringEquals "--cached" :: files :: []) -> gitDiffFiles files false |> Seq.append (gitBranches files true)
-        | Match @"^(?:diff|difftool)(?:.* (?<staged>(?:--cached|--staged))|.*) (?<files>\S*)$" 
+        | Match @"^(?:diff|difftool)(?:.* (?<staged>(?:--cached|--staged))|.*) [""']?(?<files>[\S ]*)$" 
           (StringEquals "--staged" :: files :: []) -> gitDiffFiles files true |> Seq.append (gitBranches files true)
-        | Match @"^(?:diff|difftool)(?:.* (?<staged>(?:--cached|--staged))|.*) (?<files>\S*)$" 
+        | Match @"^(?:diff|difftool)(?:.* (?<staged>(?:--cached|--staged))|.*) [""']?(?<files>[\S ]*)$" 
           (EmptyString :: files :: []) -> gitDiffFiles files true |> Seq.append (gitBranches files true)
         | Match @"^(?:checkout|cherry|cherry-pick|diff|difftool|log|merge|rebase|reflog\s+show|reset|revert|show).* (?<ref>\S*)$" 
           (ref :: []) -> gitBranches ref true
@@ -183,6 +183,7 @@ type TabCompleter(repo : Task<IRepositoryStatus>) =
     interface ITabCompleter with
         member this.CompleteAsync line (token: CancellationToken) = 
             async { 
+                let quote q (s: string) = if s.Contains(" ") then q + s + q else s
                 let! repo = Async.AwaitTask this.RepoTask
                 let result = 
                     match line with
@@ -190,6 +191,7 @@ type TabCompleter(repo : Task<IRepositoryStatus>) =
                         TabCompletion.ProcessGitCommand command repo
                         |> Seq.sort
                         |> Seq.distinct
+                        |> Seq.map (quote "\"")
                         |> Success
                     | _ -> Failure
                 return result

@@ -97,6 +97,7 @@ namespace PoshGit2.TabCompletion
         // git rm
         [InlineData("git rm ", new[] { "working-deleted", "working-duplicate" })]
         [InlineData("git rm working-a", new string[] { })]
+        [InlineData("git rm working-d", new string[] { "working-deleted", "working-duplicate" })]
 
         // git bisect
         [InlineData("git bisect ", new[] { "start", "bad", "good", "skip", "reset", "visualize", "replay", "log", "run" })]
@@ -286,24 +287,85 @@ namespace PoshGit2.TabCompletion
             Assert.Equal(expected.OrderBy(o => o, StringComparer.Ordinal), result);
         }
 
-        private static Task<IRepositoryStatus> CreateStatus()
+        // git add
+        [InlineData("git add ", new[] { "working duplicate", "working modified", "working added", "working unmerged" })]
+        [InlineData("git add \"working m", new[] { "working modified" })]
+        [InlineData("git add \'working m", new[] { "working modified" })]
+
+        // git rm
+        [InlineData("git rm ", new[] { "working deleted", "working duplicate" })]
+        [InlineData("git rm \"working d", new string[] { "working deleted", "working duplicate" })]
+        [InlineData("git rm \'working d", new string[] { "working deleted", "working duplicate" })]
+
+        // git checkout -- <files>
+        [InlineData("git checkout -- ", new[] { "working deleted", "working duplicate", "working modified", "working unmerged" })]
+        [InlineData("git checkout -- \"wor", new[] { "working deleted", "working duplicate", "working modified", "working unmerged" })]
+        [InlineData("git checkout -- \"working d", new[] { "working deleted", "working duplicate" })]
+        [InlineData("git checkout -- \'working d", new[] { "working deleted", "working duplicate" })]
+
+        // git merge|mergetool <files>
+        // TODO: Enable for merge state
+        //[InlineData("git merge ", new[] { "working unmerged", "working duplicate" })]
+        //[InlineData("git merge working u", new[] { "working unmerged" })]
+        //[InlineData("git merge j", new string[] { })]
+        //[InlineData("git mergetool ", new[] { "working unmerged", "working duplicate" })]
+        //[InlineData("git mergetool working u", new[] { "working unmerged" })]
+        //[InlineData("git mergetool j", new string[] { })]
+
+        // git diff <branch>
+        [InlineData("git diff ", new[] { "index modified", "FETCH_HEAD", "HEAD", "MERGE_HEAD", "ORIG_HEAD", "feature1", "feature2", "master", "origin/cutfeature", "origin/remotefeature" })]
+        [InlineData("git diff --cached ", new[] { "working modified", "working duplicate", "working unmerged", "index modified", "FETCH_HEAD", "HEAD", "MERGE_HEAD", "ORIG_HEAD", "feature1", "feature2", "master", "origin/cutfeature", "origin/remotefeature" })]
+        [InlineData("git diff --staged ", new[] { "index modified", "FETCH_HEAD", "HEAD", "MERGE_HEAD", "ORIG_HEAD", "feature1", "feature2", "master", "origin/cutfeature", "origin/remotefeature" })]
+
+        // git difftool <branch>
+        [InlineData("git difftool ", new[] { "index modified", "FETCH_HEAD", "HEAD", "MERGE_HEAD", "ORIG_HEAD", "feature1", "feature2", "master", "origin/cutfeature", "origin/remotefeature" })]
+        [InlineData("git difftool --cached ", new[] { "working modified", "working duplicate", "working unmerged", "index modified", "FETCH_HEAD", "HEAD", "MERGE_HEAD", "ORIG_HEAD", "feature1", "feature2", "master", "origin/cutfeature", "origin/remotefeature" })]
+        [InlineData("git difftool --staged ", new[] { "index modified", "FETCH_HEAD", "HEAD", "MERGE_HEAD", "ORIG_HEAD", "feature1", "feature2", "master", "origin/cutfeature", "origin/remotefeature" })]
+
+        // git reset HEAD <file>
+        [InlineData("git reset HEAD ", new[] { "index added", "index deleted", "index modified", "index unmerged" })]
+        [InlineData("git reset HEAD \"index a", new[] { "index added" })]
+        [InlineData("git reset HEAD \'index a", new[] { "index added" })]
+
+        [Theory]
+        public async Task CheckCompletionWithQuotations(string cmd, string[] initialExpected)
+        {
+            const string quot = "\"";
+            var completer = new TabCompleter(CreateStatus(" "));
+            var expected = initialExpected
+                .OrderBy(o => o, StringComparer.Ordinal)
+                .Select(o => o.Contains(" ") ? $"{quot}{o}{quot}" : o);
+
+            var fullResult = await completer.CompleteAsync(cmd, CancellationToken.None);
+            var result = GetResult(fullResult);
+
+            _log.WriteLine("Expected output:");
+            _log.WriteLine(string.Join(Environment.NewLine, expected));
+            _log.WriteLine(string.Empty);
+            _log.WriteLine("Actual output:");
+            _log.WriteLine(string.Join(Environment.NewLine, result));
+
+            Assert.Equal(expected, result);
+        }
+
+        private static Task<IRepositoryStatus> CreateStatus(string join = "-")
         {
             var status = Substitute.For<IRepositoryStatus>();
 
             var working = new ChangedItemsCollection
             {
-                Added = new[] { "working-added", "working-duplicate" },
-                Deleted = new[] { "working-deleted", "working-duplicate" },
-                Modified = new[] { "working-modified", "working-duplicate" },
-                Unmerged = new[] { "working-unmerged", "working-duplicate" }
+                Added = new[] { $"working{join}added", $"working{join}duplicate" },
+                Deleted = new[] { $"working{join}deleted", $"working{join}duplicate" },
+                Modified = new[] { $"working{join}modified", $"working{join}duplicate" },
+                Unmerged = new[] { $"working{join}unmerged", $"working{join}duplicate" }
             };
 
             var index = new ChangedItemsCollection
             {
-                Added = new[] { "index-added" },
-                Deleted = new[] { "index-deleted" },
-                Modified = new[] { "index-modified" },
-                Unmerged = new[] { "index-unmerged" }
+                Added = new[] { $"index{join}added" },
+                Deleted = new[] { $"index{join}deleted" },
+                Modified = new[] { $"index{join}modified" },
+                Unmerged = new[] { $"index{join}unmerged" }
             };
 
             status.Index.Returns(index);
