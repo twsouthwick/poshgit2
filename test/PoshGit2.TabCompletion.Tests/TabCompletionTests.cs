@@ -78,7 +78,7 @@ namespace PoshGit2.TabCompletion
         [Theory]
         public async Task ResultContains(string command, string expected)
         {
-            var completer = new TabCompleter(CreateStatus());
+            var completer = CreateTabCompleter();
 
             var fullResult = await completer.CompleteAsync(command, CancellationToken.None);
             var result = GetResult(fullResult);
@@ -273,18 +273,9 @@ namespace PoshGit2.TabCompletion
         [Theory]
         public async Task CheckCompletion(string cmd, string[] expected)
         {
-            var completer = new TabCompleter(CreateStatus());
+            var completer = CreateTabCompleter();
 
-            var fullResult = await completer.CompleteAsync(cmd, CancellationToken.None);
-            var result = GetResult(fullResult);
-
-            _log.WriteLine("Expected output:");
-            _log.WriteLine(string.Join(Environment.NewLine, expected));
-            _log.WriteLine(string.Empty);
-            _log.WriteLine("Actual output:");
-            _log.WriteLine(string.Join(Environment.NewLine, result));
-
-            Assert.Equal(expected.OrderBy(o => o, StringComparer.Ordinal), result);
+            await CompareAsync(completer, cmd, expected.OrderBy(o => o, StringComparer.Ordinal));
         }
 
         // git add
@@ -331,11 +322,16 @@ namespace PoshGit2.TabCompletion
         public async Task CheckCompletionWithQuotations(string cmd, string[] initialExpected)
         {
             const string quot = "\"";
-            var completer = new TabCompleter(CreateStatus(" "));
+            var completer = CreateTabCompleter(" ");
             var expected = initialExpected
                 .OrderBy(o => o, StringComparer.Ordinal)
                 .Select(o => o.Contains(" ") ? $"{quot}{o}{quot}" : o);
 
+            await CompareAsync(completer, cmd, expected);
+        }
+
+        private async Task CompareAsync(ITabCompleter completer, string cmd, IEnumerable<string> expected)
+        {
             var fullResult = await completer.CompleteAsync(cmd, CancellationToken.None);
             var result = GetResult(fullResult);
 
@@ -348,7 +344,7 @@ namespace PoshGit2.TabCompletion
             Assert.Equal(expected, result);
         }
 
-        private static Task<IRepositoryStatus> CreateStatus(string join = "-")
+        private static ITabCompleter CreateTabCompleter(string join = "-")
         {
             var status = Substitute.For<IRepositoryStatus>();
 
@@ -376,7 +372,7 @@ namespace PoshGit2.TabCompletion
             status.RemoteBranches.Returns(new[] { "origin/remotefeature", "origin/cutfeature" });
             status.Stashes.Returns(new[] { "stash", "wip" });
 
-            return Task.FromResult(status);
+            return new TabCompleter(Task.FromResult(status));
         }
 
         private IEnumerable<string> GetResult(TabCompletionResult fullResult)
