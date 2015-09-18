@@ -15,6 +15,7 @@
   </metadata>
   <files>
     <file src="**\*.dll" />
+    <file src="**\*.pdb" />
     <file src="**\*.exe" />
     <file src="**\*.config" />
     <file src="**\*.ps1" />
