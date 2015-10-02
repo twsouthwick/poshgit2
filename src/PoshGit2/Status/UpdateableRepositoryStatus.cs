@@ -118,6 +118,10 @@ namespace PoshGit2
             {
                 _log.Warning("Operation canceled {Exception}", e);
             }
+            catch (InvalidOperationException e)
+            {
+                _log.Warning("There was an unexpected {Exception}", e);
+            }
             finally
             {
                 // If a cancellation is requested, the semaphores may be in a disposed state and if
