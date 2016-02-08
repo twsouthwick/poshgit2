@@ -101,7 +101,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.targets))\dir.targets" />
   <Target Name="AfterBuild">
-    <Exec Command="powershell.exe -ExecutionPolicy ByPass -NoProfile -file Update-Version.ps1 $(OutDir)" />
+    <Exec Command="powershell.exe -ExecutionPolicy ByPass -NoProfile -file Update-Version.ps1 $(OutDir) $(GitVersion_NuGetVersion)" />
     <Exec Command="..\..\.nuget\nuget.exe pack $(OutDir)poshgit2.nuspec -NoPackageAnalysis -NonInteractive -OutputDirectory $(OutDir)" />
     <ItemGroup>
       <OutputNupkg Include="$(OutDir)*.nupkg" />

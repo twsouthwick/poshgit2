@@ -1,6 +1,8 @@
 param(
     [Parameter(Mandatory=$TRUE)]
-    [string]$outDir
+    [string]$outDir,
+	[Parameter(Mandatory=$TRUE)]
+	[string]$version
     )
 
 function Update-NuspecVersion (
@@ -51,8 +53,6 @@ function Update-ModuleManifest (
 
     Write-Host "Updated $FilePath"
 }
-
-$version = (Get-ChildItem -Path $outDir\PoshGit2.Cmdlet.dll).VersionInfo.FileVersion
 
 Write-Host "Updating file version: $version"
 

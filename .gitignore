@@ -9,3 +9,4 @@ ChocolateyPackage/posh-git/
 *.user
 *.lock.json
 *.nuget.props
+*.nuget.targets
