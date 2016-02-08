@@ -7,3 +7,5 @@ packages
 ChocolateyPackage/posh-git/
 *.nupkg
 *.user
+*.lock.json
+*.nuget.props

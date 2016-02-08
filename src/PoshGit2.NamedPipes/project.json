@@ -1,0 +1,12 @@
+﻿{
+  "dependencies": {
+    "Autofac": "3.5.2",
+    "Newtonsoft.Json": "6.0.8"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

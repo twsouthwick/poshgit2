@@ -1,0 +1,14 @@
+﻿{
+  "dependencies": {
+    "NSubstitute": "1.8.2.0",
+    "Rx-Linq": "2.2.5",
+    "xunit": "2.0.0",
+    "xunit.runner.visualstudio": "2.0.0"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

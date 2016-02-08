@@ -1,0 +1,15 @@
+﻿{
+  "runtimes": {
+    "win-anycpu": { },
+    "win": { }
+  },
+  "dependencies": {
+    "Autofac": "3.5.2",
+    "LibGit2Sharp": "0.21.0.176",
+    "Serilog": "1.5.1",
+    "Serilog.Sinks.Seq": "1.5.14"
+  },
+  "frameworks": {
+    "net46": { }
+  }
+}
