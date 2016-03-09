@@ -67,11 +67,11 @@ namespace PoshGit2
 
         public int BehindBy => _repository?.Head.TrackingDetails.BehindBy ?? 0;
 
-        public IReadOnlyCollection<string> LocalBranches => new ReadonlyEnumerableCollection<string>(_repository?.Branches.Where(b => !b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>());
+        public IReadOnlyCollection<string> LocalBranches => new ReadonlyEnumerableCollection<string>(_repository?.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName) ?? Enumerable.Empty<string>());
 
-        public IReadOnlyCollection<string> RemoteBranches => new ReadonlyEnumerableCollection<string>(_repository?.Branches.Where(b => b.IsRemote).Select(b => b.Name) ?? Enumerable.Empty<string>());
+        public IReadOnlyCollection<string> RemoteBranches => new ReadonlyEnumerableCollection<string>(_repository?.Branches.Where(b => b.IsRemote).Select(b => b.FriendlyName) ?? Enumerable.Empty<string>());
 
-        public IReadOnlyCollection<string> Stashes => new ReadonlyEnumerableCollection<string>(_repository?.Stashes.Select(s => s.Name) ?? Enumerable.Empty<string>());
+        public IReadOnlyCollection<string> Stashes => new ReadonlyEnumerableCollection<string>(_repository?.Stashes.Select(s => s.FriendlyName) ?? Enumerable.Empty<string>());
 
         public IReadOnlyCollection<string> Remotes => new ReadonlyEnumerableCollection<string>(_repository?.Network.Remotes.Select(r => r.Name) ?? Enumerable.Empty<string>());
 
@@ -176,7 +176,7 @@ namespace PoshGit2
                 return Elipses;
             }
 
-            var branch = _repository.Head.Name;
+            var branch = _repository.Head.FriendlyName;
 
             if (_cwd.CWD.StartsWith(GitDir, StringComparison.CurrentCultureIgnoreCase))
             {
