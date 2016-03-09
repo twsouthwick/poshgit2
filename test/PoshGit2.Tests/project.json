@@ -1,9 +1,9 @@
 ﻿{
   "dependencies": {
-    "NSubstitute": "1.8.2.0",
+    "NSubstitute": "1.9.2",
     "Rx-Linq": "2.2.5",
-    "xunit": "2.0.0",
-    "xunit.runner.visualstudio": "2.0.0"
+    "xunit": "2.1.0",
+    "xunit.runner.visualstudio": "2.1.0"
   },
   "frameworks": {
     "net46": {}
