@@ -11,7 +11,7 @@ namespace PoshGit2
 {
     public sealed class NamedPipePoshGitServer : IDisposable
     {
-        public static readonly string ServerName = Environment.MachineName;
+        public static readonly string ServerName = ".";
 
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly ILogger _log;
