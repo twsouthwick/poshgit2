@@ -30,7 +30,7 @@ namespace PoshGit2
             }
             catch (OperationCanceledException)
             {
-                Log.Error("GetGitInfo timedout");
+                Log.Error("GetGitInfo timed-out");
             }
         }
     }

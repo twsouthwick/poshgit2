@@ -95,7 +95,7 @@ namespace PoshGit2
             {
                 try
                 {
-                    // Ensure that the named pipe cancellation token gets cancelled if the main token is
+                    // Ensure that the named pipe cancellation token gets canceled if the main token is
                     using (cancellationToken.Register(innerCancellationTokenSource.Cancel))
                     using (var pipe = new NamedPipeClientStream(NamedPipePoshGitServer.ServerName, ServerInfo.Name, PipeDirection.InOut, PipeOptions.Asynchronous))
                     {
@@ -119,7 +119,13 @@ namespace PoshGit2
                 }
                 catch (OperationCanceledException)
                 {
-                    _log.Error("Named pipe communication with server was cancelled");
+                    _log.Warning("Named pipe communication with server was canceled");
+
+                    return defaultValue;
+                }
+                catch (IOException e)
+                {
+                    _log.Warning(e, "IOException in named pipe communication");
 
                     return defaultValue;
                 }
