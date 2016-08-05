@@ -22,6 +22,10 @@ namespace PoshGit2
         public IReadOnlyCollection<string> Deleted { get; set; }
         public IReadOnlyCollection<string> Unmerged { get; set; }
 
+        public int Count => Added.Count + Modified.Count + Deleted.Count + Unmerged.Count;
+
+        public int Length => Count;
+
         public override string ToString()
         {
             return $"{Added.Count} | {Modified.Count} | {Deleted.Count} | {Unmerged.Count}";
