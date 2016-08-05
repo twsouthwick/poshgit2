@@ -13,7 +13,12 @@ namespace PoshGit.Daemon
             var argSet = new HashSet<string>(args, StringComparer.OrdinalIgnoreCase);
 
             var skipServer = argSet.Contains("test");
+
+#if DEBUG
+            var showServer = true;
+#else
             var showServer = argSet.Contains("showServer");
+#endif
 
             if (skipServer)
             {
