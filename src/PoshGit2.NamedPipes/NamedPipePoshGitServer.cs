@@ -4,6 +4,7 @@ using PoshGit2.IO;
 using System;
 using System.IO;
 using System.IO.Pipes;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -87,6 +88,10 @@ namespace PoshGit2
                             case NamedPipeCommand.ExpandGitCommand:
                                 await writer.WriteAsync(NamedPipeCommand.Ready);
                                 await ProcessExpandGitCommandAsync(writer, reader, cancellationToken);
+                                break;
+                            case NamedPipeCommand.StatusString:
+                                await writer.WriteAsync(NamedPipeCommand.Ready);
+                                await ProcessGetStatusStringAsync(writer, reader, cancellationToken);
                                 break;
                             default:
                                 await writer.WriteAsync(NamedPipeCommand.BadCommand);
@@ -190,6 +195,37 @@ namespace PoshGit2
                 }
 
                 _log.Information("Found a repo at '{Path}'", path);
+            }
+        }
+        private async Task ProcessGetStatusStringAsync(StreamWriter writer, StreamReader reader, CancellationToken cancellationToken)
+        {
+            using (var jsonReader = new JsonTextReader(reader))
+            {
+                var result = _serializer.Deserialize<FormatStatusStringData>(jsonReader);
+                var scwd = new StringCurrentWorkingDirectory(result.Cwd);
+
+                try
+                {
+                    var status = await _repoCache.GetStatusStringAsync(result.Format, scwd, cancellationToken);
+
+                    await writer.WriteAsync(status);
+
+                    _log.Information("Return status string for {@Input}: {Status}", result, status);
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    var sb = new StringBuilder();
+
+                    sb.Append((char)0x1B);
+                    sb.Append("[1;33;41mUnknown Parameter: ");
+                    sb.Append(ex.ParamName);
+                    sb.Append((char)0x1B);
+                    sb.AppendLine("[0m");
+
+                    await writer.WriteAsync(sb.ToString());
+
+                    _log.Information(ex, "Error parsing {Input}", result);
+                }
             }
         }
     }

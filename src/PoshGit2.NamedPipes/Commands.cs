@@ -14,7 +14,8 @@ namespace PoshGit2
         Ready,
         BadCommand,
         Success,
-        Failed
+        Failed,
+        StatusString
     }
 
     internal static class ReaderWriterExtensions

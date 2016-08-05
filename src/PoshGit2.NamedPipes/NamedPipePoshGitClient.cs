@@ -36,6 +36,23 @@ namespace PoshGit2
             }, NamedPipeCommand.FindRepo, cancellationToken);
         }
 
+        public Task<string> GetStatusStringAsync(string statusString, ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
+        {
+            return SendReceiveCommandAsync(async (reader, writer) =>
+            {
+                using (var jsonWriter = new JsonTextWriter(writer))
+                {
+                    _serializer.Serialize(jsonWriter, new FormatStatusStringData
+                    {
+                        Cwd = cwd.CWD,
+                        Format = statusString
+                    });
+                }
+
+                return await reader.ReadToEndAsync();
+            }, NamedPipeCommand.StatusString, cancellationToken);
+        }
+
         public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
         {
             return SendReceiveCommandAsync((reader, writer) =>

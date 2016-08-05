@@ -66,6 +66,13 @@ namespace PoshGit2
             return _repositoryCache.FindRepoAsync(cwd, cancellationToken);
         }
 
+        public Task<string> GetStatusStringAsync(string statusString, ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
+        {
+            EnsureServerIsAvailable();
+
+            return _repositoryCache.GetStatusStringAsync(statusString, cwd, cancellationToken);
+        }
+
         public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
         {
             EnsureServerIsAvailable();

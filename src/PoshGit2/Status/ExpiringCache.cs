@@ -13,13 +13,15 @@ namespace PoshGit2
     {
         private readonly Func<string, ICurrentWorkingDirectory, IRepositoryStatus> _factory;
         private readonly ILogger _log;
+        private readonly IFormatStatusString _writer;
 
         // This is replaced when it is cleared
-        private MemoryCache _cache; 
+        private MemoryCache _cache;
 
-        public ExpiringCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
+        public ExpiringCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory, IFormatStatusString writer)
         {
             _log = log;
+            _writer = writer;
             _factory = factory;
 
             _cache = GetCache();
@@ -104,6 +106,13 @@ namespace PoshGit2
                     return @null;
                 }
             }
+        }
+
+        public async Task<string> GetStatusStringAsync(string formatString, ICurrentWorkingDirectory cwd, CancellationToken token)
+        {
+            var status = await FindRepoAsync(cwd, token);
+
+            return _writer.Format(formatString, status);
         }
 
         private string FindGitRepo(string path)

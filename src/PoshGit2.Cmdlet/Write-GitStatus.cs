@@ -1,24 +1,46 @@
-﻿using System.Management.Automation;
+﻿using Autofac;
+using System;
+using System.Management.Automation;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PoshGit2
 {
     [Cmdlet(VerbsCommunications.Write, "GitStatus")]
-    public class Write_GitStatus : AutofacCmdlet
+    public class WriteGitStatus : AutofacCmdlet
     {
-        public IStatusWriter Writer { get; set; }
+        [Parameter(Mandatory = false, Position = 0)]
+        public string Format { get; set; }
 
-        public Task<IRepositoryStatus> Status { get; set; }
+        public ILifetimeScope Scope { get; set; }
 
         protected override void ProcessRecord()
         {
             base.ProcessRecord();
 
-            var status = Status.Result;
+            ProcessRecordAsync().GetAwaiter().GetResult();
+        }
 
-            if (status != null)
+        private async Task ProcessRecordAsync()
+        {
+            if (Format == null)
             {
-                Writer.WriteStatus(status);
+                var repositoryStatus = await Scope.Resolve<Task<IRepositoryStatus>>();
+                var writer = Scope.Resolve<IStatusWriter>();
+
+                if (repositoryStatus != null)
+                {
+                    writer.WriteStatus(repositoryStatus);
+                }
+            }
+            else
+            {
+                var cache = Scope.Resolve<IRepositoryCache>();
+                var cwd = Scope.Resolve<ICurrentWorkingDirectory>();
+
+                var statusString = await cache.GetStatusStringAsync(Format, cwd, CancellationToken.None);
+
+                Console.WriteLine(statusString);
             }
         }
     }
