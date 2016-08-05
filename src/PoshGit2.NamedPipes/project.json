@@ -1,8 +1,6 @@
 ﻿{
   "dependencies": {
     "Autofac": "3.5.2",
-    "GitVersion": "3.4.1",
-    "GitVersionTask": "3.4.1",
     "Newtonsoft.Json": "8.0.2"
   },
   "frameworks": {
