@@ -4,10 +4,10 @@
     "win": {}
   },
   "dependencies": {
-    "Autofac": "3.5.2",
+    "Autofac": "4.1.1",
     "LibGit2Sharp": "0.22.0",
-    "Serilog": "1.5.1",
-    "Serilog.Sinks.Seq": "1.5.14"
+    "Serilog": "2.3.0",
+    "Serilog.Sinks.Seq": "3.0.1"
   },
   "frameworks": {
     "net46": {}

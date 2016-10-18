@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
-    "Autofac": "3.5.2",
-    "Newtonsoft.Json": "8.0.2"
+    "Autofac": "4.1.1",
+    "Newtonsoft.Json": "9.0.1"
   },
   "frameworks": {
     "net46": {}
