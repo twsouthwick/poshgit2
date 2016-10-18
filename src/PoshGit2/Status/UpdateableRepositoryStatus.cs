@@ -78,8 +78,8 @@ namespace PoshGit2
         public IReadOnlyCollection<ConfigurationEntry<string>> Configuration => new ReadonlyEnumerableCollection<ConfigurationEntry<string>>(_repository?.Config ?? Enumerable.Empty<ConfigurationEntry<string>>());
 
         /// <summary>
-        /// Update the status from a file change asynchronously 
-        /// 
+        /// Update the status from a file change asynchronously
+        ///
         /// This gates it so that only one update occurs at a time and at most one update
         /// is pending.  This is so that when a large number of file updates are triggered,
         /// we make sure to catch the final one.
@@ -114,13 +114,16 @@ namespace PoshGit2
 
                 return;
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException)
             {
-                _log.Warning("Operation canceled {Exception}", e);
             }
             catch (InvalidOperationException e)
             {
-                _log.Warning("There was an unexpected {Exception}", e);
+                _log.Warning(e, "Invalid operation");
+            }
+            catch (Exception e)
+            {
+                _log.Error(e, "Unexpected exception");
             }
             finally
             {
@@ -243,11 +246,13 @@ namespace PoshGit2
             _folderWatcher.OnNext -= UpdateStatus;
             (_folderWatcher as IDisposable)?.Dispose();
 
-            _updateRepoSemaphore.Dispose();
-            _updateGateSemaphore.Dispose();
-
+            // Dispose cancellation before disposing semaphore
+            // Otherwise, the WaitAsync throws an ArgumentNullException
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource.Dispose();
+
+            _updateRepoSemaphore.Dispose();
+            _updateGateSemaphore.Dispose();
         }
 
         private class ReadonlyEnumerableCollection<T> : IReadOnlyCollection<T>
