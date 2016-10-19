@@ -44,7 +44,7 @@ namespace PoshGit2
             _sb = new StringBuilder();
         }
 
-        public string Status => _sb.ToString();
+        public override string Status => _sb.ToString();
 
         private const char ESC = (char)0x1B;
 
