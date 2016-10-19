@@ -52,6 +52,10 @@ namespace PoshGit2
             builder.RegisterType<FormatStatusString>()
                 .As<IFormatStatusString>()
                 .SingleInstance();
+
+            builder.RegisterType<DefaultStatusWriterProvider>()
+                .As<IStatusWriterProvider>()
+                .SingleInstance();
         }
     }
 }

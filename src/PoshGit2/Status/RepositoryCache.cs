@@ -12,8 +12,12 @@ namespace PoshGit2
     {
         private static readonly Task<IRepositoryStatus> s_null = Task.FromResult<IRepositoryStatus>(null);
 
-        public RepositoryCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
+        private readonly IStatusWriterProvider _statusWriterProvider;
+
+        public RepositoryCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory, IStatusWriterProvider statusWriterProvider)
         {
+            _statusWriterProvider = statusWriterProvider;
+
             Log = log;
             RepositoryFactory = factory;
         }
@@ -68,11 +72,11 @@ namespace PoshGit2
         public async Task<string> GetStatusStringAsync(IGitPromptSettings settings, ICurrentWorkingDirectory cwd, CancellationToken token)
         {
             var status = await FindRepoAsync(cwd, token);
-            var vt100 = new VT100StatusWriter(settings);
+            var writer = _statusWriterProvider.GetStatusWriter(settings);
 
-            vt100.WriteStatus(status);
+            writer.WriteStatus(status);
 
-            return vt100.Status;
+            return writer.Status;
         }
 
         public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)

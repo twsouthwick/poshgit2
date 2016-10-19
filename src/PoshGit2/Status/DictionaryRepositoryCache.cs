@@ -8,8 +8,8 @@ namespace PoshGit2.Status
     {
         private readonly Dictionary<string, IRepositoryStatus> _repositories = new Dictionary<string, IRepositoryStatus>(StringComparer.OrdinalIgnoreCase);
 
-        public DictionaryRepositoryCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
-            : base(log, factory)
+        public DictionaryRepositoryCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory, IStatusWriterProvider writerProvider)
+            : base(log, factory, writerProvider)
         {
         }
 

@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StatusWriters\DefaultStatusWriterProvider.cs" />
+    <Compile Include="StatusWriters\IStatusWriterProvider.cs" />
     <Compile Include="StatusWriters\PlainTextStatusWriter.cs" />
     <Compile Include="Settings\ReadWriteGitPromptSettings.cs" />
     <Compile Include="StatusWriters\VT100StatusWriter.cs" />

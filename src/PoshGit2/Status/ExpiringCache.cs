@@ -11,8 +11,8 @@ namespace PoshGit2
         // This is replaced when it is cleared
         private MemoryCache _cache;
 
-        public ExpiringCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
-            : base(log, factory)
+        public ExpiringCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory, IStatusWriterProvider writerProvider)
+            : base(log, factory, writerProvider)
         {
             _cache = GetCache();
         }

@@ -1,13 +1,9 @@
 ﻿using Autofac;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using PoshGit2.IO;
-using PoshGit2.Settings;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,8 +12,6 @@ namespace PoshGit2
 {
     public sealed class NamedPipePoshGitServer : IDisposable
     {
-        private static readonly IGitPromptSettings s_defaultSettings = new DefaultGitPromptSettings(ConsoleColor.Blue);
-
         public const string ServerName = ".";
 
         private readonly CancellationTokenSource _cancellationTokenSource;
@@ -213,7 +207,7 @@ namespace PoshGit2
 
                 try
                 {
-                    var status = await _repoCache.GetStatusStringAsync(result.Settings ?? s_defaultSettings, scwd, cancellationToken);
+                    var status = await _repoCache.GetStatusStringAsync(result.Settings, scwd, cancellationToken);
 
                     await writer.WriteAsync(status);
 

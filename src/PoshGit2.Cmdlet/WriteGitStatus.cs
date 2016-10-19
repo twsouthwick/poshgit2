@@ -5,11 +5,17 @@ using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    [Cmdlet(VerbsCommunications.Write, "GitStatus")]
+    [Cmdlet(VerbsCommunications.Write, "GitStatus", DefaultParameterSetName = nameof(Console))]
     public class WriteGitStatus : AutofacCmdlet
     {
-        [Parameter(Mandatory = false, Position = 0)]
+        [Parameter(Mandatory = false, ParameterSetName = nameof(VT100))]
         public SwitchParameter VT100 { get; set; }
+
+        [Parameter(Mandatory = false, ParameterSetName = nameof(PlainText))]
+        public SwitchParameter PlainText { get; set; }
+
+        [Parameter(Mandatory = false, ParameterSetName = nameof(Console))]
+        public SwitchParameter Console { get; set; } = true;
 
         public IRepositoryCache Cache { get; set; }
 
@@ -44,14 +50,23 @@ namespace PoshGit2
 
                 return await Cache.GetStatusStringAsync(Settings, Cwd, CancellationToken.None);
             }
-            else
+            else if (PlainText)
+            {
+                return await Cache.GetStatusStringAsync(null, Cwd, CancellationToken.None);
+            }
+            else if (Console)
             {
                 var repositoryStatus = await Status.Value;
 
-                Writer?.WriteStatus(repositoryStatus);
+                if (repositoryStatus != null)
+                {
+                    Writer.WriteStatus(repositoryStatus);
 
-                return null;
+                    return Writer.Status;
+                }
             }
+
+            return null;
         }
     }
 }
