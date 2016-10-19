@@ -8,21 +8,25 @@ using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    public sealed class RepositoryCache : IDisposable, IRepositoryCache
+    public abstract class RepositoryCache : IDisposable, IRepositoryCache
     {
-        private readonly IDictionary<string, IRepositoryStatus> _repositories = new Dictionary<string, IRepositoryStatus>(StringComparer.OrdinalIgnoreCase);
-        private readonly Func<string, ICurrentWorkingDirectory, IRepositoryStatus> _factory;
-        private readonly ILogger _log;
+        private static readonly Task<IRepositoryStatus> s_null = Task.FromResult<IRepositoryStatus>(null);
 
         public RepositoryCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
         {
-            _log = log;
-            _factory = factory;
+            Log = log;
+            RepositoryFactory = factory;
         }
+
+        protected abstract IEnumerable<IRepositoryStatus> Repositories { get; }
+
+        protected Func<string, ICurrentWorkingDirectory, IRepositoryStatus> RepositoryFactory { get; }
+
+        protected ILogger Log { get; }
 
         public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
         {
-            var all = _repositories.Values
+            var all = Repositories
                 .Select(o => new ReadonlyCopyRepositoryStatus(o))
                 .ToList();
 
@@ -31,11 +35,9 @@ namespace PoshGit2
 
         public Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
         {
-            var @null = Task.FromResult<IRepositoryStatus>(null);
-
             if (!cwd.IsValid)
             {
-                return @null;
+                return s_null;
             }
 
             var path = cwd.CWD;
@@ -43,30 +45,23 @@ namespace PoshGit2
 
             if (repo == null)
             {
-                return @null;
-            }
-
-            IRepositoryStatus oldStatus;
-            if (_repositories.TryGetValue(repo, out oldStatus))
-            {
-                _log.Information("Found repo: {Path}", repo);
-
-                return Task.FromResult(new ReadonlyCopyRepositoryStatus(oldStatus, cwd) as IRepositoryStatus);
+                return s_null;
             }
 
             try
             {
-                _log.Information("Creating repo: {Path}", repo);
+                var result = FindRepo(repo, cwd);
 
-                var status = _factory(repo, cwd);
-
-                _repositories.Add(repo, status);
-
-                return Task.FromResult(new ReadonlyCopyRepositoryStatus(status, cwd) as IRepositoryStatus);
+                return Task.FromResult(result);
             }
             catch (RepositoryNotFoundException)
             {
-                return @null;
+                return s_null;
+            }
+            catch (Exception e)
+            {
+                Log.Warning(e, "Unknown exception in cache");
+                return s_null;
             }
         }
 
@@ -78,6 +73,37 @@ namespace PoshGit2
             vt100.WriteStatus(status);
 
             return vt100.Status;
+        }
+
+        public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
+        {
+            var repoPath = FindGitRepo(path);
+
+            return Task.FromResult(RemovePath(repoPath));
+        }
+
+        public Task<bool> ClearCacheAsync(CancellationToken cancellationToken)
+        {
+            Clear();
+            return Task.FromResult(true);
+        }
+
+        protected abstract IRepositoryStatus FindRepo(string repo, ICurrentWorkingDirectory cwd);
+
+        protected abstract void Clear();
+
+        protected abstract bool Remove(string path);
+
+        protected bool RemovePath(string path)
+        {
+            var mainPath = FindGitRepo(path);
+
+            if (mainPath == null)
+            {
+                return false;
+            }
+
+            return Remove(mainPath);
         }
 
         private static string FindGitRepo(string path)
@@ -99,46 +125,16 @@ namespace PoshGit2
             }
         }
 
-        public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
         {
-            var repoPath = FindGitRepo(path);
-
-            return Task.FromResult(Remove(repoPath));
-        }
-
-        public Task<bool> ClearCacheAsync(CancellationToken cancellationToken)
-        {
-            _repositories.Clear();
-
-            return Task.FromResult(true);
-        }
-
-        private bool Remove(string path)
-        {
-            var mainPath = FindGitRepo(path);
-
-            if (mainPath == null)
+            if (!disposedValue)
             {
-                return false;
-            }
-
-            IRepositoryStatus status;
-            if (_repositories.TryGetValue(mainPath, out status))
-            {
-                (status as IDisposable)?.Dispose();
-            }
-
-            return _repositories.Remove(mainPath);
-        }
-
-        public void Dispose()
-        {
-            var all = _repositories.Keys.ToList();
-
-            foreach (var repo in all)
-            {
-                Remove(repo);
+                disposedValue = true;
             }
         }
+
+        public void Dispose() => Dispose(true);
     }
 }

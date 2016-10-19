@@ -1,27 +1,19 @@
-﻿using LibGit2Sharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    public sealed class ExpiringCache : IDisposable, IRepositoryCache
+    public sealed class ExpiringCache : RepositoryCache
     {
-        private readonly Func<string, ICurrentWorkingDirectory, IRepositoryStatus> _factory;
-        private readonly ILogger _log;
-
         // This is replaced when it is cleared
         private MemoryCache _cache;
 
         public ExpiringCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
+            : base(log, factory)
         {
-            _log = log;
-            _factory = factory;
-
             _cache = GetCache();
         }
 
@@ -30,32 +22,10 @@ namespace PoshGit2
             return new MemoryCache("PoshGit2");
         }
 
-        public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
+        protected override IEnumerable<IRepositoryStatus> Repositories => _cache.Select(r => r.Value as IRepositoryStatus);
+
+        protected override IRepositoryStatus FindRepo(string repo, ICurrentWorkingDirectory cwd)
         {
-            var all = _cache
-                .Select(o => new ReadonlyCopyRepositoryStatus(o.Value as IRepositoryStatus))
-                .ToList();
-
-            return Task.FromResult<IEnumerable<IRepositoryStatus>>(all);
-        }
-
-        public Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
-        {
-            var @null = Task.FromResult<IRepositoryStatus>(null);
-
-            if (!cwd.IsValid)
-            {
-                return @null;
-            }
-
-            var path = cwd.CWD;
-            var repo = FindGitRepo(path);
-
-            if (repo == null)
-            {
-                return @null;
-            }
-
             lock (_cache)
             {
                 if (_cache.Contains(repo))
@@ -65,116 +35,56 @@ namespace PoshGit2
 
                     if (value == null)
                     {
-                        _log.Warning("Found an entry that is not IRepositoryStatus: {CacheValue}", item.Value?.GetType());
+                        Log.Warning("Found an entry that is not IRepositoryStatus: {CacheValue}", item.Value?.GetType());
                         _cache.Remove(repo);
                     }
                     else
                     {
-                        _log.Verbose("Found repo: {Path}", repo);
-                        return Task.FromResult(new ReadonlyCopyRepositoryStatus(value, cwd) as IRepositoryStatus);
+                        Log.Verbose("Found repo: {Path}", repo);
+                        return new ReadonlyCopyRepositoryStatus(value, cwd);
                     }
                 }
 
-                try
-                {
-                    _log.Information("Creating repo: {Path}", repo);
+                Log.Information("Creating repo: {Path}", repo);
 
-                    var status = _factory(repo, cwd);
-                    var policy = new CacheItemPolicy
+                var status = RepositoryFactory(repo, cwd);
+                var policy = new CacheItemPolicy
+                {
+                    RemovedCallback = arg =>
                     {
-                        RemovedCallback = arg =>
-                        {
-                            _log.Information("Removing repo from cache: {Repo}", repo);
-                            (arg.CacheItem.Value as IDisposable)?.Dispose();
-                        },
-                        SlidingExpiration = TimeSpan.FromMinutes(10)
-                    };
+                        Log.Information("Removing repo from cache: {Repo}", repo);
+                        (arg.CacheItem.Value as IDisposable)?.Dispose();
+                    },
+                    SlidingExpiration = TimeSpan.FromMinutes(10)
+                };
 
-                    _cache.Add(new CacheItem(repo, status), policy);
+                _cache.Add(new CacheItem(repo, status), policy);
 
-                    return Task.FromResult(new ReadonlyCopyRepositoryStatus(status, cwd) as IRepositoryStatus);
-                }
-                catch (RepositoryNotFoundException)
-                {
-                    return @null;
-                }
-                catch (Exception e)
-                {
-                    _log.Warning(e, "Unknown exception in ExpiringCache");
-                    return @null;
-                }
+                return new ReadonlyCopyRepositoryStatus(status, cwd);
             }
         }
 
-        public async Task<string> GetStatusStringAsync(IGitPromptSettings settings, ICurrentWorkingDirectory cwd, CancellationToken token)
-        {
-            var status = await FindRepoAsync(cwd, token);
-            var vt100 = new VT100StatusWriter(settings);
-
-            vt100.WriteStatus(status);
-
-            return vt100.Status;
-        }
-
-        private string FindGitRepo(string path)
-        {
-            if (path == null)
-            {
-                return null;
-            }
-
-            if (Directory.Exists(Path.Combine(path, ".git")))
-            {
-                return path;
-            }
-            else
-            {
-                try
-                {
-                    var up = Path.GetDirectoryName(path);
-
-                    return string.Equals(up, path, StringComparison.OrdinalIgnoreCase) ? null : FindGitRepo(up);
-                }
-                catch (Exception e)
-                {
-                    _log.Error("Invalid repo path: {Path}, {Exception}", path, e);
-
-                    return null;
-                }
-            }
-        }
-
-        public Task<bool> RemoveRepoAsync(string path, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(Remove(path));
-        }
-
-        public Task<bool> ClearCacheAsync(CancellationToken cancellationToken)
+        protected override void Clear()
         {
             var original = Interlocked.Exchange(ref _cache, GetCache());
 
             original.Dispose();
-
-            return Task.FromResult(true);
         }
 
-        private bool Remove(string path)
+        protected override bool Remove(string path)
         {
-            var mainPath = FindGitRepo(path);
-
-            if (mainPath == null)
-            {
-                return false;
-            }
-
-            var removed = _cache.Remove(mainPath);
+            var removed = _cache.Remove(path);
 
             return removed != null;
         }
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            _cache.Dispose();
+            if (disposing)
+            {
+                _cache.Dispose();
+                _cache = null;
+            }
         }
     }
 }
