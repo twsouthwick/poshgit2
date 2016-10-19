@@ -1,5 +1,4 @@
-﻿using Autofac;
-using System;
+﻿using System;
 using System.Management.Automation;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +11,15 @@ namespace PoshGit2
         [Parameter(Mandatory = false, Position = 0)]
         public SwitchParameter VT100 { get; set; }
 
-        public ILifetimeScope Scope { get; set; }
+        public IRepositoryCache Cache { get; set; }
+
+        public ICurrentWorkingDirectory Cwd { get; set; }
+
+        public IGitPromptSettings Settings { get; set; }
+
+        public Lazy<Task<IRepositoryStatus>> Status { get; set; }
+
+        public IStatusWriter Writer { get; set; }
 
         protected override void ProcessRecord()
         {
@@ -35,30 +42,15 @@ namespace PoshGit2
                     throw new InvalidOperationException("VT100 is not available on your system");
                 }
 
-                var cache = Scope.Resolve<IRepositoryCache>();
-                var cwd = Scope.Resolve<ICurrentWorkingDirectory>();
-                var settings = Scope.Resolve<IGitPromptSettings>();
-
-                var statusString = await cache.GetStatusStringAsync(settings, cwd, CancellationToken.None);
-
-                return statusString;
+                return await Cache.GetStatusStringAsync(Settings, Cwd, CancellationToken.None);
             }
             else
             {
-                var repositoryStatus = await Scope.Resolve<Task<IRepositoryStatus>>();
-                var writer = Scope.Resolve<IStatusWriter>();
+                var repositoryStatus = await Status.Value;
 
-                if (repositoryStatus != null)
-                {
-                    writer.WriteStatus(repositoryStatus);
-
-                    var vt100 = writer as VT100StatusWriter;
-
-                    return vt100?.Status;
-                }
+                Writer?.WriteStatus(repositoryStatus);
 
                 return null;
-
             }
         }
     }

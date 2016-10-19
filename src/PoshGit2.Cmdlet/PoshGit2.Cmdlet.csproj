@@ -57,7 +57,7 @@
     <Compile Include="PSObjectGitPromptSettings.cs" />
     <Compile Include="RemoveGitRepo.cs" />
     <Compile Include="VirtualTerminalHelper.cs" />
-    <Compile Include="Write-GitStatus.cs" />
+    <Compile Include="WriteGitStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
