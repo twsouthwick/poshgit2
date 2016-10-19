@@ -30,6 +30,11 @@ namespace PoshGit2
         {
             if (VT100)
             {
+                if (!VirtualTerminalHelper.IsEnabled)
+                {
+                    throw new InvalidOperationException("VT100 is not available on your system");
+                }
+
                 var cache = Scope.Resolve<IRepositoryCache>();
                 var cwd = Scope.Resolve<ICurrentWorkingDirectory>();
                 var settings = Scope.Resolve<IGitPromptSettings>();
