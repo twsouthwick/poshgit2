@@ -49,10 +49,6 @@ namespace PoshGit2
                 .As<Task<IRepositoryStatus>>()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<FormatStatusString>()
-                .As<IFormatStatusString>()
-                .SingleInstance();
-
             builder.RegisterType<DefaultStatusWriterProvider>()
                 .As<IStatusWriterProvider>()
                 .SingleInstance();

@@ -73,8 +73,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status\RepositoryCache.cs" />
     <Compile Include="IO\WindowsCurrentWorkingDirectory.cs" />
-    <Compile Include="IFormatStatusString.cs" />
-    <Compile Include="FormatStatusString.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
