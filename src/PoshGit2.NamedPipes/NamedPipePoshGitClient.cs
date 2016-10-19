@@ -146,6 +146,12 @@ namespace PoshGit2
 
                     return defaultValue;
                 }
+                catch (Exception e)
+                {
+                    _log.Error(e, "{InnerCancellationToken} {CancellationToken}", innerCancellationTokenSource.IsCancellationRequested, cancellationToken.IsCancellationRequested);
+
+                    return defaultValue;
+                }
             }
         }
     }
