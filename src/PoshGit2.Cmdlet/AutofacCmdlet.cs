@@ -1,6 +1,9 @@
 ﻿using Autofac;
+using Autofac.Core;
 using System;
+using System.Linq;
 using System.Management.Automation;
+using System.Reflection;
 
 namespace PoshGit2
 {
@@ -56,9 +59,7 @@ namespace PoshGit2
         {
             base.BeginProcessing();
 
-            // TODO: This needs to be here for now, otherwise SessionState is not defined yet.
-            // TODO: Is this called on each time something is piped through?
-            _lifetimeScope.InjectUnsetProperties(this);
+            _lifetimeScope.InjectProperties(this, CmdletParameterSelector.Instance);
         }
 
         private bool disposedValue = false; // To detect redundant calls
@@ -79,6 +80,16 @@ namespace PoshGit2
         public void Dispose()
         {
             Dispose(true);
+        }
+
+        private sealed class CmdletParameterSelector : IPropertySelector
+        {
+            public static IPropertySelector Instance = new CmdletParameterSelector();
+
+            public bool InjectProperty(PropertyInfo propertyInfo, object instance)
+            {
+                return !propertyInfo.GetCustomAttributes<ParameterAttribute>().Any();
+            }
         }
     }
 }
