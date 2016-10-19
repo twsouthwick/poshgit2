@@ -19,7 +19,7 @@ namespace PoshGit2
         {
             _log = log;
             _cwd = cwd;
-            _serializer = JsonSerializer.Create();
+            _serializer = Serializer.Instance;
         }
 
         public Task<IRepositoryStatus> FindRepoAsync(ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
@@ -36,16 +36,16 @@ namespace PoshGit2
             }, NamedPipeCommand.FindRepo, cancellationToken);
         }
 
-        public Task<string> GetStatusStringAsync(string statusString, ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
+        public Task<string> GetStatusStringAsync(IGitPromptSettings settings, ICurrentWorkingDirectory cwd, CancellationToken cancellationToken)
         {
             return SendReceiveCommandAsync(async (reader, writer) =>
             {
                 using (var jsonWriter = new JsonTextWriter(writer))
                 {
-                    _serializer.Serialize(jsonWriter, new FormatStatusStringData
+                    _serializer.Serialize(jsonWriter, new StatusStringData
                     {
                         Cwd = cwd.CWD,
-                        Format = statusString
+                        Settings = settings
                     });
                 }
 
@@ -107,8 +107,14 @@ namespace PoshGit2
 
         private async Task<T> SendReceiveCommandAsync<T>(Func<StreamReader, StreamWriter, Task<T>> func, NamedPipeCommand command, CancellationToken cancellationToken, T defaultValue = default(T))
         {
+#if DEBUG
+            var timeout = TimeSpan.FromDays(1);
+#else
+            var timeout = TimeSpan.FromSeconds(2);
+#endif
+
             // Time out after 2 seconds to access named pipe
-            using (var innerCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2)))
+            using (var innerCancellationTokenSource = new CancellationTokenSource(timeout))
             {
                 try
                 {

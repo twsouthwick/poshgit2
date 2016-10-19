@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    public class PromptColor
+    public struct PromptColor
     {
         public static PromptColor Create(ConsoleColor foreground, ConsoleColor background)
         {
@@ -17,8 +13,8 @@ namespace PoshGit2
             };
         }
 
-        public ConsoleColor Foreground { get; private set; }
+        public ConsoleColor Foreground { get; set; }
 
-        public ConsoleColor Background { get; private set; }
+        public ConsoleColor Background { get; set; }
     }
 }

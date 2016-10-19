@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Settings\ReadWriteGitPromptSettings.cs" />
     <Compile Include="VT100StatusWriter.cs" />
     <Compile Include="StatusWriter.cs" />
     <Compile Include="Logging\ILogger.cs" />

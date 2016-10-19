@@ -13,13 +13,11 @@ namespace PoshGit2
         private readonly IDictionary<string, IRepositoryStatus> _repositories = new Dictionary<string, IRepositoryStatus>(StringComparer.OrdinalIgnoreCase);
         private readonly Func<string, ICurrentWorkingDirectory, IRepositoryStatus> _factory;
         private readonly ILogger _log;
-        private readonly IFormatStatusString _writer;
 
-        public RepositoryCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory, IFormatStatusString writer)
+        public RepositoryCache(ILogger log, Func<string, ICurrentWorkingDirectory, IRepositoryStatus> factory)
         {
             _log = log;
             _factory = factory;
-            _writer = writer;
         }
 
         public Task<IEnumerable<IRepositoryStatus>> GetAllReposAsync(CancellationToken cancellationToken)
@@ -72,11 +70,14 @@ namespace PoshGit2
             }
         }
 
-        public async Task<string> GetStatusStringAsync(string statusString, ICurrentWorkingDirectory cwd, CancellationToken token)
+        public async Task<string> GetStatusStringAsync(IGitPromptSettings settings, ICurrentWorkingDirectory cwd, CancellationToken token)
         {
             var status = await FindRepoAsync(cwd, token);
+            var vt100 = new VT100StatusWriter(settings);
 
-            return _writer.Format(statusString, status);
+            vt100.WriteStatus(status);
+
+            return vt100.Status;
         }
 
         private static string FindGitRepo(string path)

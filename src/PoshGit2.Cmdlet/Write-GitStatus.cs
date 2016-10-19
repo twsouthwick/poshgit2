@@ -10,7 +10,7 @@ namespace PoshGit2
     public class WriteGitStatus : AutofacCmdlet
     {
         [Parameter(Mandatory = false, Position = 0)]
-        public string Format { get; set; }
+        public SwitchParameter VT100 { get; set; }
 
         public ILifetimeScope Scope { get; set; }
 
@@ -28,7 +28,17 @@ namespace PoshGit2
 
         private async Task<string> ProcessRecordAsync()
         {
-            if (Format == null)
+            if (VT100)
+            {
+                var cache = Scope.Resolve<IRepositoryCache>();
+                var cwd = Scope.Resolve<ICurrentWorkingDirectory>();
+                var settings = Scope.Resolve<IGitPromptSettings>();
+
+                var statusString = await cache.GetStatusStringAsync(settings, cwd, CancellationToken.None);
+
+                return statusString;
+            }
+            else
             {
                 var repositoryStatus = await Scope.Resolve<Task<IRepositoryStatus>>();
                 var writer = Scope.Resolve<IStatusWriter>();
@@ -43,15 +53,7 @@ namespace PoshGit2
                 }
 
                 return null;
-            }
-            else
-            {
-                var cache = Scope.Resolve<IRepositoryCache>();
-                var cwd = Scope.Resolve<ICurrentWorkingDirectory>();
 
-                var statusString = await cache.GetStatusStringAsync(Format, cwd, CancellationToken.None);
-
-                return statusString;
             }
         }
     }

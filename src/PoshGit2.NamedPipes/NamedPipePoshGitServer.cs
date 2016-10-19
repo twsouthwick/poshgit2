@@ -1,9 +1,13 @@
 ﻿using Autofac;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using PoshGit2.IO;
+using PoshGit2.Settings;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +16,9 @@ namespace PoshGit2
 {
     public sealed class NamedPipePoshGitServer : IDisposable
     {
-        public static readonly string ServerName = ".";
+        private static readonly IGitPromptSettings s_defaultSettings = new DefaultGitPromptSettings(ConsoleColor.Blue);
+
+        public const string ServerName = ".";
 
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly ILogger _log;
@@ -25,8 +31,8 @@ namespace PoshGit2
             _log = log;
             _cancellationTokenSource = new CancellationTokenSource();
             _repoCache = repoCache;
-            _serializer = JsonSerializer.Create();
             _lifetimeScope = lifetimeScope;
+            _serializer = Serializer.Instance;
 
             log.Information("Server started");
         }
@@ -197,16 +203,17 @@ namespace PoshGit2
                 _log.Information("Found a repo at '{Path}'", path);
             }
         }
+
         private async Task ProcessGetStatusStringAsync(StreamWriter writer, StreamReader reader, CancellationToken cancellationToken)
         {
             using (var jsonReader = new JsonTextReader(reader))
             {
-                var result = _serializer.Deserialize<FormatStatusStringData>(jsonReader);
+                var result = _serializer.Deserialize<StatusStringData>(jsonReader);
                 var scwd = new StringCurrentWorkingDirectory(result.Cwd);
 
                 try
                 {
-                    var status = await _repoCache.GetStatusStringAsync(result.Format, scwd, cancellationToken);
+                    var status = await _repoCache.GetStatusStringAsync(result.Settings ?? s_defaultSettings, scwd, cancellationToken);
 
                     await writer.WriteAsync(status);
 

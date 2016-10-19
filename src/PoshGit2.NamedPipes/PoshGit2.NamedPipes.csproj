@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands.cs" />
+    <Compile Include="Serializer.cs" />
     <Compile Include="ServerInfo.cs" />
     <Compile Include="ServerStartupPoshGitClient.cs" />
     <Compile Include="NamedPipeStatusModule.cs" />
@@ -51,7 +52,7 @@
     <Compile Include="NonClosingStreamWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NamedPipePoshGitClient.cs" />
-    <Compile Include="FormatStatusStringData.cs" />
+    <Compile Include="StatusStringData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PoshGit2.TabCompletion\PoshGit2.TabCompletion.fsproj">
