@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace PoshGit2
 {
-    [Cmdlet(VerbsCommunications.Write, "GitStatus", DefaultParameterSetName = nameof(Console))]
-    public class WriteGitStatus : AutofacCmdlet
+    [Cmdlet(VerbsCommon.Get, "RepositoryStatus", DefaultParameterSetName = nameof(PlainText))]
+    public class GetRepositoryStatus : AutofacCmdlet
     {
         [Parameter(Mandatory = false, ParameterSetName = nameof(VT100))]
         public SwitchParameter VT100 { get; set; }
@@ -14,18 +14,11 @@ namespace PoshGit2
         [Parameter(Mandatory = false, ParameterSetName = nameof(PlainText))]
         public SwitchParameter PlainText { get; set; }
 
-        [Parameter(Mandatory = false, ParameterSetName = nameof(Console))]
-        public SwitchParameter Console { get; set; } = true;
-
         public IRepositoryCache Cache { get; set; }
 
         public ICurrentWorkingDirectory Cwd { get; set; }
 
         public IGitPromptSettings Settings { get; set; }
-
-        public Lazy<Task<IRepositoryStatus>> Status { get; set; }
-
-        public IStatusWriter Writer { get; set; }
 
         protected override void ProcessRecord()
         {
@@ -41,7 +34,7 @@ namespace PoshGit2
 
         private async Task<string> ProcessRecordAsync()
         {
-            if (VT100)
+            if (ParameterSetName == nameof(VT100))
             {
                 if (!VirtualTerminalHelper.IsEnabled)
                 {
@@ -50,20 +43,9 @@ namespace PoshGit2
 
                 return await Cache.GetStatusStringAsync(Settings, Cwd, CancellationToken.None);
             }
-            else if (PlainText)
+            else if (ParameterSetName == nameof(PlainText))
             {
                 return await Cache.GetStatusStringAsync(null, Cwd, CancellationToken.None);
-            }
-            else if (Console)
-            {
-                var repositoryStatus = await Status.Value;
-
-                if (repositoryStatus != null)
-                {
-                    Writer.WriteStatus(repositoryStatus);
-
-                    return Writer.Status;
-                }
             }
 
             return null;

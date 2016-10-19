@@ -47,17 +47,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacCmdlet.cs" />
-    <Compile Include="GetGitInfo.cs" />
-    <Compile Include="GetRepoStatus.cs" />
+    <Compile Include="GetRepository.cs" />
+    <Compile Include="GetRepositoryStatus.cs" />
     <Compile Include="ISessionState.cs" />
     <Compile Include="PSAutofacModule.cs" />
     <Compile Include="IO\PSCurrentWorkingDirectory.cs" />
     <Compile Include="ExpandGitCommand.cs" />
     <Compile Include="SessionStateWrapper.cs" />
     <Compile Include="PSObjectGitPromptSettings.cs" />
-    <Compile Include="RemoveGitRepo.cs" />
+    <Compile Include="RemoveRepository.cs" />
     <Compile Include="VirtualTerminalHelper.cs" />
-    <Compile Include="WriteGitStatus.cs" />
+    <Compile Include="WriteRepositoryStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

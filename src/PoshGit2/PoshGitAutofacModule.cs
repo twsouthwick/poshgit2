@@ -25,6 +25,7 @@ namespace PoshGit2
                 .As<IFolderWatcher>();
 
             builder.RegisterType<ConsoleStatusWriter>()
+                .AsSelf()
                 .As<IStatusWriter>()
                 .InstancePerLifetimeScope();
 
