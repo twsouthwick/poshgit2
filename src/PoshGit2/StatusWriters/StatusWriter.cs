@@ -12,6 +12,8 @@ namespace PoshGit2
             _settings = settings;
         }
 
+        public virtual string Status { get; }
+
         public void WriteStatus(IRepositoryStatus status)
         {
             if (!_settings.EnablePromptStatus)

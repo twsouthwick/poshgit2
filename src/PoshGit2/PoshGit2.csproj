@@ -43,9 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StatusWriters\PlainTextStatusWriter.cs" />
     <Compile Include="Settings\ReadWriteGitPromptSettings.cs" />
-    <Compile Include="VT100StatusWriter.cs" />
-    <Compile Include="StatusWriter.cs" />
+    <Compile Include="StatusWriters\VT100StatusWriter.cs" />
+    <Compile Include="StatusWriters\StatusWriter.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\SerilogModule.cs" />
     <Compile Include="Logging\SerilogWrapper.cs" />
@@ -54,10 +55,10 @@
     <Compile Include="Status\ChangedItemsCollection.cs" />
     <Compile Include="Settings\DefaultGitPromptSettings.cs" />
     <Compile Include="IGitPromptSettings.cs" />
-    <Compile Include="ConsoleStatusWriter.cs" />
+    <Compile Include="StatusWriters\ConsoleStatusWriter.cs" />
     <Compile Include="Status\ExpiringCache.cs" />
     <Compile Include="Status\GitFolderWatcher.cs" />
-    <Compile Include="IStatusWriter.cs" />
+    <Compile Include="StatusWriters\IStatusWriter.cs" />
     <Compile Include="Status\ReadWriteRepositoryStatus.cs" />
     <Compile Include="Status\ReadonlyCopyRepositoryStatus.cs" />
     <Compile Include="ICurrentWorkingDirectory.cs" />
