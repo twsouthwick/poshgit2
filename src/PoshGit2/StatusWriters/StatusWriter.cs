@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace PoshGit2
@@ -16,6 +17,12 @@ namespace PoshGit2
 
         public void WriteStatus(IRepositoryStatus status)
         {
+            if (status == null)
+            {
+                Debug.Fail("Status should not be null");
+                return;
+            }
+
             if (!_settings.EnablePromptStatus)
             {
                 return;

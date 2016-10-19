@@ -72,6 +72,12 @@ namespace PoshGit2
         public async Task<string> GetStatusStringAsync(IGitPromptSettings settings, ICurrentWorkingDirectory cwd, CancellationToken token)
         {
             var status = await FindRepoAsync(cwd, token);
+
+            if (status == null)
+            {
+                return null;
+            }
+
             var writer = _statusWriterProvider.GetStatusWriter(settings);
 
             writer.WriteStatus(status);
