@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="VT100StatusWriter.cs" />
+    <Compile Include="StatusWriter.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\SerilogModule.cs" />
     <Compile Include="Logging\SerilogWrapper.cs" />

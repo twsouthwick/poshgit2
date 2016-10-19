@@ -18,10 +18,15 @@ namespace PoshGit2
         {
             base.ProcessRecord();
 
-            ProcessRecordAsync().GetAwaiter().GetResult();
+            var result = ProcessRecordAsync().GetAwaiter().GetResult();
+
+            if (result != null)
+            {
+                WriteObject(result);
+            }
         }
 
-        private async Task ProcessRecordAsync()
+        private async Task<string> ProcessRecordAsync()
         {
             if (Format == null)
             {
@@ -31,7 +36,13 @@ namespace PoshGit2
                 if (repositoryStatus != null)
                 {
                     writer.WriteStatus(repositoryStatus);
+
+                    var vt100 = writer as VT100StatusWriter;
+
+                    return vt100?.Status;
                 }
+
+                return null;
             }
             else
             {
@@ -40,7 +51,7 @@ namespace PoshGit2
 
                 var statusString = await cache.GetStatusStringAsync(Format, cwd, CancellationToken.None);
 
-                Console.WriteLine(statusString);
+                return statusString;
             }
         }
     }

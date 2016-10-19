@@ -24,7 +24,9 @@ namespace PoshGit2
             builder.RegisterType<GitFolderWatcher>()
                 .As<IFolderWatcher>();
 
-            builder.RegisterType<ConsoleStatusWriter>()
+            // TODO: Determine which one to return based on console support
+            //builder.RegisterType<ConsoleStatusWriter>()
+            builder.RegisterType<VT100StatusWriter>()
                 .As<IStatusWriter>()
                 .InstancePerLifetimeScope();
 
