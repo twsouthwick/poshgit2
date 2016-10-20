@@ -4,12 +4,44 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/wltxy9an91vlj5ms/branch/master?svg=true)](https://ci.appveyor.com/project/twsouthwick/poshgit2/branch/master)
 [![Current Version](https://img.shields.io/myget/poshgit2/v/poshgit2.svg)](https://www.myget.org/feed/Packages/poshgit2)
 
-A set of PowerShell scripts which provide Git/PowerShell integration
+A set of PowerShell cmdlets which provide Git/PowerShell integration
 
-### Prompt for Git repositories
-   The prompt within Git repositories can show the current branch and the state of files (additions, modifications, deletions) within.  This is based off of [posh-git](https://github.com/dahlbyk/posh-git), but watches the repos in out-of-proc with libgit2.  The result is it is faster to display staus and expand tabs, which is very noticeable on larger repos.
-   
-### Tab completion
+## Cmdlets
+
+- Expand a git command given the line and last word
+
+    `Expand-GitCommand [[-FullLine] <string>] [[-LastWord] <string>]`
+    
+- Retrieve the process of the current running service. If the service is not running, no response is given
+
+    `Get-PoshGit2Server`
+    
+- Retrieve repository information of the current directory
+
+    `Get-Repository [-CurrentDirectory]` *Default*
+    
+    `Get-Repository [-All]`
+
+- Get a string representation of the output
+
+    `Get-RepositoryStatus [-PlainText]` *Default*
+
+    `Get-RepositoryStatus [-VT100]`
+
+- Remove single repository or all from server cache
+
+    `Remove-Repository [-Repository] <string[]>`
+
+    `Remove-Repository [-All]`
+
+- Write the colored output to the console
+
+    `Write-RepositoryStatus`
+
+## Prompt for Git repositories
+   The prompt within Git repositories can show the current branch and the state of files (additions, modifications, deletions) within.  This is based off of [posh-git](https://github.com/dahlbyk/posh-git), but watches the repos in an out of process server with libgit2.  The result is it is faster to display staus and expand tabs, which is very noticeable on larger repos. A single server is maintained for the user.
+  
+## Tab completion
    Provides tab completion for common commands when using git.  
    E.g. `git ch<tab>` --> `git checkout`
 
@@ -29,14 +61,14 @@ The Prompt
 This tool is intended to be incorporated as part of the PowerShell prompt.  For example, add the following function to your `profile.ps1` file:
 
 ```
-function prompt {
+function prompt 
+{
 	$dir = $pwd.Path.Replace("Microsoft.PowerShell.Core\FileSystem::", "");
 
-	Write-Host ("`n[$dir]") -nonewline -ForegroundColor DarkGreen
-	Write-GitStatus
-	Write-Host ""
-
-	return "$ "
+	$status = Get-RepositoryStatus -VT100
+	$esc = [char]0x1b
+	
+	return "`n${esc}[0m${esc}[32;3m[$dir]${esc}[0m$status`n$ "
 }
 ```
 
