@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacCmdlet.cs" />
+    <Compile Include="Get-PoshGit2Server.cs" />
     <Compile Include="GetRepository.cs" />
     <Compile Include="GetRepositoryStatus.cs" />
     <Compile Include="ISessionState.cs" />

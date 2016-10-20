@@ -30,7 +30,7 @@ namespace PoshGit.Daemon
             {
                 Console.Title = "PoshGit2 Server";
 
-                TryStartServer();
+                TryStartServer(showServer);
             }
         }
 
@@ -42,7 +42,7 @@ namespace PoshGit.Daemon
             }
         }
 
-        private static bool TryStartServer()
+        private static bool TryStartServer(bool showServer)
         {
             bool createdNewServerMutex;
             using (var serverMutex = new Mutex(true, ServerInfo.Name, out createdNewServerMutex))
@@ -52,7 +52,8 @@ namespace PoshGit.Daemon
                     return false;
                 }
 
-                using (var container = BuildServerContainer())
+                using (var container = BuildServerContainer(showServer))
+                using (container.Resolve<IServerInformation>())
                 {
                     var logger = container.Resolve<ILogger>();
                     logger.Information("Server name: {Version}", ServerInfo.Name);
@@ -94,7 +95,7 @@ namespace PoshGit.Daemon
             return builder.Build();
         }
 
-        private static IContainer BuildServerContainer()
+        private static IContainer BuildServerContainer(bool showServer)
         {
             var builder = new ContainerBuilder();
 
@@ -102,12 +103,10 @@ namespace PoshGit.Daemon
             builder.RegisterModule(new SerilogModule
             {
                 LogUnhandledExceptions = true,
-                LogToConsole = true
+                LogToConsole = showServer
             });
 
-            builder.RegisterType<NamedPipePoshGitServer>()
-                .AsSelf()
-                .SingleInstance();
+            builder.RegisterModule(new NamedPipeStatusModule { ServerMode = true });
 
             builder.RegisterType<TabCompleter>()
                 .As<ITabCompleter>();
